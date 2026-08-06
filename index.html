@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的旅遊手冊</title>
+<title>2026泰國</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -559,6 +559,12 @@
     font-size:.78rem;font-weight:600;font-family:var(--sans);
     box-shadow:0 0 0 2px rgba(242,241,239,.65);
   }
+  .map-dot-b{width:22px;height:22px;line-height:20px;}
+  .map-dot-b .ic{width:11px;height:11px;vertical-align:-1px;}
+  .map-dot-hotel{border-color:var(--terra);color:var(--terra);}
+  .map-dot-air{border-color:var(--gold);color:var(--gold);}
+  .map-dot.map-dot-base{width:12px;height:12px;}
+  .map-dot-base{border-color:var(--soft);color:var(--soft);}
   .day-map.day-map-fallback{height:auto;padding:12px 16px;font-size:.9rem;color:var(--soft);background:transparent;}
   .leaflet-container{font-family:var(--sans);font-size:.8rem;}
   @media(min-width:640px){.day-map{height:220px;}}
@@ -765,7 +771,8 @@ const TRIP_DATA = {
           url: "https://www.vietjetair.com/",
           mapQuery: "Suvarnabhumi Airport Bangkok",
           stay: "15:30–18:15",
-          coords: [25.0797, 121.2342],
+          coords: [25.0764, 121.2239],
+          base: "airport",  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Thai_VietJet_Air_Airbus_A320_HS-VKD_Bangkok_Suvarnabhumi_2024_%2801%29.jpg/960px-Thai_VietJet_Air_Airbus_A320_HS-VKD_Bangkok_Suvarnabhumi_2024_%2801%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Suvarnabhumi_Airport_Departures_Hall_Bangkok_Thailand.jpg/960px-Suvarnabhumi_Airport_Departures_Hall_Bangkok_Thailand.jpg"],
           intro: [
             "泰越捷航空 VZ567 經濟艙，桃園直飛曼谷",
@@ -783,7 +790,8 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Hilton Garden Inn Bangkok Silom",
           stay: "18:30–20:00",
-          coords: [13.7238, 100.5226],
+          coords: [13.7232, 100.5185],
+          base: "hotel",  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg/960px-Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Silom_Road_Bangkok_Thailand.jpg/960px-Silom_Road_Bangkok_Thailand.jpg"],
           intro: [
             "ARL 機場鐵路至 Phaya Thai，轉 BTS 到 Surasak 站",
@@ -801,7 +809,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
           stay: "20:00–22:00",
-          coords: [13.7187, 100.5142],
+          coords: [13.7184, 100.5126],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sathorn_Pier_%281%29.jpg/960px-Sathorn_Pier_%281%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Bangkok_Street_Food.jpg/960px-Bangkok_Street_Food.jpg"],
           intro: [
             "步行到 Sathorn Pier 一帶的昭披耶河岸",
@@ -889,7 +897,8 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
           stay: "11:00–11:40",
-          coords: [13.7187, 100.5142],
+          coords: [13.7184, 100.5126],
+          base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg/960px-Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chao_Phraya_Express_Boat_Orange_Flag_1.jpg/960px-Chao_Phraya_Express_Boat_Orange_Flag_1.jpg"],
           intro: [
             "步行到 Sathorn Pier 搭交通船",
@@ -907,7 +916,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Warehouse 30 Charoen Krung Bangkok",
           stay: "11:40–14:30",
-          coords: [13.7267, 100.5124],
+          coords: [13.7281, 100.5148],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Warehouse_30_%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%AE%E0%B8%B2%E0%B8%AA%E0%B9%8C_30_%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87_--_04.jpg/960px-Warehouse_30_%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%AE%E0%B8%B2%E0%B8%AA%E0%B9%8C_30_%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87_--_04.jpg"],
           intro: [
             "二戰老倉庫改建的文創園區",
@@ -967,7 +976,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "EmQuartier Bangkok",
           stay: "14:45–18:30",
-          coords: [13.7305, 100.5697],
+          coords: [13.7320, 100.5696],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Emquartier_27-03-2015.JPG/960px-Emquartier_27-03-2015.JPG"],
           intro: [
             "BTS 一站到 Phrom Phong，EM 商圈三館齊逛",
@@ -995,6 +1004,7 @@ const TRIP_DATA = {
           mapQuery: "CentralWorld Bangkok",
           stay: "07:30–09:00",
           coords: [13.7466, 100.5393],
+          base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/CentralWorld-2015.jpg/960px-CentralWorld-2015.jpg"],
           intro: [
             "一早 BTS 到 Chit Lom，CentralWorld 門口集合",
@@ -1012,7 +1022,7 @@ const TRIP_DATA = {
           url: "https://www.safariworld.com/",
           mapQuery: "Safari World Bangkok",
           stay: "09:00–16:30",
-          coords: [13.8804, 100.6935],
+          coords: [13.8650, 100.7030],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/0740_Tierpark_Bangkok_Safari_World.jpg/960px-0740_Tierpark_Bangkok_Safari_World.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/0890_Tierpark_Bangkok_Safari_World.jpg/960px-0890_Tierpark_Bangkok_Safari_World.jpg"],
           intro: [
             "大巴直接開進野生動物區，長頸鹿、斑馬、老虎近距離看",
@@ -1072,7 +1082,8 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Hilton Garden Inn Bangkok Silom",
           stay: "14:00–15:30",
-          coords: [13.7238, 100.5226],
+          coords: [13.7232, 100.5185],
+          base: "hotel",  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Bangkok_Skytrain_2011.jpg/960px-Bangkok_Skytrain_2011.jpg"],
           intro: [
             "戰利品先搬回飯店",
@@ -1259,7 +1270,8 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Khlong Toei Pier Bangkok",
           stay: "09:30–10:30",
-          coords: [13.7016, 100.5745],
+          coords: [13.6993, 100.5770],
+          base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MRT_BLUE_LINE_EMU-BLE.jpg/960px-MRT_BLUE_LINE_EMU-BLE.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg/960px-Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg"],
           intro: [
             "BTS 到 Sala Daeng 轉 MRT 到 Khlong Toei",
@@ -1319,7 +1331,8 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
           stay: "16:00–17:00",
-          coords: [13.7187, 100.5142],
+          coords: [13.7184, 100.5126],
+          base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sathorn_Pier_%281%29.jpg/960px-Sathorn_Pier_%281%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Sathon_Pier_Bangkok_2019_hoponhopoff_boat.jpg/960px-Sathon_Pier_Bangkok_2019_hoponhopoff_boat.jpg"],
           intro: [
             "BTS 到 Saphan Taksin，走到 Sathorn Pier",
@@ -1362,6 +1375,7 @@ const TRIP_DATA = {
           mapQuery: "Suvarnabhumi Airport Bangkok",
           stay: "約 08:30 出發",
           coords: [13.69, 100.7501],
+          base: "airport",  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg/960px-CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg"],
           intro: [
             "一早退房，BTS 到 Phaya Thai 轉機場鐵路 ARL",
@@ -1379,7 +1393,8 @@ const TRIP_DATA = {
           url: "https://www.thaiairways.com/",
           mapQuery: "Suvarnabhumi Airport Bangkok",
           stay: "12:40–17:20",
-          coords: [25.0797, 121.2342],
+          coords: [25.0764, 121.2239],
+          base: "airport",  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Thai_Airways%2C_Boeing_777-300ER%2C_HS-TKQ_-_NRT.jpg/960px-Thai_Airways%2C_Boeing_777-300ER%2C_HS-TKQ_-_NRT.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Suvarnabhumi_International_Airport_Bangkok_%2812%29.jpg/960px-Suvarnabhumi_International_Airport_Bangkok_%2812%29.jpg"],
           intro: [
             "泰國航空 TG634 經濟艙，曼谷直飛桃園",
@@ -1487,6 +1502,9 @@ const TRIP_DATA = {
       createdAt: "2026-08-06T00:00:00.000Z"
     }
   ],
+  /* 城市邊界（曼谷都，Nominatim/OSM 簡化 GeoJSON，內嵌避免 runtime 外抓；day 小地圖淡虛線描邊用） */
+  cityBoundary: {"type":"Polygon","coordinates":[[[100.3279,13.8042],[100.3375,13.7361],[100.3329,13.7211],[100.3388,13.7128],[100.3323,13.7125],[100.3313,13.6973],[100.3394,13.655],[100.3468,13.6553],[100.3484,13.641],[100.3778,13.6209],[100.3785,13.5943],[100.3954,13.5537],[100.4152,13.5571],[100.4201,13.5454],[100.4048,13.5081],[100.4541,13.2191],[100.4543,13.4977],[100.4444,13.5537],[100.4537,13.606],[100.464,13.6058],[100.4697,13.5927],[100.4854,13.6063],[100.5015,13.6095],[100.5115,13.5969],[100.521,13.6051],[100.5142,13.6286],[100.5204,13.6756],[100.5467,13.6717],[100.5565,13.7061],[100.5879,13.6914],[100.5793,13.6692],[100.6351,13.6475],[100.6406,13.6539],[100.6503,13.6521],[100.6554,13.6723],[100.6983,13.6562],[100.7124,13.7013],[100.71,13.7164],[100.7164,13.7184],[100.7884,13.7166],[100.8593,13.6894],[100.8608,13.697],[100.8552,13.6994],[100.9099,13.7905],[100.9386,13.8143],[100.9077,13.8382],[100.9127,13.8468],[100.9052,13.8482],[100.9141,13.9462],[100.7925,13.9316],[100.7527,13.9185],[100.6868,13.9163],[100.6898,13.931],[100.6413,13.9313],[100.6398,13.9374],[100.6248,13.938],[100.6246,13.9488],[100.6128,13.9552],[100.6044,13.9534],[100.6057,13.9441],[100.574,13.9546],[100.5676,13.9514],[100.5437,13.8497],[100.5094,13.8256],[100.5072,13.8162],[100.515,13.8132],[100.5012,13.8008],[100.4665,13.7891],[100.4699,13.7947],[100.4589,13.7983],[100.3279,13.8042]]]},
+
   expenses: null
 };
 </script>
@@ -2295,6 +2313,14 @@ const TRIP_DATA = {
      切到該天頁籤才初始化（lazy、一次 init 後保留），避免載入頁面就抓全部圖磚；
      Leaflet CDN 載入失敗（斷網）→ 降級成「今日活動區域」文字卡，不破版。 */
   const DAY_MAPS = {}, MAP_TRIES = {};
+  let BOUNDARY_BB = null; // 城界 bbox 快取（fitBounds 出城判斷用）
+  function boundaryBB() {
+    if (BOUNDARY_BB !== null || !TRIP_DATA.cityBoundary || !(window.L && L.latLngBounds)) return BOUNDARY_BB;
+    const arr = [];
+    (function walk(c) { typeof c[0] === "number" ? arr.push([c[1], c[0]]) : c.forEach(walk); })(TRIP_DATA.cityBoundary.coordinates);
+    BOUNDARY_BB = L.latLngBounds(arr);
+    return BOUNDARY_BB;
+  }
   const dayZone = day => String(day.theme || "").split("（")[0];
   const dayMapHTML = (di, day) =>
     '<div class="day-map-wrap"><div class="day-map" id="day-map-' + di + '"></div>'
@@ -2313,7 +2339,7 @@ const TRIP_DATA = {
     if (!el || DAY_MAPS[di] || !day) return;
     const zone = dayZone(day);
     const pts = (day.spots || [])
-      .map((s, i) => ({ name: s.name, coords: s.coords, no: i + 1 }))
+      .map((s, i) => ({ name: s.name, coords: s.coords, base: s.base, no: i + 1 }))
       .filter(x => Array.isArray(x.coords) && x.coords.length === 2);
     if (!pts.length) { dayMapFallback(el, di, zone); return; }
     if (!(window.L && L.map)) {
@@ -2329,12 +2355,30 @@ const TRIP_DATA = {
       subdomains: "abcd", maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
-    pts.forEach(x => {
-      L.marker(x.coords, {
-        icon: L.divIcon({ className: "map-dot-wrap", html: '<div class="map-dot">' + x.no + '</div>', iconSize: [26, 26], iconAnchor: [13, 13] })
-      }).addTo(map).bindPopup(esc(x.name));
-    });
-    map.fitBounds(pts.map(x => x.coords), { padding: [34, 34], maxZoom: 15 });
+    /* 城市邊界描邊：淡虛線、主色 30% 透明（內嵌簡化 GeoJSON，不外抓） */
+    if (TRIP_DATA.cityBoundary) {
+      const mainCol = (getComputedStyle(document.documentElement).getPropertyValue("--blue") || "#767676").trim();
+      L.geoJSON(TRIP_DATA.cityBoundary, {
+        interactive: false,
+        style: { color: mainCol, opacity: .3, weight: 1.2, dashArray: "5 5", fill: false }
+      }).addTo(map);
+    }
+    /* marker：一般＝主色編號圓點；base 點照常顯示但不參與 fitBounds
+       （飯店＝陶土色小家、機場＝芥末金小飛機、交通出發點＝小空心點） */
+    const dotIcon = x => {
+      if (!x.base) return L.divIcon({ className: "map-dot-wrap", html: '<div class="map-dot">' + x.no + '</div>', iconSize: [26, 26], iconAnchor: [13, 13] });
+      const t = x.base === "hotel" ? " map-dot-hotel" : x.base === "airport" ? " map-dot-air" : " map-dot-base";
+      const inner = x.base === "hotel" ? ic("home", "sm") : x.base === "airport" ? ic("plane", "sm") : "";
+      const size = inner ? 22 : 12;
+      return L.divIcon({ className: "map-dot-wrap", html: '<div class="map-dot map-dot-b' + t + '">' + inner + '</div>', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+    };
+    pts.forEach(x => { L.marker(x.coords, { icon: dotIcon(x) }).addTo(map).bindPopup(esc(x.name)); });
+    const focus = pts.filter(x => !x.base);
+    let fit = L.latLngBounds((focus.length ? focus : pts).map(x => x.coords));
+    /* 出城日：聚焦點跑出城界時，把城界一起框進來，看得出「今天跑出框外」 */
+    const bb = boundaryBB();
+    if (bb && focus.length && focus.some(x => !bb.contains(L.latLng(x.coords)))) fit = fit.extend(bb);
+    map.fitBounds(fit, { padding: [34, 34], maxZoom: 15 });
     DAY_MAPS[di] = map;
   }
 
