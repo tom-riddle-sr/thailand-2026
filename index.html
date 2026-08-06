@@ -628,7 +628,6 @@ const TRIP_DATA = {
 
   /* 旅伴公開資訊（使用者同意公開：英文姓名／國籍／性別）；證件號碼只存在 secure 加密區 */
   membersPublic: [
-    { name: "HUANG YI CIH", nationality: "台灣", gender: "女" },
     { name: "CHANG RONG JIA", nationality: "台灣", gender: "女" }
   ],
 
@@ -2355,12 +2354,12 @@ const TRIP_DATA = {
       subdomains: "abcd", maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
-    /* 城市邊界描邊：淡虛線、主色 30% 透明（內嵌簡化 GeoJSON，不外抓） */
+    /* 城市邊界描邊：主色 75% 透明、2px 虛線（內嵌簡化 GeoJSON，不外抓） */
     if (TRIP_DATA.cityBoundary) {
       const mainCol = (getComputedStyle(document.documentElement).getPropertyValue("--blue") || "#767676").trim();
       L.geoJSON(TRIP_DATA.cityBoundary, {
         interactive: false,
-        style: { color: mainCol, opacity: .3, weight: 1.2, dashArray: "5 5", fill: false }
+        style: { color: mainCol, opacity: .75, weight: 2, dashArray: "6 6", fill: false }
       }).addTo(map);
     }
     /* marker：一般＝主色編號圓點；base 點照常顯示但不參與 fitBounds
