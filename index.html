@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 <style>
   :root{
     --bg:#F2F1EF;
@@ -542,6 +544,25 @@
   .shop-item .swhere{color:var(--soft);font-size:.85rem;margin-left:8px;}
   .shop-item .sdesc{color:var(--soft);font-size:.88rem;}
 
+  /* ===== Day mini map（Leaflet） ===== */
+  .day-map-wrap{position:relative;margin-top:8px;}
+  .day-map{height:200px;width:100%;max-width:100%;border:1px solid var(--line);background:#e9e6e1;z-index:0;}
+  .day-map-label{
+    position:absolute;top:10px;left:10px;z-index:600;pointer-events:none;
+    background:rgba(242,241,239,.92);border:1px solid var(--line);
+    font-size:.72rem;letter-spacing:.1em;color:var(--ink);padding:1px 10px;font-weight:600;
+  }
+  .map-dot-wrap{background:none;border:none;}
+  .map-dot{
+    width:26px;height:26px;line-height:24px;border-radius:50%;text-align:center;
+    background:var(--bg);border:1px solid var(--blue);color:var(--blue);
+    font-size:.78rem;font-weight:600;font-family:var(--sans);
+    box-shadow:0 0 0 2px rgba(242,241,239,.65);
+  }
+  .day-map.day-map-fallback{height:auto;padding:12px 16px;font-size:.9rem;color:var(--soft);background:transparent;}
+  .leaflet-container{font-family:var(--sans);font-size:.8rem;}
+  @media(min-width:640px){.day-map{height:220px;}}
+
   /* ===== Lightbox ===== */
   .lightbox{
     position:fixed;inset:0;z-index:200;background:rgba(24,23,22,.93);
@@ -744,6 +765,7 @@ const TRIP_DATA = {
           url: "https://www.vietjetair.com/",
           mapQuery: "Suvarnabhumi Airport Bangkok",
           stay: "15:30–18:15",
+          coords: [25.0797, 121.2342],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Thai_VietJet_Air_Airbus_A320_HS-VKD_Bangkok_Suvarnabhumi_2024_%2801%29.jpg/960px-Thai_VietJet_Air_Airbus_A320_HS-VKD_Bangkok_Suvarnabhumi_2024_%2801%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Suvarnabhumi_Airport_Departures_Hall_Bangkok_Thailand.jpg/960px-Suvarnabhumi_Airport_Departures_Hall_Bangkok_Thailand.jpg"],
           intro: [
             "泰越捷航空 VZ567 經濟艙，桃園直飛曼谷",
@@ -761,6 +783,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Hilton Garden Inn Bangkok Silom",
           stay: "18:30–20:00",
+          coords: [13.7238, 100.5226],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg/960px-Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Silom_Road_Bangkok_Thailand.jpg/960px-Silom_Road_Bangkok_Thailand.jpg"],
           intro: [
             "ARL 機場鐵路至 Phaya Thai，轉 BTS 到 Surasak 站",
@@ -778,6 +801,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
           stay: "20:00–22:00",
+          coords: [13.7187, 100.5142],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sathorn_Pier_%281%29.jpg/960px-Sathorn_Pier_%281%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Bangkok_Street_Food.jpg/960px-Bangkok_Street_Food.jpg"],
           intro: [
             "步行到 Sathorn Pier 一帶的昭披耶河岸",
@@ -801,6 +825,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Erawan Shrine Bangkok",
           stay: "11:30–12:30",
+          coords: [13.7443, 100.5404],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Erawan_Shrine_Bangkok_2021_May.jpg/960px-Erawan_Shrine_Bangkok_2021_May.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dance_offering_at_Erawan_Shrine%2C_Bangkok_%2832844253793%29.jpg/960px-Dance_offering_at_Erawan_Shrine%2C_Bangkok_%2832844253793%29.jpg"],
           intro: [
             "曼谷香火最旺的四面佛，就在 Grand Hyatt 門口路口",
@@ -818,6 +843,7 @@ const TRIP_DATA = {
           url: "https://www.centralworld.co.th/",
           mapQuery: "CentralWorld Bangkok",
           stay: "12:30–15:30",
+          coords: [13.7466, 100.5393],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/CentralWorld-2015.jpg/960px-CentralWorld-2015.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/CentralWorld_Bangkok_Thailand.jpg/960px-CentralWorld_Bangkok_Thailand.jpg"],
           intro: [
             "東南亞最大級的百貨商場之一",
@@ -835,6 +861,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Siam Paragon Bangkok",
           stay: "15:30–19:00",
+          coords: [13.746, 100.5348],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Siam_Paragon_06.23.jpg/960px-Siam_Paragon_06.23.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Present_SiamSquare.jpg/960px-Present_SiamSquare.jpg"],
           intro: [
             "沿空橋一路逛到 Siam 商圈",
@@ -862,6 +889,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
           stay: "11:00–11:40",
+          coords: [13.7187, 100.5142],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg/960px-Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chao_Phraya_Express_Boat_Orange_Flag_1.jpg/960px-Chao_Phraya_Express_Boat_Orange_Flag_1.jpg"],
           intro: [
             "步行到 Sathorn Pier 搭交通船",
@@ -879,6 +907,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Warehouse 30 Charoen Krung Bangkok",
           stay: "11:40–14:30",
+          coords: [13.7267, 100.5124],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Warehouse_30_%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%AE%E0%B8%B2%E0%B8%AA%E0%B9%8C_30_%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87_--_04.jpg/960px-Warehouse_30_%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%AE%E0%B8%B2%E0%B8%AA%E0%B9%8C_30_%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87_--_04.jpg"],
           intro: [
             "二戰老倉庫改建的文創園區",
@@ -896,6 +925,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Talat Noi Bangkok",
           stay: "14:30–18:00",
+          coords: [13.7327, 100.5126],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Sunset_View_of_Chao_Phraya_River_from_Talat_Noi%2C_Bangkok%2C_Thailand.jpg/960px-Sunset_View_of_Chao_Phraya_River_from_Talat_Noi%2C_Bangkok%2C_Thailand.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Lam_Phun_Chai_road%2C_talat_Noi%2C_Samphanthawong%2C_Bangkok_Thailand_-_panoramio.jpg/960px-Lam_Phun_Chai_road%2C_talat_Noi%2C_Samphanthawong%2C_Bangkok_Thailand_-_panoramio.jpg"],
           intro: [
             "曼谷最老的華人街區之一，老屋、汽車零件行與街頭壁畫共存",
@@ -919,6 +949,7 @@ const TRIP_DATA = {
           url: "https://www.terminal21.co.th/",
           mapQuery: "Terminal 21 Asok Bangkok",
           stay: "11:30–14:30",
+          coords: [13.7373, 100.5605],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Terminal_21_Asok_Bangkok_20202021.jpg/960px-Terminal_21_Asok_Bangkok_20202021.jpg"],
           intro: [
             "以機場航廈為概念的主題商場，每層一個城市",
@@ -936,6 +967,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "EmQuartier Bangkok",
           stay: "14:45–18:30",
+          coords: [13.7305, 100.5697],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Emquartier_27-03-2015.JPG/960px-Emquartier_27-03-2015.JPG"],
           intro: [
             "BTS 一站到 Phrom Phong，EM 商圈三館齊逛",
@@ -962,6 +994,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "CentralWorld Bangkok",
           stay: "07:30–09:00",
+          coords: [13.7466, 100.5393],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/CentralWorld-2015.jpg/960px-CentralWorld-2015.jpg"],
           intro: [
             "一早 BTS 到 Chit Lom，CentralWorld 門口集合",
@@ -979,6 +1012,7 @@ const TRIP_DATA = {
           url: "https://www.safariworld.com/",
           mapQuery: "Safari World Bangkok",
           stay: "09:00–16:30",
+          coords: [13.8804, 100.6935],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/0740_Tierpark_Bangkok_Safari_World.jpg/960px-0740_Tierpark_Bangkok_Safari_World.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/0890_Tierpark_Bangkok_Safari_World.jpg/960px-0890_Tierpark_Bangkok_Safari_World.jpg"],
           intro: [
             "大巴直接開進野生動物區，長頸鹿、斑馬、老虎近距離看",
@@ -996,6 +1030,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "CentralWorld Bangkok",
           stay: "16:30–20:00",
+          coords: [13.7466, 100.5393],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/CentralWorld_Bangkok_Thailand.jpg/960px-CentralWorld_Bangkok_Thailand.jpg"],
           intro: [
             "傍晚大巴回 CentralWorld",
@@ -1019,6 +1054,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Chatuchak Weekend Market Bangkok",
           stay: "10:00–14:00",
+          coords: [13.7999, 100.5502],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Chatuchak_Weekend_Market_1.jpg/960px-Chatuchak_Weekend_Market_1.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Chatuchak_Weekend_Market_Soi.jpg/960px-Chatuchak_Weekend_Market_Soi.jpg"],
           intro: [
             "世界最大週末市集之一，一萬多攤只有六日全開",
@@ -1036,6 +1072,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Hilton Garden Inn Bangkok Silom",
           stay: "14:00–15:30",
+          coords: [13.7238, 100.5226],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Bangkok_Skytrain_2011.jpg/960px-Bangkok_Skytrain_2011.jpg"],
           intro: [
             "戰利品先搬回飯店",
@@ -1052,6 +1089,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Silom Road Bangkok",
           stay: "15:30–19:00",
+          coords: [13.7262, 100.5299],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thai_massage_Ao_Nang_1.jpg/960px-Thai_massage_Ao_Nang_1.jpg"],
           intro: [
             "飯店周邊找間咖啡廳放空",
@@ -1077,6 +1115,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Maeklong Railway Market",
           stay: "13:00–15:00",
+          coords: [13.4067, 99.9553],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Maeklong_Railway_Market_01.jpg/960px-Maeklong_Railway_Market_01.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Maeklong_Railway_Market_03.jpg/960px-Maeklong_Railway_Market_03.jpg"],
           intro: [
             "攤販直接擺在鐵軌上的傳奇市場",
@@ -1094,6 +1133,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Amphawa Floating Market",
           stay: "15:30–20:00",
+          coords: [13.4259, 99.9549],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Amphawa_Floating_Market_10.jpg/960px-Amphawa_Floating_Market_10.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Amphawa_Floating_Market_2.jpg/960px-Amphawa_Floating_Market_2.jpg"],
           intro: [
             "運河兩岸木屋與船上小吃攤，黃昏開始最有味道",
@@ -1117,6 +1157,7 @@ const TRIP_DATA = {
           url: "https://www.royalgrandpalace.th/",
           mapQuery: "Grand Palace Bangkok",
           stay: "08:30–11:30",
+          coords: [13.75, 100.4913],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/A_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg/960px-A_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Wat_Phra_Kaew_by_Ninara_TSP_edit_crop.jpg/960px-Wat_Phra_Kaew_by_Ninara_TSP_edit_crop.jpg"],
           intro: [
             "曼谷王朝的心臟，金光燦爛的宮殿建築群",
@@ -1134,6 +1175,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Wat Pho Bangkok",
           stay: "11:45–13:30",
+          coords: [13.7465, 100.493],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Reclining_Buddha_statue_of_Wat_Pho9.jpg/960px-Reclining_Buddha_statue_of_Wat_Pho9.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Wat_Pho%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg/960px-Wat_Pho%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg"],
           intro: [
             "46 公尺長的金色臥佛，氣勢驚人",
@@ -1151,6 +1193,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Wat Arun Bangkok",
           stay: "13:45–16:00",
+          coords: [13.7437, 100.4889],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg/960px-Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/20171201_Wat_Arun_Bangkok_6443_DxO.jpg/960px-20171201_Wat_Arun_Bangkok_6443_DxO.jpg"],
           intro: [
             "昭披耶河西岸的黎明寺，主塔貼滿彩色瓷片",
@@ -1174,6 +1217,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Silom Road Bangkok",
           stay: "12:00–15:00",
+          coords: [13.7248, 100.5285],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thai_massage_Ao_Nang_1.jpg/960px-Thai_massage_Ao_Nang_1.jpg"],
           intro: [
             "行程過半，安排一個下午給高級 SPA",
@@ -1191,6 +1235,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Silom Road Bangkok",
           stay: "15:00–20:00",
+          coords: [13.7276, 100.534],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Silom_Road_Bangkok_Thailand.jpg/960px-Silom_Road_Bangkok_Thailand.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Bangkok_Street_Food.jpg/960px-Bangkok_Street_Food.jpg"],
           intro: [
             "SPA 完就在 Silom 區或飯店周邊覓食",
@@ -1214,6 +1259,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Khlong Toei Pier Bangkok",
           stay: "09:30–10:30",
+          coords: [13.7016, 100.5745],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MRT_BLUE_LINE_EMU-BLE.jpg/960px-MRT_BLUE_LINE_EMU-BLE.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg/960px-Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg"],
           intro: [
             "BTS 到 Sala Daeng 轉 MRT 到 Khlong Toei",
@@ -1231,6 +1277,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Bang Krachao",
           stay: "10:30–15:00",
+          coords: [13.6787, 100.5772],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Bang_Kachao_jungle_path.jpg/960px-Bang_Kachao_jungle_path.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bang_Krachao.jpg/960px-Bang_Krachao.jpg"],
           intro: [
             "昭披耶河環抱的綠洲，被稱為「曼谷之肺」",
@@ -1248,6 +1295,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Bang Krachao cafe",
           stay: "15:00–17:00",
+          coords: [13.686, 100.579],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bang_Krachao.jpg/960px-Bang_Krachao.jpg"],
           intro: [
             "騎累了找間樹屋咖啡廳放空",
@@ -1271,6 +1319,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
           stay: "16:00–17:00",
+          coords: [13.7187, 100.5142],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sathorn_Pier_%281%29.jpg/960px-Sathorn_Pier_%281%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Sathon_Pier_Bangkok_2019_hoponhopoff_boat.jpg/960px-Sathon_Pier_Bangkok_2019_hoponhopoff_boat.jpg"],
           intro: [
             "BTS 到 Saphan Taksin，走到 Sathorn Pier",
@@ -1288,6 +1337,7 @@ const TRIP_DATA = {
           url: "https://www.asiatiquethailand.com/",
           mapQuery: "Asiatique The Riverfront Bangkok",
           stay: "17:00–21:30",
+          coords: [13.7045, 100.5023],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Asiatique_The_Riverfront_08.jpg/960px-Asiatique_The_Riverfront_08.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Asiatique_The_Riverfront_23.jpg/960px-Asiatique_The_Riverfront_23.jpg"],
           intro: [
             "老碼頭倉庫改建的河岸夜市",
@@ -1311,6 +1361,7 @@ const TRIP_DATA = {
           url: "",
           mapQuery: "Suvarnabhumi Airport Bangkok",
           stay: "約 08:30 出發",
+          coords: [13.69, 100.7501],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg/960px-CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg"],
           intro: [
             "一早退房，BTS 到 Phaya Thai 轉機場鐵路 ARL",
@@ -1328,6 +1379,7 @@ const TRIP_DATA = {
           url: "https://www.thaiairways.com/",
           mapQuery: "Suvarnabhumi Airport Bangkok",
           stay: "12:40–17:20",
+          coords: [25.0797, 121.2342],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Thai_Airways%2C_Boeing_777-300ER%2C_HS-TKQ_-_NRT.jpg/960px-Thai_Airways%2C_Boeing_777-300ER%2C_HS-TKQ_-_NRT.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Suvarnabhumi_International_Airport_Bangkok_%2812%29.jpg/960px-Suvarnabhumi_International_Airport_Bangkok_%2812%29.jpg"],
           intro: [
             "泰國航空 TG634 經濟艙，曼谷直飛桃園",
@@ -1584,6 +1636,7 @@ const TRIP_DATA = {
   function activate(id) {
     $$("button", tabbar).forEach(b => b.classList.toggle("active", b.dataset.target === id));
     $$("section.panel", main).forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
+    if (id.indexOf("day") === 0) initDayMap(+id.slice(3)); // 小地圖 lazy 初始化：切到該天才 init
     const btn = $$("button", tabbar).find(b => b.dataset.target === id);
     if (btn && btn.scrollIntoView) btn.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
   }
@@ -2238,6 +2291,53 @@ const TRIP_DATA = {
   })();
 
   /* ==================== 3. 每日行程 ==================== */
+  /* ---------- 每日小地圖：Leaflet ＋ CARTO Positron 淺色底圖 ----------
+     切到該天頁籤才初始化（lazy、一次 init 後保留），避免載入頁面就抓全部圖磚；
+     Leaflet CDN 載入失敗（斷網）→ 降級成「今日活動區域」文字卡，不破版。 */
+  const DAY_MAPS = {}, MAP_TRIES = {};
+  const dayZone = day => String(day.theme || "").split("（")[0];
+  const dayMapHTML = (di, day) =>
+    '<div class="day-map-wrap"><div class="day-map" id="day-map-' + di + '"></div>'
+    + '<span class="day-map-label">' + esc(dayZone(day)) + '</span></div>';
+  function dayMapFallback(el, di, zone) {
+    DAY_MAPS[di] = "fallback";
+    el.classList.add("day-map-fallback");
+    el.innerHTML = ic("map", "sm") + ' 今日活動區域：<b>' + esc(zone) + '</b>　'
+      + '<span class="muted">（離線或地圖元件未載入，改以文字顯示）</span>';
+    const lb = el.parentElement.querySelector(".day-map-label");
+    if (lb) lb.remove();
+  }
+  function initDayMap(di) {
+    const day = TRIP_DATA.days[di];
+    const el = document.getElementById("day-map-" + di);
+    if (!el || DAY_MAPS[di] || !day) return;
+    const zone = dayZone(day);
+    const pts = (day.spots || [])
+      .map((s, i) => ({ name: s.name, coords: s.coords, no: i + 1 }))
+      .filter(x => Array.isArray(x.coords) && x.coords.length === 2);
+    if (!pts.length) { dayMapFallback(el, di, zone); return; }
+    if (!(window.L && L.map)) {
+      /* Leaflet 以 defer 載入，可能還沒好：短暫重試幾次，仍失敗才降級 */
+      MAP_TRIES[di] = (MAP_TRIES[di] || 0) + 1;
+      if (MAP_TRIES[di] <= 6) setTimeout(() => { if (!DAY_MAPS[di]) initDayMap(di); }, 500);
+      else dayMapFallback(el, di, zone);
+      return;
+    }
+    const map = L.map(el, { scrollWheelZoom: false, zoomControl: false });
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      subdomains: "abcd", maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+    pts.forEach(x => {
+      L.marker(x.coords, {
+        icon: L.divIcon({ className: "map-dot-wrap", html: '<div class="map-dot">' + x.no + '</div>', iconSize: [26, 26], iconAnchor: [13, 13] })
+      }).addTo(map).bindPopup(esc(x.name));
+    });
+    map.fitBounds(pts.map(x => x.coords), { padding: [34, 34], maxZoom: 15 });
+    DAY_MAPS[di] = map;
+  }
+
   function flowHTML(day) {
     let h = '<div class="flow-scroll"><div class="flow">';
     day.spots.forEach((s, i) => {
@@ -2283,7 +2383,7 @@ const TRIP_DATA = {
     const p = panel("day" + di);
     let html = '<div class="card"><h3>' + secTitle("Route", "今日節點圖", "", "map")
       + '<span class="en">' + fmtDate(day.date) + (day.theme ? '｜' + esc(day.theme) : '') + '</span></h3>'
-      + flowHTML(day) + '</div>';
+      + flowHTML(day) + dayMapHTML(di, day) + '</div>';
 
     day.spots.forEach((s, si) => {
       /* 標題連結：mapQuery → Google Maps 定位（官網連結移至下方注意提醒） */
