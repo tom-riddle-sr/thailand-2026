@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的旅遊手冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async></script>
+<style>
+  :root{
+    --bg:#F2F1EF;
+    --ink:#1a1a1a;
+    --soft:#767676;
+    --line:#c9c6c1;
+    --line-soft:#dedbd6;
+    --serif:'Playfair Display','Songti TC',Georgia,serif;   /* 只用於大型展示標題與英文裝飾小標 */
+    --sans:-apple-system,BlinkMacSystemFont,'Inter','Noto Sans TC','PingFang TC','Segoe UI','Microsoft JhengHei',sans-serif;
+    /* 泰式低飽和色盤：主色鼠尾草綠，功能性上色用，文字主體維持碳灰 */
+    --blue:#5C7A5E;  --blue-soft:#E7EEE7;
+    --terra:#C1666B; --terra-soft:#F5E6E6;
+    --sage:#84A98C;  --sage-soft:#E8F0EA;
+    --gold:#C9A227;  --gold-soft:#F5EED6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:var(--sans);
+    background:var(--bg);color:var(--ink);
+    font-size:16px;line-height:1.7;letter-spacing:.01em;font-weight:400;
+  }
+  a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;}
+
+  /* ===== Header ===== */
+  header.hero{
+    background:var(--bg);color:var(--ink);
+    padding:38px 20px 22px;text-align:center;
+  }
+  header.hero .eyebrow{
+    font-family:var(--serif);
+    font-size:.68rem;letter-spacing:.45em;color:var(--soft);
+    text-transform:uppercase;margin-bottom:12px;
+  }
+  header.hero h1{
+    font-family:'Playfair Display',var(--serif);
+    font-size:1.6rem;font-weight:500;letter-spacing:.12em;
+  }
+  header.hero .sub{font-size:.8rem;color:var(--soft);margin-top:8px;letter-spacing:.12em;}
+
+  /* ===== Tab bar ===== */
+  nav.tabbar{
+    position:sticky;top:0;z-index:50;
+    background:var(--bg);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  nav.tabbar::-webkit-scrollbar{display:none;}
+  nav.tabbar button{
+    flex:0 0 auto;appearance:none;border:none;background:none;cursor:pointer;
+    font-family:var(--sans);
+    padding:13px 15px 12px;font-size:.85rem;color:var(--soft);
+    letter-spacing:.08em;font-weight:500;white-space:nowrap;
+    border-bottom:1px solid transparent;
+  }
+  nav.tabbar button.active{color:var(--ink);border-bottom-color:var(--ink);font-weight:600;}
+
+  main{max-width:860px;margin:0 auto;padding:8px 20px 90px;}
+  section.panel{display:none;}
+  section.panel.active{display:block;animation:fadein .3s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* ===== Sections（去卡片化：細分隔線分區）===== */
+  .card{
+    background:transparent;border:none;border-radius:0;box-shadow:none;
+    border-top:1px solid var(--line);
+    padding:26px 0 30px;margin:0;
+  }
+  section.panel > .card:first-child{border-top:none;}
+  .card h3{
+    font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;color:var(--ink);margin-bottom:16px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .card h3 .no{color:var(--soft);letter-spacing:.08em;font-weight:500;}
+  .card h3 .en{font-family:var(--serif);color:var(--soft);letter-spacing:.26em;font-weight:500;font-size:.7rem;}
+  .card h3 .ic{width:17px;height:17px;flex:0 0 auto;}
+  .kv{display:flex;flex-wrap:wrap;gap:4px 0;font-size:.95rem;padding:6px 0;border-bottom:1px solid var(--line-soft);}
+  .kv:last-child{border-bottom:none;}
+  .kv .k{flex:0 0 7.5em;color:var(--soft);letter-spacing:.08em;font-weight:500;}
+  .kv .v{flex:1;min-width:12em;font-weight:500;}
+  .muted{color:var(--soft);font-size:.87rem;}
+  /* 單色線條 icon 基本樣式 */
+  .ic{
+    width:16px;height:16px;stroke:currentColor;stroke-width:1.7;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;
+    vertical-align:-3px;display:inline-block;
+  }
+  .ic.sm{width:14px;height:14px;vertical-align:-2px;}
+  .kv .k .ic{margin-right:6px;}
+  nav.tabbar button .ic{width:14px;height:14px;vertical-align:-2px;margin-right:6px;}
+
+  /* ===== Clocks ===== */
+  .clocks{display:flex;}
+  .clock{
+    flex:1;text-align:left;padding:6px 0 6px 20px;
+    border-left:1px solid var(--line);
+  }
+  .clock:first-child{border-left:none;padding-left:0;}
+  .clock .zone{font-size:.72rem;color:var(--soft);letter-spacing:.16em;text-transform:uppercase;font-weight:500;}
+  .clock .time{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+  .clock .date{font-size:.8rem;color:var(--soft);letter-spacing:.08em;font-weight:500;}
+
+  /* ===== Weather ===== */
+  .wx-grid{display:flex;gap:0;overflow-x:auto;padding-bottom:4px;}
+  .wx-day{
+    flex:0 0 auto;min-width:132px;background:transparent;
+    border-left:1px solid var(--line-soft);border-radius:0;
+    padding:6px 14px;font-size:.84rem;text-align:left;
+  }
+  .wx-day:first-child{border-left:none;padding-left:0;}
+  .wx-day .d{font-weight:600;color:var(--ink);letter-spacing:.06em;}
+  .wx-day .t{font-size:1.15rem;font-weight:600;}
+
+  /* ===== Prep checklist ===== */
+  .progress-wrap{margin-bottom:18px;}
+  .progress-bar{height:2px;background:var(--line-soft);border-radius:0;overflow:hidden;}
+  .progress-bar > div{height:100%;background:var(--ink);border-radius:0;transition:width .3s;}
+  .prep-cat{margin-bottom:14px;}
+  .prep-cat h4{
+    font-size:.86rem;color:var(--ink);background:transparent;
+    border-bottom:1px solid var(--line);
+    padding:8px 0;border-radius:0;margin-bottom:2px;
+    letter-spacing:.08em;font-weight:700;
+  }
+  .prep-cat h4 .no{color:var(--soft);margin-right:10px;letter-spacing:.04em;font-weight:500;}
+  .prep-cat h4 .ic{margin-right:8px;}
+  label.prep-item{
+    display:flex;align-items:flex-start;gap:12px;padding:11px 0;
+    border-bottom:1px solid var(--line-soft);cursor:pointer;font-size:.95rem;
+  }
+  label.prep-item:last-child{border-bottom:none;}
+  label.prep-item input{
+    appearance:none;-webkit-appearance:none;
+    width:15px;height:15px;margin-top:7px;flex:0 0 auto;
+    border:1px solid var(--ink);border-radius:0;background:transparent;
+    position:relative;cursor:pointer;
+  }
+  label.prep-item input:checked{background:var(--ink);}
+  label.prep-item input:checked::after{
+    content:"";position:absolute;left:4px;top:0px;width:4px;height:9px;
+    border:solid var(--bg);border-width:0 1px 1px 0;transform:rotate(45deg);
+  }
+  label.prep-item .txt .name{font-weight:600;}
+  label.prep-item.done .txt .name{text-decoration:line-through;color:var(--soft);}
+  .deadline{
+    display:inline-block;font-size:.74rem;background:transparent;
+    border:1px solid var(--line);color:var(--soft);
+    border-radius:999px;padding:0 10px;margin-left:8px;letter-spacing:.08em;
+  }
+
+  /* ===== Day flow (node graph) ===== */
+  .flow-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 2px 14px;}
+  .flow{display:flex;align-items:flex-start;min-width:min-content;}
+  .flow-node{flex:0 0 auto;text-align:center;width:112px;}
+  .flow-node .dot{
+    width:36px;height:36px;line-height:34px;border-radius:50%;margin:0 auto 8px;
+    background:transparent;border:1px solid var(--ink);
+    color:var(--ink);font-weight:400;font-size:.9rem;
+  }
+  .flow-node .nm{font-size:.86rem;font-weight:600;line-height:1.4;letter-spacing:.02em;}
+  .flow-node .st{font-size:.76rem;color:var(--soft);letter-spacing:.04em;font-weight:500;}
+  .flow-link{
+    flex:0 0 auto;width:44px;height:1px;margin-top:18px;
+    background:var(--line);position:relative;
+  }
+  .flow-link::after{
+    content:"";position:absolute;right:0;top:-2.5px;width:5px;height:5px;
+    border-top:1px solid var(--ink);border-right:1px solid var(--ink);
+    transform:rotate(45deg);
+  }
+
+  /* ===== Spot ===== */
+  .spot{padding-top:26px;}
+  .spot .spot-head{padding:0 0 12px;}
+  .spot h3{
+    font-size:1.22rem;font-weight:700;color:var(--ink);margin-bottom:2px;
+    letter-spacing:.01em;text-transform:none;display:block;
+  }
+  .spot h3 a{text-decoration:none;border-bottom:1px solid var(--ink);}
+  .spot h3 .ic{width:15px;height:15px;margin-left:6px;vertical-align:-1px;}
+  .spot .order-badge{
+    display:inline-block;background:transparent;color:var(--soft);border-radius:0;
+    font-size:.72rem;padding:0;margin-bottom:8px;font-weight:600;letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+  .spot .stay{font-size:.84rem;color:var(--soft);margin-bottom:12px;letter-spacing:.04em;font-weight:500;font-variant-numeric:tabular-nums;}
+  .spot .stay .ic{margin-right:5px;}
+  .spot .body{padding:14px 0 0;}
+  .spot .intro{font-size:.95rem;}
+  .spot .intro p{margin:0 0 7px;}
+  .spot .intro p:last-child{margin-bottom:0;}
+  .wx-overall{font-size:.9rem;margin-bottom:14px;}
+  .wx-overall p{margin:0 0 5px;}
+  .ss-dress .dl{margin-bottom:7px;}
+  .ss-dress .dl:last-child{margin-bottom:0;}
+  .kv .v .vl{margin-bottom:5px;}
+  .kv .v .vl:last-child{margin-bottom:0;}
+  .tr-when > div{margin-bottom:3px;}
+
+  /* ===== Carousel ===== */
+  .carousel{position:relative;}
+  .car-track{
+    display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .car-track::-webkit-scrollbar{display:none;}
+  .car-track img{
+    flex:0 0 100%;width:100%;aspect-ratio:16/9;object-fit:cover;
+    scroll-snap-align:center;display:block;border-radius:0;
+    background:#e5e2dd;
+  }
+  .car-btn{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:30px;height:30px;border-radius:999px;cursor:pointer;
+    background:rgba(242,241,239,.85);color:var(--ink);
+    border:1px solid var(--ink);
+    font-size:.95rem;line-height:1;font-family:var(--sans);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .car-btn.prev{left:10px;}
+  .car-btn.next{right:10px;}
+  .car-dots{
+    position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:7px;
+  }
+  .car-dots span{
+    width:16px;height:2px;border-radius:0;background:rgba(255,255,255,.72);
+    box-shadow:0 0 2px rgba(0,0,0,.45);
+  }
+  .car-dots span.on{background:var(--ink);box-shadow:0 0 0 1px rgba(255,255,255,.75);}
+
+  /* ===== Notice block ===== */
+  .notice{
+    background:transparent;
+    border:1px solid var(--line);border-left:2px solid var(--ink);
+    border-radius:0;padding:12px 16px;margin-top:14px;font-size:.9rem;
+  }
+  .notice .nt-title{
+    font-weight:700;color:var(--ink);margin-bottom:6px;
+    font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;
+  }
+  .notice ul{list-style:none;}
+  .notice li{padding:3px 0;display:flex;gap:9px;}
+  .notice li .ic{flex:0 0 auto;margin-top:7px;color:var(--soft);}
+
+  /* ===== Tomorrow preview ===== */
+  .tomorrow{
+    background:transparent;
+    border:1px solid var(--line);border-top:1px solid var(--line);
+    padding:22px 20px 24px;margin-top:30px;
+  }
+
+  /* ===== Expense ===== */
+  .stats{display:grid;grid-template-columns:1fr;gap:0;margin-bottom:26px;border-top:1px solid var(--line);}
+  @media(min-width:640px){.stats{grid-template-columns:1fr 1fr 1fr;}}
+  .stat-card{
+    background:transparent;border:none;border-bottom:1px solid var(--line-soft);
+    border-radius:0;padding:16px 4px;box-shadow:none;
+  }
+  @media(min-width:640px){
+    .stat-card{border-bottom:none;border-left:1px solid var(--line-soft);padding:18px 18px;}
+    .stat-card:first-child{border-left:none;padding-left:4px;}
+  }
+  .stat-card .t{font-size:.74rem;color:var(--soft);margin-bottom:6px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;}
+  .stat-card .t .ic{margin-right:6px;}
+  .stat-card .big{font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:.01em;font-variant-numeric:tabular-nums;}
+  .stat-card .row{display:flex;justify-content:space-between;font-size:.88rem;padding:3px 0;}
+  .stat-card .row b{font-variant-numeric:tabular-nums;font-weight:600;}
+
+  .table-wrap{
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    background:transparent;border:none;border-radius:0;box-shadow:none;
+  }
+  table.expense{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem;}
+  table.expense th{
+    background:transparent;color:var(--soft);text-align:left;padding:10px 14px 8px;
+    white-space:nowrap;font-weight:600;font-size:.75rem;
+    letter-spacing:.1em;text-transform:uppercase;
+    border-bottom:1px solid var(--ink);
+  }
+  table.expense th:first-child{padding-left:0;}
+  table.expense td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
+  table.expense td:first-child{padding-left:0;}
+  table.expense td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
+  .badge{
+    display:inline-block;border-radius:999px;padding:1px 12px;
+    font-size:.75rem;font-weight:500;letter-spacing:.12em;
+    background:transparent;border:1px solid var(--soft);color:var(--soft);
+  }
+  .badge.paid{border-color:var(--ink);color:var(--ink);}
+  .badge.pending{border-color:var(--soft);color:var(--soft);}
+  .badge.refund{border-style:dashed;border-color:var(--soft);color:var(--soft);}
+
+  /* ===== 配色套用（功能性、有節制） ===== */
+  .ic-blue{color:var(--blue);}
+  .ic-gold{color:var(--gold);}
+  .ic-terra{color:var(--terra);}
+  .ic-sage{color:var(--sage);}
+  .card h3 .ic{color:var(--blue);}
+  .card h3 .no{color:var(--blue);}
+  .card h3 .en{color:var(--terra);}
+  nav.tabbar button.active{color:var(--blue);border-bottom-color:var(--blue);}
+  a:hover{color:var(--blue);}
+  .car-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .flow-node .dot{border-color:var(--blue);color:var(--blue);}
+  .flow-node .st{color:var(--terra);font-weight:600;}
+  .flow-link::after{border-top-color:var(--blue);border-right-color:var(--blue);}
+  .wx-day .t{color:var(--blue);}
+  label.prep-item input:checked{background:var(--blue);border-color:var(--blue);}
+  .progress-bar > div{background:var(--blue);}
+  .prep-cat h4{border-left:3px solid var(--line);padding-left:10px;}
+  .prep-cat.c0 h4{border-left-color:var(--blue);}  .prep-cat.c0 h4 .ic{color:var(--blue);}
+  .prep-cat.c1 h4{border-left-color:var(--terra);} .prep-cat.c1 h4 .ic{color:var(--terra);}
+  .prep-cat.c2 h4{border-left-color:var(--sage);}  .prep-cat.c2 h4 .ic{color:var(--sage);}
+  .prep-cat.c3 h4{border-left-color:var(--gold);}  .prep-cat.c3 h4 .ic{color:var(--gold);}
+  .notice{border-left-color:var(--blue);}
+  .notice li .ic.ic-blue{color:var(--blue);}
+  .notice li .ic.ic-gold{color:var(--gold);}
+  .notice li .ic.ic-terra{color:var(--terra);}
+  .notice li .ic.ic-sage{color:var(--sage);}
+  .badge.paid{border-color:var(--sage);color:var(--sage);}
+  .badge.pending{border-color:var(--gold);color:var(--gold);}
+  .chip{
+    display:inline-block;background:var(--blue-soft);color:var(--blue);
+    border-radius:999px;padding:1px 10px;font-size:.75rem;font-weight:500;
+  }
+  .ov-row .ov-day{border-color:var(--blue);color:var(--blue);}
+  .tr-when{color:var(--terra);}
+
+  /* ===== 基本資料：雜誌式版面 ===== */
+  .info-hero{
+    display:flex;flex-wrap:wrap;gap:18px 44px;
+    justify-content:space-between;align-items:flex-end;padding-top:30px;
+  }
+  .ih-count{display:flex;align-items:baseline;gap:10px;}
+  .ih-num{font-size:3.4rem;font-weight:700;color:var(--blue);line-height:1;font-variant-numeric:tabular-nums;}
+  .ih-unit{font-size:1rem;font-weight:600;letter-spacing:.05em;}
+  .ih-dates{margin-top:8px;font-weight:500;}
+  .ih-clocks{flex:0 1 360px;min-width:270px;}
+  .info-grid{display:grid;grid-template-columns:1fr;column-gap:48px;}
+  @media(min-width:820px){
+    .info-grid{grid-template-columns:3fr 2fr;}
+  }
+  .fl-dir{
+    font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--blue);margin:16px 0 10px;
+  }
+  .fl-dir .ic{margin-right:6px;}
+  .fl-tl{border-left:1px solid var(--line);margin-left:7px;padding-left:22px;}
+  .fl-node{position:relative;padding:2px 0;}
+  .fl-node::before{
+    content:"";position:absolute;left:-27.5px;top:11px;width:9px;height:9px;
+    border-radius:50%;background:var(--bg);border:2px solid var(--blue);
+  }
+  .fl-node > .ic{color:var(--blue);margin-left:2px;}
+  .fl-time{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;margin-right:8px;}
+  .fl-date{color:var(--soft);font-size:.85rem;margin-right:8px;font-variant-numeric:tabular-nums;font-weight:500;}
+  .fl-ap{font-size:.9rem;font-weight:500;}
+  .fl-meta{font-size:.8rem;color:var(--soft);padding:8px 0 14px;line-height:1.6;}
+  .sun-strip{display:flex;flex-wrap:wrap;gap:16px 44px;align-items:flex-start;}
+  .ss-sun{flex:0 0 auto;font-size:.95rem;}
+  .ss-sun b{font-weight:700;margin-left:4px;}
+  .ss-dress{flex:1;min-width:250px;font-size:.92rem;}
+
+  /* ===== 旅程總覽 ===== */
+  .ov-summary{font-size:1.05rem;font-weight:600;letter-spacing:.06em;margin-bottom:4px;}
+  .ov-flight{font-size:.92rem;padding:5px 0;border-bottom:1px solid var(--line-soft);}
+  .ov-flight:last-child{border-bottom:none;}
+  .ov-flight .ic{margin-right:8px;}
+  .ov-row{
+    display:block;width:100%;text-align:left;cursor:pointer;
+    appearance:none;background:none;border:none;font-family:var(--sans);color:var(--ink);
+    padding:13px 0;border-bottom:1px solid var(--line-soft);
+    font-size:.95rem;line-height:1.7;letter-spacing:.01em;
+  }
+  .ov-row:hover .ov-day{border-color:var(--ink);}
+  .ov-row .ov-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+  .ov-row .ov-day{
+    font-weight:600;letter-spacing:.06em;font-size:.78rem;text-transform:uppercase;
+    border:1px solid var(--line);border-radius:999px;padding:0 10px;
+  }
+  .ov-row .ov-date{color:var(--soft);font-size:.85rem;font-weight:500;}
+  .ov-row .ov-theme{font-weight:600;}
+  .ov-row .ov-spots{color:var(--soft);font-size:.88rem;display:block;margin-top:2px;}
+  .ov-row .ov-spots .ic{margin-right:6px;}
+  .ov-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:4px;}
+  .ov-stats .st{font-size:.9rem;}
+  .ov-stats .st b{font-size:1.4rem;font-weight:600;margin-right:6px;}
+
+  /* ===== 交通資訊 ===== */
+  .tr-when{font-size:.85rem;color:var(--soft);letter-spacing:.06em;margin:-8px 0 10px;font-weight:500;}
+  .tr-imgs{display:flex;gap:10px;overflow-x:auto;padding:12px 0 4px;}
+  .tr-imgs img{
+    height:120px;width:auto;flex:0 0 auto;display:block;border-radius:0;
+    cursor:zoom-in;background:#e5e2dd;
+  }
+  .tr-map-hint{font-size:.78rem;color:var(--soft);letter-spacing:.08em;margin-top:4px;}
+
+  /* ===== 記帳輸入與同步 ===== */
+  .ef-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px;}
+  @media(min-width:760px){.ef-grid{grid-template-columns:repeat(4,1fr);}}
+  .ef-f label{display:block;font-size:.74rem;color:var(--soft);letter-spacing:.06em;margin-bottom:3px;}
+  .ef-f input,.ef-f select{
+    width:100%;padding:8px 10px;font-family:var(--sans);font-size:.95rem;
+    background:transparent;border:1px solid var(--line);border-radius:0;color:var(--ink);
+  }
+  .ef-f select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%);background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;}
+  .ef-f input:focus,.ef-f select:focus{outline:none;border-color:var(--blue);}
+  .ef-name{grid-column:span 2;}
+  .ef-note{grid-column:span 2;}
+  .ef-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
+  .ef-submit,.ef-cancel{
+    appearance:none;cursor:pointer;font-family:var(--sans);font-size:.88rem;letter-spacing:.06em;
+    padding:6px 20px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--soft);
+  }
+  .ef-submit{border-color:var(--blue);color:var(--blue);font-weight:600;}
+  .ef-submit:hover{background:var(--blue);color:#fff;}
+  .ef-cancel:hover{border-color:var(--ink);color:var(--ink);}
+  .row-act{appearance:none;cursor:pointer;background:none;border:none;color:var(--soft);padding:2px 5px;}
+  .row-act:hover{color:var(--blue);}
+  .row-act.del:hover{color:var(--terra);}
+  table.expense td.acts{white-space:nowrap;}
+  .exp-pending{color:var(--gold);font-size:.72rem;letter-spacing:.04em;font-weight:600;}
+
+  /* ===== Google 登入與記錄者頭像 ===== */
+  .auth-av{width:22px;height:22px;border-radius:50%;vertical-align:-6px;margin-right:7px;}
+  img.auth-av{object-fit:cover;}
+  span.auth-av{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--blue);color:#fff;font-size:.72rem;font-weight:600;line-height:1;
+  }
+  .lock-btn.auth-off{color:#b5b2ad;border-color:var(--line-soft);cursor:default;}
+  .lock-btn.auth-off:hover{color:#b5b2ad;border-color:var(--line-soft);}
+  .rec-av{width:20px;height:20px;border-radius:50%;vertical-align:-5px;margin-right:6px;}
+  img.rec-av{object-fit:cover;}
+  span.rec-av{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--blue);color:#fff;font-size:.68rem;font-weight:600;line-height:1;
+  }
+  .gsi-host{display:flex;justify-content:center;margin:14px 0 4px;min-height:44px;}
+  .lock-btn{margin-left:4px;margin-right:4px;}
+
+  /* ===== 行前準備：打勾沉底＋自訂提醒 ===== */
+  label.prep-item{transition:opacity .18s ease,transform .18s ease;position:relative;}
+  label.prep-item.moving{opacity:.2;transform:translateX(6px);}
+  label.prep-item .prep-del{position:absolute;right:2px;top:50%;transform:translateY(-50%);}
+  .prep-done-sec{opacity:.78;margin-top:22px;}
+  .prep-done-sec h4{border-left:3px solid var(--sage);padding-left:10px;}
+  .prep-done-sec label.prep-item{animation:prepIn .25s ease;}
+  .prep-done-sec .txt .name{text-decoration:line-through;color:var(--soft);}
+  @keyframes prepIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  .prep-add-form{border:1px solid var(--line-soft);padding:12px 14px;margin:12px 0 4px;}
+  .prep-hint{font-size:.85rem;color:var(--soft);margin-top:8px;}
+
+  /* ===== 旅伴大頭貼展示（Google 頭像；未登入過→字母圓點） ===== */
+  .mem-grid{display:flex;flex-wrap:wrap;gap:18px 10px;justify-content:space-around;padding:8px 0 4px;}
+  .mem-person{display:flex;flex-direction:column;align-items:center;gap:9px;flex:0 0 42%;}
+  .mem-ava{width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid var(--line);}
+  .mem-ava-letter{
+    display:flex;align-items:center;justify-content:center;
+    background:var(--blue);color:#fff;font-size:1.55rem;font-weight:600;line-height:1;
+  }
+  .mem-pname{font-size:.85rem;letter-spacing:.06em;font-weight:600;text-align:center;}
+
+  /* ===== 記帳手機卡片式列表（<640px 以卡片取代橫向捲動表格） ===== */
+  .exp-cards{display:none;}
+  @media(max-width:639px){
+    #exp-table .table-wrap{display:none;}
+    .exp-cards{display:flex;flex-direction:column;gap:10px;}
+  }
+  .exp-card{
+    position:relative;border:1px solid var(--line-soft);background:#fff;
+    padding:12px 14px 11px;
+  }
+  .exp-card .xc-acts{position:absolute;top:9px;right:8px;}
+  .exp-card .xc-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding-right:64px;}
+  .exp-card .xc-name{font-weight:600;font-size:.95rem;line-height:1.45;}
+  .exp-card .xc-amt{margin-top:6px;font-size:1.02rem;font-weight:600;letter-spacing:.01em;}
+  .exp-card .xc-amt .sub{font-size:.8rem;font-weight:400;color:var(--soft);margin-left:8px;}
+  .exp-card .xc-meta{
+    display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;
+    margin-top:9px;padding-top:9px;border-top:1px solid var(--line-soft);
+    font-size:.85rem;color:var(--soft);
+  }
+
+  /* ===== 敏感資料鎖定 ===== */
+  .lock-btn{
+    appearance:none;cursor:pointer;margin-top:12px;
+    background:transparent;border:1px solid var(--line);border-radius:999px;
+    font-family:var(--sans);font-size:.78rem;letter-spacing:.08em;color:var(--soft);
+    padding:4px 16px;
+  }
+  .lock-btn:hover{border-color:var(--blue);color:var(--blue);}
+  .sec-locked{color:var(--soft);cursor:pointer;}
+  .sec-locked.unset{cursor:default;font-size:.9em;}
+  .sec-locked .dots{filter:blur(2.5px);letter-spacing:2px;margin-left:4px;}
+  .sec-block{font-size:.9rem;color:var(--soft);padding:8px 0;}
+  .sec-block .dots{filter:blur(3px);letter-spacing:2px;display:block;margin-top:4px;}
+  .sec-modal{
+    position:fixed;inset:0;z-index:300;background:rgba(24,23,22,.45);
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .sec-card{
+    background:var(--bg);border:1px solid var(--line);max-width:380px;width:100%;
+    padding:26px 28px;
+  }
+  .sec-card h4{
+    font-size:.9rem;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;margin-bottom:8px;
+  }
+  .sec-card h4 .ic{color:var(--blue);margin-right:4px;}
+  .sec-card p{font-size:.85rem;margin-bottom:14px;}
+  .sec-card input{
+    width:100%;padding:9px 12px;font-family:var(--sans);font-size:1rem;
+    background:transparent;border:1px solid var(--line);border-radius:0;color:var(--ink);
+  }
+  .sec-card input:focus{outline:none;border-color:var(--blue);}
+  .sec-err{color:var(--terra);font-size:.82rem;min-height:1.4em;margin-top:6px;}
+  .sec-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;}
+  .sec-actions button{
+    appearance:none;cursor:pointer;font-family:var(--sans);font-size:.85rem;letter-spacing:.06em;
+    padding:6px 18px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--soft);
+  }
+  .sec-actions .sec-ok{border-color:var(--blue);color:var(--blue);}
+  .sec-actions .sec-ok:hover{background:var(--blue);color:#fff;}
+
+  /* ===== 文創店推薦 ===== */
+  .shop-item{padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:.95rem;}
+  .shop-item:last-child{border-bottom:none;}
+  .shop-item .sname{font-weight:600;}
+  .shop-item .swhere{color:var(--soft);font-size:.85rem;margin-left:8px;}
+  .shop-item .sdesc{color:var(--soft);font-size:.88rem;}
+
+  /* ===== Lightbox ===== */
+  .lightbox{
+    position:fixed;inset:0;z-index:200;background:rgba(24,23,22,.93);
+    display:flex;align-items:center;justify-content:center;cursor:zoom-out;
+    padding:18px;
+  }
+  .lightbox img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;}
+  .lightbox .lb-close{
+    position:absolute;top:14px;right:18px;color:#fff;font-size:1.6rem;line-height:1;
+    font-family:var(--sans);
+  }
+
+  @media(min-width:640px){
+    header.hero{padding:56px 20px 30px;}
+    header.hero h1{font-size:2.1rem;}
+    main{padding:12px 24px 110px;}
+    .car-track img{aspect-ratio:2/1;}
+    .tr-imgs img{height:150px;}
+  }
+</style>
+</head>
+<body>
+
+<script>
+/* ==========================================================================
+   TRIP_DATA — 整個網頁的唯一資料來源。
+   換一趟旅程時，只需要替換這個物件，頁面（含頁籤數量）會自動重新產生。
+   本次資料來源：使用者 Notion「2026泰國」頁面；
+   標注（預估）（待補）（以官網為準）者為系統補充，非 Notion 原始資料。
+   圖片：Wikimedia Commons 直連縮圖（已逐一驗證可用）；斷網或圖片失效時
+   會自動 fallback 成灰色佔位圖（見 phFallback）。
+   ========================================================================== */
+
+/* 產生 inline SVG 佔位圖（data URI）的小工具 */
+const ph = (text, c1, c2) => {
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450">'
+    + '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+    + '<stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/>'
+    + '</linearGradient></defs>'
+    + '<rect width="800" height="450" fill="url(#g)"/>'
+    + '<text x="400" y="235" font-size="38" fill="rgba(60,58,54,.7)" text-anchor="middle" font-family="serif">' + text + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+};
+/* 圖片載入失敗時的統一 fallback（供 img onerror 使用） */
+const phFallback = t => ph(t || 'PHOTO', '#e3e0db', '#cfccc6');
+
+const TRIP_DATA = {
+  id: "thailand-2026",              // 唯一代號，行前準備勾選狀態以此為 localStorage key
+  title: "2026 泰國曼谷 12 天",
+  subtitle: "雨季尾聲的曼谷慢遊",
+  timezone: "Asia/Bangkok",         // 旅遊地時區（IANA 名稱）
+  timezoneLabel: "曼谷",
+  dates: { start: "2026-09-21", end: "2026-10-02" },  // 9/21（一）台北出發、10/2（五）返抵台北
+
+  /* 旅伴護照資料屬敏感資訊，已移入 secure 加密區（見下方 secure 欄位說明） */
+  travelers: [],
+
+  /* 旅伴公開資訊（使用者同意公開：英文姓名／國籍／性別）；證件號碼只存在 secure 加密區 */
+  membersPublic: [
+    { name: "HUANG YI CIH", nationality: "台灣", gender: "女" },
+    { name: "CHANG RONG JIA", nationality: "台灣", gender: "女" }
+  ],
+
+  /* Google 登入用 OAuth Client ID（GIS 按鈕），登入後以 ID token 橋接 Firebase Auth；
+     與巴黎版共用同一個 OAuth Client（同網域部署，origin 已授權） */
+  googleClientId: "875899276811-cnic2ah0usubru127q9c7jir5hgqjj8o.apps.googleusercontent.com",
+
+  /* Firebase 專案設定（web config 屬公開資訊，安全性由 Firestore 規則與 Auth 把關）：
+     與巴黎版共用同一個 Firebase 專案；本旅程資料存 trips/thailand-2026/... */
+  firebase: {
+    apiKey: "AIzaSyBxhir4enuWAZ1ccRLa7Yopj6BGo7Sgohw",
+    authDomain: "paris-2027.firebaseapp.com",
+    projectId: "paris-2027",
+    storageBucket: "paris-2027.firebasestorage.app",
+    messagingSenderId: "875899276811",
+    appId: "1:875899276811:web:9c1a2e2d2fac1532f6c10e"
+  },
+
+  /* 單段直飛，無轉機：去程泰越捷、回程泰國航空 */
+  flights: [
+    {
+      label: "去程", airline: "泰越捷航空", flightNo: "VZ567",
+      depart: { airport: "臺灣桃園國際機場 TPE", time: "2026-09-21 15:30" },
+      arrive: { airport: "曼谷蘇凡納布機場 BKK", time: "2026-09-21 18:15" },
+      baggage: "經濟艙・手提 7kg／托運 20kg", note: "直飛，飛行約 3 小時 45 分（台泰時差 -1 小時）"
+    },
+    {
+      label: "回程", airline: "泰國航空", flightNo: "TG634",
+      depart: { airport: "曼谷蘇凡納布機場 BKK", time: "2026-10-02 12:40" },
+      arrive: { airport: "臺灣桃園國際機場 TPE", time: "2026-10-02 17:20" },
+      baggage: "經濟艙・手提 7kg／托運 23kg", note: "直飛，飛行約 3 小時 40 分"
+    }
+  ],
+
+  hotels: [
+    {
+      name: "曼谷是隆希爾頓花園飯店 Hilton Garden Inn Bangkok Silom",
+      url: "",
+      address: "320 Silom Rd, Suriya Wong, Bang Rak, Bangkok 10500",
+      checkIn: "2026-09-21", checkOut: "2026-10-02",
+      access: [
+        "機場鐵路 ARL 至 Phaya Thai 轉 BTS",
+        "BTS 至 Surasak 或 Saphan Taksin 站，步行 10–15 分"
+      ],
+      note: "機加酒含稅 TWD 32,702"
+      /* 訂房編號屬敏感資訊，之後移入 secure 加密區（hotelBookingRefs） */
+    }
+  ],
+
+  /* ============================================================
+     secure：敏感資料加密區（護照、訂位代號、訂房編號）
+     - null＝尚未設定。用本機的 encrypt.html 輸入資料與密碼產生密文後，
+       將整段 blob 物件貼到這裡取代 null。
+     - blob 格式：{ v:1, alg, salt, iv, ciphertext }（皆 base64）
+     - 演算法：WebCrypto PBKDF2（SHA-256、310000 次迭代）導出金鑰
+       ＋ AES-GCM 256 加密；解密後為 JSON：
+       { travelers:[{name,passportName,passportNo,expiry},...],
+         bookingRef:"...", hotelBookingRefs:{ "0":"..." } }
+     - 密碼與明碼都不會出現在本檔原始碼中，可安心公開部署。
+     ============================================================ */
+  secure: null,
+
+  /* 每日天氣概況（9 月底～10 月初平均預估：曼谷雨季尾聲，出發前請再查即時預報） */
+  weather: {
+    overall: [
+      "曼谷 9 月底～10 月初為雨季尾聲（以下為氣候平均值，非即時預報）",
+      "均溫約 25–33°C，濕度高（約 75–85%）",
+      "午後常有雷陣雨，來得快去得快",
+      "室內商場與捷運冷氣極強"
+    ],
+    daily: [
+      { date: "2026-09-21", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 33, humidity: "79%", rain: "60%" },
+      { date: "2026-09-22", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 33, humidity: "79%", rain: "60%" },
+      { date: "2026-09-23", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "80%", rain: "60%" },
+      { date: "2026-09-24", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "80%", rain: "60%" },
+      { date: "2026-09-25", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 33, humidity: "79%", rain: "60%" },
+      { date: "2026-09-26", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 33, humidity: "79%", rain: "60%" },
+      { date: "2026-09-27", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "80%", rain: "65%" },
+      { date: "2026-09-28", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "80%", rain: "65%" },
+      { date: "2026-09-29", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 33, humidity: "80%", rain: "65%" },
+      { date: "2026-09-30", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "81%", rain: "65%" },
+      { date: "2026-10-01", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "81%", rain: "65%" },
+      { date: "2026-10-02", desc: "多雲午後雷陣雨（預估）", tempMin: 25, tempMax: 32, humidity: "80%", rain: "60%" }
+    ]
+  },
+
+  sun: { sunrise: "約 06:05（9 月底平均預估）", sunset: "約 18:10（9 月底平均預估）" },
+
+  clothing: [
+    "曼谷 9 月底仍炎熱潮濕（依平均氣候預估），透氣短袖＋防曬為主",
+    "午後雷陣雨：摺疊傘或輕便雨衣隨身帶",
+    "寺廟參拜備長袖長褲或披肩（大皇宮服儀檢查嚴格）",
+    "商場與捷運冷氣極強，帶一件薄外套",
+    "好走的鞋，寺廟參觀常需脫鞋"
+  ],
+
+  /* 行前準備清單：來自 Notion 注意事項＋依曼谷行程補充的建議項目，可自行增刪 */
+  prep: [
+    {
+      category: "簽證與入境",
+      items: [
+        { name: "確認護照與台胞證效期", note: "護照效期 6 個月以上；台灣護照赴泰觀光目前免簽（出發前再確認最新規定）", deadline: "2026-09-01" },
+        { name: "TDAC 線上入境卡", note: "泰國數位入境卡，入境前 72 小時內線上填寫", deadline: "2026-09-18" }
+      ]
+    },
+    {
+      category: "要提前預約的",
+      items: [
+        { name: "Safari World 共乘接送＋門票（9/25）", note: "Klook 預約含 CentralWorld 集合共乘大巴（尚未預約）", deadline: "2026-09-18" },
+        { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" }
+      ]
+    },
+    {
+      category: "錢與票卡",
+      items: [
+        { name: "線上結匯備現金 2 萬泰銖", note: "市集、夜市、小吃攤多半只收現金", deadline: "2026-09-14" },
+        { name: "Rabbit Card（搭 BTS 用）", note: "抵達後在 BTS 站櫃檯購買儲值，省去每趟排隊買票", deadline: "" },
+        { name: "退稅 Tax Refund 規則記起來", note: "同一天同一店家消費滿 2,000 THB 可辦 VAT 退稅，結帳時出示護照拿 P.P.10 單", deadline: "" }
+      ]
+    },
+    {
+      category: "其他準備",
+      items: [
+        { name: "下載 Grab 與 Bolt", note: "叫車雙保險：下雨、晚歸、拖行李都用得到，先綁好付款方式", deadline: "2026-09-19" },
+        { name: "腸胃藥＋防蚊液", note: "路邊攤與水上市場行程必備", deadline: "2026-09-19" },
+        { name: "寺廟服儀：長袖長褲／披肩", note: "大皇宮、玉佛寺服儀檢查嚴格，無袖短褲不能進", deadline: "2026-09-19" },
+        { name: "買 eSIM 或開通漫遊", note: "12 天流量方案（9/21–10/2）", deadline: "2026-09-18" }
+      ]
+    }
+  ],
+
+  /* 每天一個物件，頁籤數量由此陣列長度自動產生（D1–D12 來自 Notion 行程表） */
+  days: [
+    {
+      date: "2026-09-21",
+      theme: "抵達日｜Silom 河岸（VZ567 15:30 起飛）",
+      spots: [
+        {
+          name: "VZ567 台北 → 曼谷",
+          url: "https://www.vietjetair.com/",
+          mapQuery: "Suvarnabhumi Airport Bangkok",
+          stay: "15:30–18:15",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Thai_VietJet_Air_Airbus_A320_HS-VKD_Bangkok_Suvarnabhumi_2024_%2801%29.jpg/960px-Thai_VietJet_Air_Airbus_A320_HS-VKD_Bangkok_Suvarnabhumi_2024_%2801%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Suvarnabhumi_Airport_Departures_Hall_Bangkok_Thailand.jpg/960px-Suvarnabhumi_Airport_Departures_Hall_Bangkok_Thailand.jpg"],
+          intro: [
+            "泰越捷航空 VZ567 經濟艙，桃園直飛曼谷",
+            "手提 7kg／托運 20kg",
+            "抵達為曼谷當地時間 18:15（台泰時差 -1 小時）"
+          ],
+          notice: {
+            ticket: "已開票（訂位代號屬敏感資料，解鎖後於基本資料頁查看）",
+            hours: "15:30 起飛（建議 12:30 前抵達桃園機場）",
+            tips: [ "TDAC 入境卡記得在起飛前 72 小時內線上填好", "入境後跟著 Airport Rail Link 指標走" ]
+          }
+        },
+        {
+          name: "機場鐵路＋BTS → 飯店 check-in",
+          url: "",
+          mapQuery: "Hilton Garden Inn Bangkok Silom",
+          stay: "18:30–20:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg/960px-Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Silom_Road_Bangkok_Thailand.jpg/960px-Silom_Road_Bangkok_Thailand.jpg"],
+          intro: [
+            "ARL 機場鐵路至 Phaya Thai，轉 BTS 到 Surasak 站",
+            "步行 10–15 分鐘到曼谷是隆希爾頓花園飯店",
+            "check-in 後放行李、稍作休息"
+          ],
+          notice: {
+            ticket: "ARL 約 15–45 THB＋BTS 約 17–62 THB，以現場公告為準",
+            hours: "ARL 約 05:30–24:00",
+            tips: [ "交通：BKK → ARL → Phaya Thai → BTS → Surasak → 步行", "行李多或下雨改叫 Grab／Bolt 也方便" ]
+          }
+        },
+        {
+          name: "Sathorn Pier 碼頭河岸散步",
+          url: "",
+          mapQuery: "Sathorn Pier Bangkok",
+          stay: "20:00–22:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sathorn_Pier_%281%29.jpg/960px-Sathorn_Pier_%281%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Bangkok_Street_Food.jpg/960px-Bangkok_Street_Food.jpg"],
+          intro: [
+            "步行到 Sathorn Pier 一帶的昭披耶河岸",
+            "沿路找餐廳解決第一晚的晚餐",
+            "看夜裡的河景，把時差調過來"
+          ],
+          notice: {
+            ticket: "免門票（晚餐費另計）",
+            hours: "河岸全天開放，餐廳多營業至 22:00 後",
+            tips: [ "步行：飯店 → Sathorn Pier 約 10–15 分", "明天 11:00 出發，今晚早點休息" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-09-22",
+      theme: "四面佛＋Siam 商圈（建議 11:00 出發）",
+      spots: [
+        {
+          name: "Erawan Shrine 四面佛",
+          url: "",
+          mapQuery: "Erawan Shrine Bangkok",
+          stay: "11:30–12:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Erawan_Shrine_Bangkok_2021_May.jpg/960px-Erawan_Shrine_Bangkok_2021_May.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Dance_offering_at_Erawan_Shrine%2C_Bangkok_%2832844253793%29.jpg/960px-Dance_offering_at_Erawan_Shrine%2C_Bangkok_%2832844253793%29.jpg"],
+          intro: [
+            "曼谷香火最旺的四面佛，就在 Grand Hyatt 門口路口",
+            "求事業、姻緣、健康、財運各有一面",
+            "誠心參拜後再開始逛街行程"
+          ],
+          notice: {
+            ticket: "免門票（花串香燭現場買，小額泰銖）",
+            hours: "約 06:00–22:00，以現場為準",
+            tips: [ "交通：BTS Surasak → Chit Lom，下車即到", "拜拜順時針方向，四面都拜" ]
+          }
+        },
+        {
+          name: "CentralWorld（寶可夢中心朝聖）",
+          url: "https://www.centralworld.co.th/",
+          mapQuery: "CentralWorld Bangkok",
+          stay: "12:30–15:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/CentralWorld-2015.jpg/960px-CentralWorld-2015.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/CentralWorld_Bangkok_Thailand.jpg/960px-CentralWorld_Bangkok_Thailand.jpg"],
+          intro: [
+            "東南亞最大級的百貨商場之一",
+            "重點：全新曼谷寶可夢中心朝聖",
+            "泰國限定皮卡丘周邊一次買齊，午餐也在館內解決"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "約 10:00–22:00，以官網為準",
+            tips: [ "從四面佛步行約 5 分鐘（有空橋）", "同一店家滿 2,000 THB 記得辦退稅單" ]
+          }
+        },
+        {
+          name: "Siam Paragon／Siam 商圈",
+          url: "",
+          mapQuery: "Siam Paragon Bangkok",
+          stay: "15:30–19:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Siam_Paragon_06.23.jpg/960px-Siam_Paragon_06.23.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Present_SiamSquare.jpg/960px-Present_SiamSquare.jpg"],
+          intro: [
+            "沿空橋一路逛到 Siam 商圈",
+            "Siam Paragon 精品與美食街、Siam Square 年輕人街區",
+            "晚餐在商圈解決再回飯店"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "商場約 10:00–22:00",
+            tips: [ "回程：BTS 經 Siam 回 Surasak", "Siam Square 巷子裡藏很多獨立小店，留點時間亂逛" ]
+          }
+        }
+      ],
+      shops: [
+        { name: "Daddy and the Muscle Academy", where: "Siam Square Soi 2", desc: [ "元老級美式復古少女風選物店", "泰國插畫家貼紙、手機殼一次挖齊", "店內有拍貼機，記得拍一輪" ] },
+        { name: "Frank Garcon", where: "Siam Center 1–3F", desc: [ "泰國獨立設計師集合店", "刺繡棒球帽、搞怪公仔是招牌", "價格比精品親民，適合挑伴手禮" ] }
+      ]
+    },
+    {
+      date: "2026-09-23",
+      theme: "河岸文創｜Warehouse 30＋Talad Noi（建議 11:00 出發）",
+      spots: [
+        {
+          name: "昭披耶河交通船",
+          url: "",
+          mapQuery: "Sathorn Pier Bangkok",
+          stay: "11:00–11:40",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg/960px-Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chao_Phraya_Express_Boat_Orange_Flag_1.jpg/960px-Chao_Phraya_Express_Boat_Orange_Flag_1.jpg"],
+          intro: [
+            "步行到 Sathorn Pier 搭交通船",
+            "在 Si Phraya Pier（N3）或 Marine Department Pier（N4）下船",
+            "順便看曼谷的河上日常"
+          ],
+          notice: {
+            ticket: "橘旗交通船單程約 16 THB，以現場公告為準",
+            hours: "日間班次約 06:00–18:00",
+            tips: [ "交通：飯店 → 步行 → Sathorn Pier → 交通船 → N3／N4", "上船後往船尾坐，拍照視野好" ]
+          }
+        },
+        {
+          name: "Warehouse 30 文創園區",
+          url: "",
+          mapQuery: "Warehouse 30 Charoen Krung Bangkok",
+          stay: "11:40–14:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Warehouse_30_%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%AE%E0%B8%B2%E0%B8%AA%E0%B9%8C_30_%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87_--_04.jpg/960px-Warehouse_30_%E0%B9%81%E0%B8%A7%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%AE%E0%B8%B2%E0%B8%AA%E0%B9%8C_30_%E0%B9%80%E0%B8%88%E0%B8%A3%E0%B8%B4%E0%B8%8D%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87_--_04.jpg"],
+          intro: [
+            "二戰老倉庫改建的文創園區",
+            "選物店、咖啡廳、藝廊與設計工作室",
+            "午餐直接在園區內解決"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "約 11:00–20:00，各店不一，以現場為準",
+            tips: [ "從 N3 碼頭步行約 5–8 分", "同一條 Charoen Krung 路上還有 TCDC 泰國創意設計中心" ]
+          }
+        },
+        {
+          name: "Talad Noi 老城文創街區",
+          url: "",
+          mapQuery: "Talat Noi Bangkok",
+          stay: "14:30–18:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Sunset_View_of_Chao_Phraya_River_from_Talat_Noi%2C_Bangkok%2C_Thailand.jpg/960px-Sunset_View_of_Chao_Phraya_River_from_Talat_Noi%2C_Bangkok%2C_Thailand.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Lam_Phun_Chai_road%2C_talat_Noi%2C_Samphanthawong%2C_Bangkok_Thailand_-_panoramio.jpg/960px-Lam_Phun_Chai_road%2C_talat_Noi%2C_Samphanthawong%2C_Bangkok_Thailand_-_panoramio.jpg"],
+          intro: [
+            "曼谷最老的華人街區之一，老屋、汽車零件行與街頭壁畫共存",
+            "巷弄裡藏著一間間網美咖啡廳",
+            "邊走邊拍，累了就進咖啡廳躲太陽"
+          ],
+          notice: {
+            ticket: "免門票（咖啡另計）",
+            hours: "街區全天開放，咖啡廳多營業至 18:00 後",
+            tips: [ "回程：搭船回 Sathorn Pier，或 Grab／BTS", "午後雷陣雨機率高，傘帶著" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-09-24",
+      theme: "主題商場日｜Terminal 21＋EmQuartier（建議 11:00 出發）",
+      spots: [
+        {
+          name: "Terminal 21 主題平價商場",
+          url: "https://www.terminal21.co.th/",
+          mapQuery: "Terminal 21 Asok Bangkok",
+          stay: "11:30–14:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Terminal_21_Asok_Bangkok_20202021.jpg/960px-Terminal_21_Asok_Bangkok_20202021.jpg"],
+          intro: [
+            "以機場航廈為概念的主題商場，每層一個城市",
+            "東京街、倫敦街、舊金山金門大橋都能拍",
+            "頂樓美食街 Pier 21 便宜又好吃，午餐在這裡解決"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "約 10:00–22:00，以官網為準",
+            tips: [ "交通：BTS Surasak → Asok，出站直結", "每層的主題廁所也是打卡點" ]
+          }
+        },
+        {
+          name: "EmQuartier／Emporium 貴婦商場",
+          url: "",
+          mapQuery: "EmQuartier Bangkok",
+          stay: "14:45–18:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Emquartier_27-03-2015.JPG/960px-Emquartier_27-03-2015.JPG"],
+          intro: [
+            "BTS 一站到 Phrom Phong，EM 商圈三館齊逛",
+            "EmQuartier 的空中花園與瀑布中庭必看",
+            "甜點與超市伴手禮在這裡補"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "約 10:00–22:00，以官網為準",
+            tips: [ "交通：BTS Asok → Phrom Phong（一站）", "回程：BTS 回 Surasak" ]
+          }
+        }
+      ],
+      shops: [
+        { name: "Emsphere 全新百貨", where: "Phrom Phong EM 商圈（EmQuartier 旁）", desc: [ "EM 商圈最新開幕的一館", "超大 Pop Mart 旗艦店，泰國限定款在這裡抓", "潮流文創快閃店輪番進駐，路過必掃一圈" ] }
+      ]
+    },
+    {
+      date: "2026-09-25",
+      theme: "Safari World 賽佛瑞野生動物園（07:30 出發）",
+      spots: [
+        {
+          name: "CentralWorld 集合搭共乘大巴",
+          url: "",
+          mapQuery: "CentralWorld Bangkok",
+          stay: "07:30–09:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/CentralWorld-2015.jpg/960px-CentralWorld-2015.jpg"],
+          intro: [
+            "一早 BTS 到 Chit Lom，CentralWorld 門口集合",
+            "搭 Klook／KKday 共乘大巴前往 Safari World",
+            "車程約 1 小時"
+          ],
+          notice: {
+            ticket: "共乘接送＋門票套票以 Klook／KKday 訂單為準（行前準備清單記得先預約）",
+            hours: "集合時間以訂單通知為準（約 07:45–08:00）",
+            tips: [ "交通：BTS Surasak → Chit Lom → 步行集合點", "早餐先買好帶上車" ]
+          }
+        },
+        {
+          name: "Safari World 賽佛瑞野生動物園",
+          url: "https://www.safariworld.com/",
+          mapQuery: "Safari World Bangkok",
+          stay: "09:00–16:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/0740_Tierpark_Bangkok_Safari_World.jpg/960px-0740_Tierpark_Bangkok_Safari_World.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/0890_Tierpark_Bangkok_Safari_World.jpg/960px-0890_Tierpark_Bangkok_Safari_World.jpg"],
+          intro: [
+            "大巴直接開進野生動物區，長頸鹿、斑馬、老虎近距離看",
+            "海洋公園區有海豚秀、海獅秀等多場表演",
+            "重頭戲：親手餵長頸鹿"
+          ],
+          notice: {
+            ticket: "套票含野生動物區＋海洋公園，以訂單為準",
+            hours: "約 09:00–17:00，以官網為準",
+            tips: [ "表演場次時刻表進場先拍下來，動線照場次排", "防曬與水壺必帶，園區大又熱" ]
+          }
+        },
+        {
+          name: "回程＋CentralWorld 補逛",
+          url: "",
+          mapQuery: "CentralWorld Bangkok",
+          stay: "16:30–20:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/CentralWorld_Bangkok_Thailand.jpg/960px-CentralWorld_Bangkok_Thailand.jpg"],
+          intro: [
+            "傍晚大巴回 CentralWorld",
+            "補逛寶可夢中心、吃晚餐",
+            "第一天沒買齊的這次補齊"
+          ],
+          notice: {
+            ticket: "免門票（晚餐費另計）",
+            hours: "商場約 10:00–22:00",
+            tips: [ "回程：BTS Chit Lom → Surasak", "累的話直接 Grab 回飯店" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-09-26",
+      theme: "恰圖恰週末市集（建議 09:30 出發）",
+      spots: [
+        {
+          name: "Chatuchak 恰圖恰週末市集",
+          url: "",
+          mapQuery: "Chatuchak Weekend Market Bangkok",
+          stay: "10:00–14:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Chatuchak_Weekend_Market_1.jpg/960px-Chatuchak_Weekend_Market_1.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Chatuchak_Weekend_Market_Soi.jpg/960px-Chatuchak_Weekend_Market_Soi.jpg"],
+          intro: [
+            "世界最大週末市集之一，一萬多攤只有六日全開",
+            "服飾、手作、香氛、居家小物、椰子冰一路掃",
+            "今天是週六，正是全開的日子"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "週六日約 09:00–18:00（六日才全開），以現場為準",
+            tips: [ "交通：BTS Surasak → Mo Chit 1 號出口", "現金多帶，攤位大多不收卡", "越早去越涼快、人也少" ]
+          }
+        },
+        {
+          name: "回飯店放戰利品",
+          url: "",
+          mapQuery: "Hilton Garden Inn Bangkok Silom",
+          stay: "14:00–15:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Bangkok_Skytrain_2011.jpg/960px-Bangkok_Skytrain_2011.jpg"],
+          intro: [
+            "戰利品先搬回飯店",
+            "順便吹冷氣休息，避開最熱的時段"
+          ],
+          notice: {
+            ticket: "BTS 車資約 17–62 THB",
+            hours: "—",
+            tips: [ "交通：BTS Mo Chit → Surasak", "買太多就直接 Grab 回去" ]
+          }
+        },
+        {
+          name: "附近咖啡廳・泰式按摩",
+          url: "",
+          mapQuery: "Silom Road Bangkok",
+          stay: "15:30–19:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thai_massage_Ao_Nang_1.jpg/960px-Thai_massage_Ao_Nang_1.jpg"],
+          intro: [
+            "飯店周邊找間咖啡廳放空",
+            "或直接來一場泰式按摩，把逛市集的腳救回來"
+          ],
+          notice: {
+            ticket: "泰式按摩約 300–600 THB／小時，以店家為準",
+            hours: "按摩店多營業至 22:00 後",
+            tips: [ "步行：Silom 區按摩店密度極高，看評價挑", "腳底按摩對走一天的行程最有感" ]
+          }
+        }
+      ],
+      shops: [
+        { name: "Chatuchak Section 2–4", where: "恰圖恰市集 Section 2、3、4 區", desc: [ "新銳設計師手創大本營", "平價手作耳環、包包、插畫小物", "看到喜歡直接買——回頭一定會迷路" ] }
+      ]
+    },
+    {
+      date: "2026-09-27",
+      theme: "美功鐵道市場＋安帕瓦水上市場（11:30 出發）",
+      spots: [
+        {
+          name: "Maeklong 美功鐵道市場",
+          url: "",
+          mapQuery: "Maeklong Railway Market",
+          stay: "13:00–15:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Maeklong_Railway_Market_01.jpg/960px-Maeklong_Railway_Market_01.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Maeklong_Railway_Market_03.jpg/960px-Maeklong_Railway_Market_03.jpg"],
+          intro: [
+            "攤販直接擺在鐵軌上的傳奇市場",
+            "火車來時整排遮陽棚秒速收起，車過再秒速擺回",
+            "鎖定 13:45 或 14:30 的火車進站時刻"
+          ],
+          notice: {
+            ticket: "免門票",
+            hours: "市場約 06:00–18:00；火車時刻以現場公告為準",
+            tips: [ "交通：包車或 Grab，車程約 1.5 小時", "火車來時務必退到攤位後方，聽從攤販指揮" ]
+          }
+        },
+        {
+          name: "Amphawa 安帕瓦水上市場",
+          url: "",
+          mapQuery: "Amphawa Floating Market",
+          stay: "15:30–20:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Amphawa_Floating_Market_10.jpg/960px-Amphawa_Floating_Market_10.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Amphawa_Floating_Market_2.jpg/960px-Amphawa_Floating_Market_2.jpg"],
+          intro: [
+            "運河兩岸木屋與船上小吃攤，黃昏開始最有味道",
+            "船家現烤海鮮、椰子冰、泰式甜點一路吃",
+            "入夜後可搭小船看螢火蟲（雨季水量足）"
+          ],
+          notice: {
+            ticket: "免門票（螢火蟲船遊約 60–100 THB／人）",
+            hours: "約 12:00–20:00，只開五六日（今天週日有開），以現場為準",
+            tips: [ "從美功車程約 20 分", "回程：包車／Grab 回飯店，車程約 1.5 小時" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-09-28",
+      theme: "大皇宮＋臥佛寺＋鄭王廟（07:30 出發）",
+      spots: [
+        {
+          name: "大皇宮＆玉佛寺",
+          url: "https://www.royalgrandpalace.th/",
+          mapQuery: "Grand Palace Bangkok",
+          stay: "08:30–11:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/A_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg/960px-A_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Wat_Phra_Kaew_by_Ninara_TSP_edit_crop.jpg/960px-Wat_Phra_Kaew_by_Ninara_TSP_edit_crop.jpg"],
+          intro: [
+            "曼谷王朝的心臟，金光燦爛的宮殿建築群",
+            "玉佛寺供奉泰國最神聖的玉佛",
+            "一開門就進場，避開人潮與烈日"
+          ],
+          notice: {
+            ticket: "門票 500 THB，以官網為準",
+            hours: "約 08:30–15:30，以官網為準",
+            tips: [ "交通：BTS Surasak → Saphan Taksin 2 號出口 → 交通船（藍旗或橘旗）→ Tha Chang 碼頭", "服儀檢查嚴格：長袖長褲，無袖短褲不能進", "門口自稱「今天沒開」的攬客一律不理" ]
+          }
+        },
+        {
+          name: "臥佛寺 Wat Pho",
+          url: "",
+          mapQuery: "Wat Pho Bangkok",
+          stay: "11:45–13:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Reclining_Buddha_statue_of_Wat_Pho9.jpg/960px-Reclining_Buddha_statue_of_Wat_Pho9.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Wat_Pho%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg/960px-Wat_Pho%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg"],
+          intro: [
+            "46 公尺長的金色臥佛，氣勢驚人",
+            "也是泰式按摩的發源地",
+            "從大皇宮步行過來約 10 分鐘"
+          ],
+          notice: {
+            ticket: "門票 300 THB（含飲用水一瓶），以現場為準",
+            hours: "約 08:00–18:30，以現場為準",
+            tips: [ "步行：大皇宮 → 臥佛寺約 10 分", "投 108 個缽的銅板祈福記得換零錢" ]
+          }
+        },
+        {
+          name: "鄭王廟 Wat Arun",
+          url: "",
+          mapQuery: "Wat Arun Bangkok",
+          stay: "13:45–16:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg/960px-Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_05.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/20171201_Wat_Arun_Bangkok_6443_DxO.jpg/960px-20171201_Wat_Arun_Bangkok_6443_DxO.jpg"],
+          intro: [
+            "昭披耶河西岸的黎明寺，主塔貼滿彩色瓷片",
+            "泰服租借拍照的熱門地",
+            "傍晚順光，拍主塔最美"
+          ],
+          notice: {
+            ticket: "門票 100 THB，以現場為準",
+            hours: "約 08:00–18:00，以現場為準",
+            tips: [ "渡輪：臥佛寺旁 Tha Tien 碼頭過河約 5 THB", "回程：渡輪回東岸 → 交通船回 Saphan Taksin → BTS 回 Surasak" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-09-29",
+      theme: "自由日｜SPA 放鬆（建議 12:00 出發）",
+      spots: [
+        {
+          name: "高級 SPA 放鬆（建議）",
+          url: "",
+          mapQuery: "Silom Road Bangkok",
+          stay: "12:00–15:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thai_massage_Ao_Nang_1.jpg/960px-Thai_massage_Ao_Nang_1.jpg"],
+          intro: [
+            "行程過半，安排一個下午給高級 SPA",
+            "精油按摩、草本熱敷球、花瓣浴看喜好選",
+            "熱門店家建議前一兩天先訂位"
+          ],
+          notice: {
+            ticket: "高級 SPA 約 1,500–3,500 THB／2 小時課程，以店家為準",
+            hours: "多數 10:00–22:00",
+            tips: [ "Silom／Sathorn 一帶名店密集，Grab 都在 10 分鐘內", "按摩前吃七分飽就好" ]
+          }
+        },
+        {
+          name: "Silom 區美食補點",
+          url: "",
+          mapQuery: "Silom Road Bangkok",
+          stay: "15:00–20:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Silom_Road_Bangkok_Thailand.jpg/960px-Silom_Road_Bangkok_Thailand.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Bangkok_Street_Food.jpg/960px-Bangkok_Street_Food.jpg"],
+          intro: [
+            "SPA 完就在 Silom 區或飯店周邊覓食",
+            "把清單上還沒吃到的泰式料理補一補",
+            "船麵、青木瓜沙拉、泰奶甜點都在步行圈內"
+          ],
+          notice: {
+            ticket: "餐費另計",
+            hours: "小吃攤傍晚開始最熱鬧",
+            tips: [ "步行：飯店周邊即可", "晚上想走遠一點就 Grab" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-09-30",
+      theme: "Bang Krachao 綠肺森林（09:30 出發）",
+      spots: [
+        {
+          name: "MRT＋的士 → 孔提碼頭",
+          url: "",
+          mapQuery: "Khlong Toei Pier Bangkok",
+          stay: "09:30–10:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MRT_BLUE_LINE_EMU-BLE.jpg/960px-MRT_BLUE_LINE_EMU-BLE.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg/960px-Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg"],
+          intro: [
+            "BTS 到 Sala Daeng 轉 MRT 到 Khlong Toei",
+            "再搭的士到孔提碼頭",
+            "碼頭搭小船渡河，前往曼谷的綠肺"
+          ],
+          notice: {
+            ticket: "MRT 約 17–45 THB；的士短程約 60–100 THB；渡河小船約 10–20 THB",
+            hours: "小船白天隨到隨開",
+            tips: [ "交通：BTS Sala Daeng → MRT Khlong Toei → 的士 → 孔提碼頭", "船小、河面有浪，包包抱好" ]
+          }
+        },
+        {
+          name: "Bang Krachao 綠肺森林騎行",
+          url: "",
+          mapQuery: "Bang Krachao",
+          stay: "10:30–15:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Bang_Kachao_jungle_path.jpg/960px-Bang_Kachao_jungle_path.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bang_Krachao.jpg/960px-Bang_Krachao.jpg"],
+          intro: [
+            "昭披耶河環抱的綠洲，被稱為「曼谷之肺」",
+            "下船租腳踏車，沿高架小徑在椰林與紅樹林間騎行",
+            "空氣跟市區完全是兩個世界"
+          ],
+          notice: {
+            ticket: "租腳踏車約 50–100 THB／天",
+            hours: "白天騎行，建議 16:00 前離開",
+            tips: [ "高架小徑窄，會車減速慢行", "防蚊液出發前先噴" ]
+          }
+        },
+        {
+          name: "樹屋咖啡廳放空",
+          url: "",
+          mapQuery: "Bang Krachao cafe",
+          stay: "15:00–17:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bang_Krachao.jpg/960px-Bang_Krachao.jpg"],
+          intro: [
+            "騎累了找間樹屋咖啡廳放空",
+            "在森林裡喝冰咖啡，聽鳥叫發呆",
+            "傍晚原路回市區"
+          ],
+          notice: {
+            ticket: "咖啡另計",
+            hours: "咖啡廳多營業至 17:00–18:00",
+            tips: [ "回程：原路——小船渡河 → 的士 → MRT → BTS", "還車時間先跟租車店確認" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-10-01",
+      theme: "Asiatique 河岸夜市（16:00 出發）",
+      spots: [
+        {
+          name: "BTS＋免費接駁船",
+          url: "",
+          mapQuery: "Sathorn Pier Bangkok",
+          stay: "16:00–17:00",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Sathorn_Pier_%281%29.jpg/960px-Sathorn_Pier_%281%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Sathon_Pier_Bangkok_2019_hoponhopoff_boat.jpg/960px-Sathon_Pier_Bangkok_2019_hoponhopoff_boat.jpg"],
+          intro: [
+            "BTS 到 Saphan Taksin，走到 Sathorn Pier",
+            "搭 Asiatique 免費接駁船順流而下",
+            "傍晚的河面最舒服"
+          ],
+          notice: {
+            ticket: "接駁船免費",
+            hours: "接駁船約 16:00–23:30，班距 15–30 分",
+            tips: [ "交通：BTS Surasak → Saphan Taksin → Sathorn Pier → 免費接駁船", "排隊人多時提早一班搭" ]
+          }
+        },
+        {
+          name: "Asiatique The Riverfront",
+          url: "https://www.asiatiquethailand.com/",
+          mapQuery: "Asiatique The Riverfront Bangkok",
+          stay: "17:00–21:30",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Asiatique_The_Riverfront_08.jpg/960px-Asiatique_The_Riverfront_08.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Asiatique_The_Riverfront_23.jpg/960px-Asiatique_The_Riverfront_23.jpg"],
+          intro: [
+            "老碼頭倉庫改建的河岸夜市",
+            "摩天輪上看昭披耶河夜景",
+            "夜市美食吃一輪，最後購物補貨在這裡收尾"
+          ],
+          notice: {
+            ticket: "免門票；摩天輪約 400–500 THB，以現場為準",
+            hours: "約 16:00–24:00，以官網為準",
+            tips: [ "回程：接駁船回 Sathorn Pier → 步行回飯店", "明天中午的飛機，今晚回去先打包行李" ]
+          }
+        }
+      ]
+    },
+    {
+      date: "2026-10-02",
+      theme: "返程（機場日，約 08:30 出發）",
+      spots: [
+        {
+          name: "飯店 → BKK 蘇凡納布機場",
+          url: "",
+          mapQuery: "Suvarnabhumi Airport Bangkok",
+          stay: "約 08:30 出發",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg/960px-CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg"],
+          intro: [
+            "一早退房，BTS 到 Phaya Thai 轉機場鐵路 ARL",
+            "12:40 起飛，抓 09:30 前抵達機場",
+            "預留辦理退稅與報到時間"
+          ],
+          notice: {
+            ticket: "BTS＋ARL 合計約 60–100 THB；行李多可 Grab（車程 40–60 分，留意塞車）",
+            hours: "退稅：先到出境大廳退稅櫃檯蓋章，再托運",
+            tips: [ "交通：BTS Surasak → Phaya Thai → ARL → BKK", "P.P.10 退稅單與護照拿在手上，商品可能要查驗" ]
+          }
+        },
+        {
+          name: "TG634 曼谷 → 台北",
+          url: "https://www.thaiairways.com/",
+          mapQuery: "Suvarnabhumi Airport Bangkok",
+          stay: "12:40–17:20",
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Thai_Airways%2C_Boeing_777-300ER%2C_HS-TKQ_-_NRT.jpg/960px-Thai_Airways%2C_Boeing_777-300ER%2C_HS-TKQ_-_NRT.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Suvarnabhumi_International_Airport_Bangkok_%2812%29.jpg/960px-Suvarnabhumi_International_Airport_Bangkok_%2812%29.jpg"],
+          intro: [
+            "泰國航空 TG634 經濟艙，曼谷直飛桃園",
+            "手提 7kg／托運 23kg",
+            "17:20 抵達桃園機場，旅程結束"
+          ],
+          notice: {
+            ticket: "已開票（訂位代號屬敏感資料，解鎖後於基本資料頁查看）",
+            hours: "12:40 起飛（建議 09:30 前抵達機場）",
+            tips: [ "免稅店的退稅退款櫃檯在出境後管制區內", "上機前把泰銖零錢花掉或留作紀念" ]
+          }
+        }
+      ]
+    }
+  ],
+
+  /* 交通資訊：這趟會用到的交通方式（價格為參考值，以現場公告為準） */
+  transport: {
+    intro: "整理這趟會用到的交通方式與購票建議。票價為 2026 年前後參考值，實際以現場公告為準。",
+    maps: [
+      { title: "曼谷捷運路線圖（BTS／MRT／ARL）", images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Bangkok-transit-map.png/1280px-Bangkok-transit-map.png"] }
+    ],
+    modes: [
+      {
+        name: "ARL 機場快線", icon: "train",
+        when: [ "第一天 BKK 機場 → 市區", "第十二天 市區 → BKK 機場" ],
+        ticket: [
+          "依站數計價約 15–45 THB",
+          "自動售票機可用零錢與小額紙鈔",
+          "以現場公告為準"
+        ],
+        hours: "約 05:30–24:00，班距 10–15 分鐘",
+        tips: [ "在 Phaya Thai 站與 BTS 換乘（需出站重新購票）", "尖峰時段車廂擁擠，行李顧好" ],
+        images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg/960px-Airport_Rail_Link_train_at_Phaya_Thai_Station.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg/960px-CITY_LINE_TRAIN_AT_LAT_PRABANG_STATION_BANGKOK_THAILAND_FEB_2013_%288530034427%29.jpg"]
+      },
+      {
+        name: "BTS 空鐵", icon: "train",
+        when: [ "每天市區移動的主力（Siam、Asok、Silom、Chatuchak 全在沿線）", "飯店最近車站：Surasak／Saphan Taksin" ],
+        ticket: [
+          "依站數計價約 17–62 THB／趟",
+          "建議買 Rabbit Card（發卡費＋儲值），逢閘門直接刷",
+          "以現場公告為準"
+        ],
+        hours: "約 06:00–24:00，班距 3–8 分鐘",
+        tips: [ "車廂冷氣極強，怕冷帶薄外套", "尖峰時段 Siam、Asok 站人潮多，換乘預留時間" ],
+        images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/BTS_Skytrain%2C_Bangkok%2C_Thailand.jpg/960px-BTS_Skytrain%2C_Bangkok%2C_Thailand.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Adult_Rabbit_card.jpg/960px-Adult_Rabbit_card.jpg"]
+      },
+      {
+        name: "MRT 地鐵", icon: "train",
+        when: [ "唐人街、喬德夜市、大皇宮周邊（Sanam Chai 站）", "第十天：Sala Daeng 轉 MRT 至 Khlong Toei" ],
+        ticket: [ "依站數計價約 17–45 THB", "單程代幣（token）或感應信用卡皆可", "以現場公告為準" ],
+        hours: "約 06:00–24:00",
+        tips: [ "BTS 與 MRT 是不同系統，票卡不通用", "Sala Daeng（BTS）↔ Si Lom（MRT）站內指標清楚，跟著走即可" ],
+        images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MRT_BLUE_LINE_EMU-BLE.jpg/960px-MRT_BLUE_LINE_EMU-BLE.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg/960px-Bangkok_MRT_Pink_Line_Monorail_PM20_Yeak_Pak_Kret.jpg"]
+      },
+      {
+        name: "昭披耶河交通船", icon: "boat",
+        when: [ "第三天 河岸文創（Sathorn → N3／N4）", "第八天 大皇宮・鄭王廟（Sathorn → Tha Chang）", "想去 ICONSIAM 也有免費接駁船" ],
+        ticket: [ "橘旗船約 16 THB 均一價；藍旗觀光船約 30 THB 起", "上船後向船員買票即可", "以現場公告為準" ],
+        hours: "日間約 06:00–18:00（藍旗觀光船至傍晚後另有班次）",
+        tips: [ "認旗色：橘旗＝通勤船最便宜，藍旗＝觀光船有廣播", "靠岸停留很短，提早到船尾準備上下船" ],
+        images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg/960px-Bangkok%2C_Chao_Phraya_Express_Boat_%286223565866%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Chao_Phraya_Express_Boat_Orange_Flag_1.jpg/960px-Chao_Phraya_Express_Boat_Orange_Flag_1.jpg"]
+      },
+      {
+        name: "Grab／Bolt 叫車", icon: "taxi",
+        when: [ "飯店 ↔ 景點的點對點移動", "下雨、晚歸、拖行李、第七天包車替代方案" ],
+        ticket: [
+          "App 內先報價，不用議價；市區短程約 60–150 THB",
+          "Bolt 通常比 Grab 便宜一些，兩個都先下載比價",
+          "以 App 報價為準"
+        ],
+        hours: "24 小時（尖峰與雨天叫車等較久）",
+        tips: [ "上車前核對車牌與司機", "路邊跳表計程車拒跳表就換一台，或直接用 App 叫" ],
+        images: []
+      },
+      {
+        name: "步行", icon: "walk",
+        when: "每天：景點之間的短程移動（節點圖上的「步行」段）",
+        ticket: "免費",
+        hours: "—",
+        tips: [ "人行道高低差多、機車會上人行道，走路留神", "白天炎熱，長距離移動盡量搭車，把腳力留給市集與寺廟" ],
+        images: []
+      }
+    ]
+  },
+
+  /* 記帳資料存於 Firebase Firestore（trips/{id}/expenses），登入 Google 後即時同步。
+     seedExpenses：內嵌初始資料——登入後 Firestore 為空時，記帳頁會出現「匯入初始資料」按鈕。 */
+  seedExpenses: [
+    {
+      id: "seed-0001",
+      name: "機加酒（曼谷是隆希爾頓花園飯店＋來回機票）",
+      amountTHB: null,
+      amountTWD: 32679,
+      inputCurrency: "TWD",
+      rate: null,
+      rateDate: null,
+      amount: 32679,
+      currency: "TWD",
+      status: "已付款",
+      category: "事前",
+      payer: "",
+      note: "含稅",
+      recordedBy: null,
+      createdAt: "2026-08-06T00:00:00.000Z"
+    }
+  ],
+  expenses: null
+};
+</script>
+
+<header class="hero">
+  <div class="eyebrow">Travel Journal</div>
+  <h1 id="trip-title"></h1>
+  <div class="sub" id="trip-sub"></div>
+  <button id="lock-btn" class="lock-btn" type="button"></button>
+  <button id="auth-btn" class="lock-btn" type="button"></button>
+</header>
+
+<nav class="tabbar" id="tabbar"></nav>
+<main id="main"></main>
+
+<script>
+/* ==========================================================================
+   以下為渲染引擎：讀取 TRIP_DATA 動態產生整個頁面，不需修改
+   ========================================================================== */
+(function () {
+  const $  = (sel, el) => (el || document).querySelector(sel);
+  const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
+  const esc = s => String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  /* 文案欄位同時支援字串與字串陣列：陣列＝一行一個重點 */
+  const lines = v => Array.isArray(v) ? v : (v == null || v === "" ? [] : [String(v)]);
+
+  const CN_NUM = ["零","一","二","三","四","五","六","七","八","九","十"];
+  const cnDay = n => {
+    if (n <= 10) return CN_NUM[n];
+    if (n < 20) return "十" + (n % 10 ? CN_NUM[n % 10] : "");
+    return String(n); // 超過 19 天直接用阿拉伯數字
+  };
+  const WEEK = ["日","一","二","三","四","五","六"];
+  const fmtDate = iso => {
+    if (!iso) return "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso; // 非 ISO 日期（如「待補」）原樣顯示
+    const d = new Date(iso + "T00:00:00");
+    return (d.getMonth() + 1) + "/" + d.getDate() + "（" + WEEK[d.getDay()] + "）";
+  };
+  const fmtMoney = n => Number(n).toLocaleString("zh-Hant-TW");
+  const pad2 = n => String(n).padStart(2, "0");
+
+  /* 單色線條 icon（Feather 風格：24x24、stroke=currentColor、無填色） */
+  const ICONS = {
+    calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    idcard: '<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c.5-1.5 1.6-2.2 3-2.2s2.5.7 3 2.2"/><line x1="14" y1="9" x2="19" y2="9"/><line x1="14" y1="13" x2="19" y2="13"/>',
+    plane: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+    takeoff: '<line x1="3" y1="21" x2="21" y2="21"/><path d="M4 16L20 8"/><polyline points="14 5.5 20 8 17.5 14"/>',
+    landing: '<line x1="3" y1="21" x2="21" y2="21"/><path d="M4 8l16 8"/><polyline points="17.5 10 20 16 14 18.5"/>',
+    luggage: '<rect x="6" y="7" width="12" height="14" rx="2"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/><line x1="9" y1="11" x2="9" y2="17"/><line x1="15" y1="11" x2="15" y2="17"/>',
+    home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    cloudrain: '<path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><line x1="8" y1="15" x2="8" y2="19"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="16" y1="15" x2="16" y2="19"/>',
+    cloud: '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/>',
+    sunrise: '<path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="4" x2="12" y2="9"/><line x1="4.9" y1="10.9" x2="6.3" y2="12.3"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="17.7" y1="12.3" x2="19.1" y2="10.9"/><line x1="23" y1="22" x2="1" y2="22"/><polyline points="8 7 12 3 16 7"/>',
+    shirt: '<path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.5 3.5a1 1 0 0 0 1 .8H6v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V10h2.2a1 1 0 0 0 1-.8l.5-3.5a2 2 0 0 0-1.3-2.2z"/>',
+    ticket: '<path d="M2 9V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6z"/><line x1="13" y1="6" x2="13" y2="8"/><line x1="13" y1="11" x2="13" y2="13"/><line x1="13" y1="16" x2="13" y2="18"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+    calcheck: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 15 11 17 15 13"/>',
+    list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+    train: '<rect x="4" y="3" width="16" height="13" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="8" y1="13.5" x2="8.01" y2="13.5"/><line x1="16" y1="13.5" x2="16.01" y2="13.5"/><path d="M8 16l-2 5"/><path d="M16 16l2 5"/>',
+    bus: '<rect x="4" y="3" width="16" height="14" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="4" y1="14" x2="20" y2="14"/><circle cx="8" cy="19.5" r="1.5"/><circle cx="16" cy="19.5" r="1.5"/>',
+    taxi: '<path d="M5.5 11 7 6.8A2 2 0 0 1 8.9 5.5h6.2A2 2 0 0 1 17 6.8L18.5 11"/><rect x="3" y="11" width="18" height="6" rx="1.5"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/><line x1="10.5" y1="5.5" x2="10.5" y2="3.5"/><line x1="13.5" y1="5.5" x2="13.5" y2="3.5"/>',
+    boat: '<path d="M2 20c1.7 1 3.3 1 5 0 1.7 1 3.3 1 5 0 1.7 1 3.3 1 5 0 1.7 1 3.3 1 5 0"/><path d="M4 16.5 3 11l9-3 9 3-1 5.5"/><line x1="12" y1="8" x2="12" y2="3"/><path d="M12 3l4.5 2.5L12 8"/>',
+    walk: '<circle cx="13" cy="4" r="1.7"/><path d="M13 7.5l-1.6 4.8 2.4 2.7v6"/><path d="M11.4 12.3 9 14l-1.2 3.2"/><path d="M13 9l2.6 2 2.4.6"/><path d="M11.8 16.5 9.8 19l-1 2.5"/>',
+    alert: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+    extlink: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+    wallet: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>',
+    user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    tag: '<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+    info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+    checksq: '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+    map: '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>',
+    lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    unlock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+    plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    edit: '<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+    trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    sync: '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+    key: '<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3"/>',
+    check: '<polyline points="20 6 9 17 4 12"/>'
+  };
+  const ic = (name, cls) =>
+    '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+  /* 依提醒文字挑 icon（交通/步行/一般提醒） */
+  const tipIcon = t =>
+    /船|碼頭|渡輪|渡河|Pier/.test(t) ? 'boat'
+    : /Grab|Bolt|包車|的士|計程車/.test(t) ? 'taxi'
+    : /BTS|MRT|ARL|捷運|地鐵|機場|大巴|交通：|回程：/.test(t) ? 'train'
+    : /步行/.test(t) ? 'walk' : 'alert';
+  /* 依天氣描述挑 icon */
+  const wxIcon = d => /雨/.test(d) ? 'cloudrain' : /雪|雲/.test(d) ? 'cloud' : 'sun';
+  /* 行前準備分類 icon */
+  const catIcon = c => /簽證/.test(c) ? 'book' : /票/.test(c) ? 'ticket' : /預約/.test(c) ? 'calcheck' : 'list';
+  /* 區塊標題：icon＋小編號＋中文＋英文小標 */
+  const secTitle = (no, zh, en, icon) =>
+    (icon ? ic(icon) : '') + '<span class="no">(' + no + ')</span>' + zh + (en ? '<span class="en">' + en + '</span>' : '');
+
+  /* ---------- 敏感資料（TRIP_DATA.secure）：PBKDF2 + AES-GCM 解密 ---------- */
+  const SEC = { data: null };
+  const SS_KEY = "trip::" + TRIP_DATA.id + "::secure";
+  try { const s = sessionStorage.getItem(SS_KEY); if (s) SEC.data = JSON.parse(s); } catch (e) { /* 私密模式 */ }
+
+  const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  async function deriveKey(pass, salt) {
+    const km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: salt, iterations: 310000, hash: "SHA-256" },
+      km, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  async function decryptBlob(blob, pass) {
+    const key = await deriveKey(pass, b64d(blob.salt));
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64d(blob.iv) }, key, b64d(blob.ciphertext));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  window.__tripDecrypt = decryptBlob; // encrypt.html round-trip 測試用
+
+  const secGet = path => path.split(".").reduce((o, k) => (o == null ? o : o[k]), SEC.data);
+  const secDisplay = path => {
+    if (SEC.data) { const v = secGet(path); return v == null ? "—" : esc(String(v)); }
+    if (!TRIP_DATA.secure) return '<span class="sec-locked unset">' + ic("lock", "sm") + ' 未設定（本機用 encrypt.html 產生）</span>';
+    return '<span class="sec-locked" title="點擊解鎖">' + ic("lock", "sm") + '<span class="dots">••••••</span></span>';
+  };
+  const secHTML = path => '<span class="sec" data-sec="' + path + '">' + secDisplay(path) + '</span>';
+
+  /* ---------- 頁籤 ---------- */
+  const tabs = [
+    { id: "info", label: "基本資料", icon: "info" },
+    { id: "overview", label: "旅程總覽", icon: "map" },
+    { id: "transport", label: "交通資訊", icon: "train" },
+    { id: "prep", label: "行前準備", icon: "checksq" }
+  ];
+  TRIP_DATA.days.forEach((d, i) => tabs.push({ id: "day" + i, label: "第" + cnDay(i + 1) + "天" }));
+  tabs.push({ id: "money", label: "記帳", icon: "wallet" });
+
+  const tabbar = $("#tabbar");
+  const main = $("#main");
+  tabs.forEach(t => {
+    const b = document.createElement("button");
+    b.innerHTML = (t.icon ? ic(t.icon, "sm") : "") + t.label;
+    b.dataset.target = t.id;
+    b.addEventListener("click", () => activate(t.id));
+    tabbar.appendChild(b);
+  });
+  function activate(id) {
+    $$("button", tabbar).forEach(b => b.classList.toggle("active", b.dataset.target === id));
+    $$("section.panel", main).forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
+    const btn = $$("button", tabbar).find(b => b.dataset.target === id);
+    if (btn && btn.scrollIntoView) btn.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+  }
+  const panel = id => {
+    const s = document.createElement("section");
+    s.className = "panel";
+    s.id = "panel-" + id;
+    main.appendChild(s);
+    return s;
+  };
+
+  /* ---------- 標題 ---------- */
+  $("#trip-title").textContent = TRIP_DATA.title;
+  $("#trip-sub").textContent = (TRIP_DATA.subtitle ? TRIP_DATA.subtitle + "　·　" : "")
+    + fmtDate(TRIP_DATA.dates.start) + " – " + fmtDate(TRIP_DATA.dates.end);
+
+  /* ==================== 1. 基本資料（雜誌式版面） ==================== */
+  (function renderInfo() {
+    const p = panel("info");
+    const D = TRIP_DATA;
+    let html = "";
+
+    /* --- Hero：出發倒數＋日期＋雙時鐘 --- */
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const dStart = new Date(D.dates.start + "T00:00:00");
+    const dEnd = new Date(D.dates.end + "T00:00:00");
+    const diff = Math.round((dStart - today) / 86400000);
+    let countHTML;
+    if (diff > 0) countHTML = '<span class="ih-num">' + diff + '</span><span class="ih-unit">天後出發</span>';
+    else if (today <= dEnd) countHTML = '<span class="ih-num">Sawasdee</span><span class="ih-unit">旅程進行中</span>';
+    else countHTML = '<span class="ih-num">Fin</span><span class="ih-unit">旅程已結束</span>';
+
+    html += '<div class="card info-hero">'
+      + '<div class="ih-left">'
+      + '<div class="ih-count">' + countHTML + '</div>'
+      + '<div class="ih-dates">' + fmtDate(D.dates.start) + ' – ' + fmtDate(D.dates.end)
+      + '　<span class="muted">當地行程 ' + D.days.length + ' 天</span></div>'
+      + '</div>'
+      + '<div class="ih-clocks clocks">'
+      + '<div class="clock"><div class="zone">台灣 Taipei</div><div class="time" id="clk-tw">--:--:--</div><div class="date" id="clkd-tw"></div></div>'
+      + '<div class="clock"><div class="zone">' + esc(D.timezoneLabel) + ' Local</div><div class="time" id="clk-local">--:--:--</div><div class="date" id="clkd-local"></div></div>'
+      + '</div></div>';
+
+    /* --- 不對稱兩欄：左＝航班時間軸（寬），右＝護照＋飯店（窄） --- */
+    const fl = (Array.isArray(D.flights) ? D.flights : [D.flights.outbound, D.flights.inbound]).filter(Boolean);
+    const splitTime = t => {
+      const m = String(t).match(/^(\d{4})-(\d{2})-(\d{2})\s+(.+)$/);
+      return m ? { d: (+m[2]) + "/" + (+m[3]), t: m[4] } : { d: "", t: String(t) };
+    };
+    const flNode = (pt, icon) => {
+      const s = splitTime(pt.time);
+      return '<div class="fl-node"><span class="fl-time">' + esc(s.t) + '</span>'
+        + (s.d ? '<span class="fl-date">' + esc(s.d) + '</span>' : '') + ic(icon, "sm")
+        + '<div class="fl-ap">' + esc(pt.airport) + '</div></div>';
+    };
+    const flGroup = name => {
+      const g = fl.filter(f => (f.label || "").indexOf(name) === 0);
+      if (!g.length) return "";
+      let h = '<div class="fl-dir">' + ic("plane", "sm") + name + '</div><div class="fl-tl">';
+      g.forEach(f => {
+        h += flNode(f.depart, "takeoff")
+          + '<div class="fl-meta">' + esc(f.airline) + ' ' + esc(f.flightNo)
+          + (f.note ? '　·　' + esc(f.note) : '')
+          + '<br>' + [f.baggage ? esc(f.baggage) : "", '訂位代號 ' + secHTML("bookingRef")].filter(Boolean).join('　·　')
+          + '</div>'
+          + flNode(f.arrive, "landing");
+      });
+      return h + '</div>';
+    };
+
+    html += '<div class="info-grid"><div class="ig-main">'
+      + '<div class="card"><h3>' + secTitle("01", "航班時間軸", "Flights", "plane") + '</h3>'
+      + flGroup("去程") + flGroup("回程") + '</div>'
+      + '</div><aside class="ig-side">';
+
+    html += '<div class="card"><h3>' + secTitle("02", "旅伴", "Members", "user") + '</h3>'
+      + '<div id="members-box"></div></div>';
+
+    html += '<div class="card"><h3>' + secTitle("03", "護照資訊", "Passport", "idcard") + '</h3>'
+      + '<div id="travelers-box"></div></div>';
+
+    html += '<div class="card"><h3>' + secTitle("04", "飯店資訊", "Hotel", "home") + '</h3>';
+    D.hotels.forEach((h, hi) => {
+      const nm = h.url
+        ? '<a href="' + esc(h.url) + '" target="_blank" rel="noopener">' + esc(h.name) + '</a>'
+        : esc(h.name);
+      html += '<div style="padding:6px 0;">'
+        + '<div style="font-weight:600;">' + nm + '</div>'
+        + '<div class="kv"><span class="k">地址</span><span class="v">' + esc(h.address) + '</span></div>'
+        + '<div class="kv"><span class="k">入住／退房</span><span class="v">' + fmtDate(h.checkIn) + ' → ' + fmtDate(h.checkOut) + '</span></div>'
+        + (h.access ? '<div class="kv"><span class="k">到達方式</span><span class="v">' + lines(h.access).map(t => '<div class="vl">' + esc(t) + '</div>').join('') + '</span></div>' : '')
+        + (h.note ? '<div class="kv"><span class="k">備註</span><span class="v">' + esc(h.note) + '</span></div>' : '')
+        + '<div class="kv"><span class="k">訂房編號</span><span class="v">' + secHTML("hotelBookingRefs." + hi) + '</span></div></div>';
+    });
+    html += '</div></aside></div>';
+
+    /* --- 天氣：橫向一排 11 天小卡 --- */
+    html += '<div class="card"><h3>' + secTitle("05", "天氣與濕度", "Weather", wxIcon(lines(D.weather.overall).join("、"))) + '</h3>'
+      + '<div class="wx-overall">' + lines(D.weather.overall).map(t => '<p>' + esc(t) + '</p>').join('') + '</div><div class="wx-grid">';
+    D.weather.daily.forEach(w => {
+      const wi = wxIcon(w.desc);
+      html += '<div class="wx-day"><div class="d">' + fmtDate(w.date) + '</div>'
+        + '<div class="muted">' + ic(wi, "sm " + (wi === "sun" ? "ic-gold" : "ic-blue")) + ' ' + esc(w.desc) + '</div>'
+        + '<div class="t">' + w.tempMin + '–' + w.tempMax + '°C</div>'
+        + '<div class="muted">濕度 ' + esc(w.humidity) + '｜降雨 ' + esc(w.rain) + '</div></div>';
+    });
+    html += '</div></div>';
+
+    /* --- 日出日落＋建議穿著：一條橫向資訊帶 --- */
+    html += '<div class="card"><h3>' + secTitle("06", "日出日落・建議穿著", "Sun & Dress", "sunrise") + '</h3>'
+      + '<div class="sun-strip">'
+      + '<div class="ss-sun">'
+      + '<div>' + ic("sunrise", "sm ic-gold") + ' 日出<b>' + esc(D.sun.sunrise) + '</b></div>'
+      + '<div>' + ic("sun", "sm ic-terra") + ' 日落<b>' + esc(D.sun.sunset) + '</b></div>'
+      + '<div class="muted">當地時間</div>'
+      + '</div>'
+      + '<div class="ss-dress">' + lines(D.clothing).map((t, i) =>
+          '<div class="dl">' + (i === 0 ? ic("shirt", "sm ic-blue") + ' ' : '') + esc(t) + '</div>').join('') + '</div>'
+      + '</div></div>';
+
+    p.innerHTML = html;
+
+    /* 雙時鐘即時更新 */
+    function clockParts(tz) {
+      const parts = new Intl.DateTimeFormat("zh-Hant-TW", {
+        timeZone: tz, hour12: false,
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit", weekday: "short"
+      }).formatToParts(new Date());
+      const g = t => (parts.find(x => x.type === t) || {}).value || "";
+      return {
+        time: pad2(g("hour") === "24" ? "00" : g("hour")) + ":" + g("minute") + ":" + g("second"),
+        date: g("month") + "/" + g("day") + "（" + g("weekday").replace("週", "") + "）"
+      };
+    }
+    function tick() {
+      const tw = clockParts("Asia/Taipei"), lo = clockParts(TRIP_DATA.timezone);
+      $("#clk-tw").textContent = tw.time;   $("#clkd-tw").textContent = tw.date;
+      $("#clk-local").textContent = lo.time; $("#clkd-local").textContent = lo.date;
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* ==================== 1b. 旅程總覽 ==================== */
+  (function renderOverview() {
+    const D = TRIP_DATA;
+    const p = panel("overview");
+
+    let html = '<div class="card"><h3>' + secTitle("01", "旅程摘要", "Summary", "map") + '</h3>'
+      + '<div class="ov-summary">' + esc(D.timezoneLabel) + ' ' + D.days.length + ' 天　'
+      + fmtDate(D.dates.start) + ' – ' + fmtDate(D.dates.end) + '</div>'
+      + (D.subtitle ? '<div class="muted">' + esc(D.subtitle) + '</div>' : '')
+      + '</div>';
+
+    /* 航班一行式摘要（去程/回程各一行，多段轉機自動合併） */
+    const fl = (Array.isArray(D.flights) ? D.flights : [D.flights.outbound, D.flights.inbound]).filter(Boolean);
+    const codeOf = s => { const m = String(s).match(/[A-Z]{3}/); return m ? m[0] : esc(s); };
+    const groupLine = name => {
+      const g = fl.filter(f => (f.label || "").indexOf(name) === 0);
+      if (!g.length) return "";
+      const via = g.length > 1 ? "，經 " + codeOf(g[0].arrive.airport) + " 轉機" : "";
+      return '<div class="ov-flight">' + ic("plane", "sm") + '<b>' + name + '</b>　'
+        + codeOf(g[0].depart.airport) + ' → ' + codeOf(g[g.length - 1].arrive.airport)
+        + '｜' + esc(g[0].depart.time) + ' 出發 → ' + esc(g[g.length - 1].arrive.time) + ' 抵達'
+        + '（' + g.map(f => esc(f.flightNo)).join("＋") + via + '）</div>';
+    };
+    html += '<div class="card"><h3>' + secTitle("02", "航班摘要", "Flights", "plane") + '</h3>'
+      + groupLine("去程") + groupLine("回程") + '</div>';
+
+    /* 每日一列總覽，點擊跳該天頁籤 */
+    html += '<div class="card"><h3>' + secTitle("03", "每日總覽", "Day by Day", "calendar") + '</h3>';
+    D.days.forEach((day, i) => {
+      const zone = String(day.theme || "").split("（")[0];
+      const dep = String(day.theme || "").match(/([0-9]{1,2}:[0-9]{2})\s*出發/);
+      const chain = day.spots.map(s => s.name).join(" → ");
+      html += '<button type="button" class="ov-row" data-day="' + i + '">'
+        + '<span class="ov-top"><span class="ov-day">Day ' + (i + 1) + '</span>'
+        + '<span class="ov-date">' + fmtDate(day.date) + (dep ? '　' + dep[1] + ' 出發' : '') + '</span>'
+        + '<span class="ov-theme">' + esc(zone) + '</span></span>'
+        + '<span class="ov-spots">' + ic("walk", "sm") + esc(chain) + '</span>'
+        + '</button>';
+    });
+    html += '<p class="muted" style="margin-top:10px;">點任一天可直接跳到該天的行程頁</p></div>';
+
+    /* 統計 */
+    const allSpots = D.days.reduce((a, d) => a.concat(d.spots), []);
+    const paid = allSpots.filter(s => /需門票|需購票/.test(((s.notice || {}).ticket) || "")).length;
+    const resv = allSpots.filter(s => /預約/.test(((s.notice || {}).ticket) || "")).length;
+    html += '<div class="card"><h3>' + secTitle("04", "統計", "Stats", "tag") + '</h3>'
+      + '<div class="ov-stats">'
+      + '<span class="st"><b>' + allSpots.length + '</b>個行程節點</span>'
+      + '<span class="st"><b>' + paid + '</b>處需購票</span>'
+      + '<span class="st"><b>' + resv + '</b>處需預約／時段票</span>'
+      + '</div></div>';
+
+    p.innerHTML = html;
+    $$(".ov-row", p).forEach(r => r.addEventListener("click", () => activate("day" + r.dataset.day)));
+  })();
+
+  /* ==================== 1c. 交通資訊 ==================== */
+  (function renderTransport() {
+    const T = TRIP_DATA.transport;
+    if (!T) return;
+    const p = panel("transport");
+    const lbImg = (u, alt) =>
+      '<img src="' + esc(u) + '" alt="' + esc(alt) + '" loading="lazy" class="lb" '
+      + 'onerror="this.onerror=null;this.classList.remove(\'lb\');this.src=phFallback(this.alt);">';
+
+    let html = '<div class="card"><h3>' + secTitle("01", "路線圖", "Network Maps", "map") + '</h3>'
+      + (T.intro ? '<p style="font-size:.92rem;margin-bottom:10px;">' + esc(T.intro) + '</p>' : '')
+      + '<div class="tr-imgs">'
+      + (T.maps || []).map(m => (Array.isArray(m.images) ? m.images : []).map(u => lbImg(u, m.title)).join('')).join('')
+      + '</div><div class="tr-map-hint">點路線圖可放大檢視，再點一下關閉</div></div>';
+
+    (T.modes || []).forEach((m, i) => {
+      const imgs = Array.isArray(m.images) ? m.images : [];
+      html += '<div class="card"><h3>' + secTitle(pad2(i + 2), m.name, "", m.icon || "train") + '</h3>'
+        + '<div class="tr-when">' + lines(m.when).map(t => '<div>' + esc(t) + '</div>').join('') + '</div>'
+        + '<div class="kv"><span class="k">' + ic("ticket", "sm") + '票怎麼買</span><span class="v">'
+        + lines(m.ticket).map(t => '<div class="vl">' + esc(t) + '</div>').join('') + '</span></div>'
+        + '<div class="kv"><span class="k">' + ic("clock", "sm") + '營運時間</span><span class="v">' + esc(m.hours) + '</span></div>'
+        + (m.tips || []).map(t => '<div class="kv"><span class="k">' + ic("alert", "sm") + '注意</span><span class="v">' + esc(t) + '</span></div>').join('')
+        + (imgs.length ? '<div class="tr-imgs">' + imgs.map(u => lbImg(u, m.name)).join('') + '</div>' : '')
+        + '</div>';
+    });
+    p.innerHTML = html;
+  })();
+
+  /* ---------- 敏感資料 UI：鎖定顯示／解鎖 modal／sessionStorage ---------- */
+  function renderTravelers() {
+    const box = $("#travelers-box");
+    if (!box) return;
+    if (SEC.data && Array.isArray(SEC.data.travelers) && SEC.data.travelers.length) {
+      box.innerHTML = SEC.data.travelers.map(t =>
+        '<div style="padding:6px 0;border-bottom:1px solid var(--line-soft);">'
+        + '<div style="font-weight:600;">' + esc(t.name || "") + ' <span class="muted">' + esc(t.passportName || "") + '</span></div>'
+        + '<div class="muted">護照號碼 ' + esc(t.passportNo || "—") + '　效期至 ' + esc(t.expiry || "—") + '</div>'
+        + '<div class="muted">台胞證號碼 ' + esc(t.tbzNo || "—") + '　效期至 ' + esc(t.tbzExpiry || "—") + '</div></div>').join("");
+    } else if (TRIP_DATA.secure) {
+      box.innerHTML = '<div class="sec-block sec-locked" title="點擊解鎖">' + ic("lock", "sm")
+        + ' 旅伴護照資料已加密，點擊解鎖查看'
+        + '<div class="dots">●●●　●●●●●●●●●　●●●●／●●／●●</div></div>';
+    } else {
+      box.innerHTML = '<div class="sec-block">' + ic("lock", "sm")
+        + ' 敏感資料尚未設定 — 在本機開啟 encrypt.html，輸入護照與訂位資料並設定密碼產生密文，貼入 TRIP_DATA.secure 即可。</div>';
+    }
+  }
+
+  /* 旅伴大頭貼：Google 頭像自動收集於 Firestore meta/members（登入時 upsert），
+     以「姓名字母重組相同」比對 TRIP_DATA.membersPublic（如 CHANG RONG JIA ↔ Rongjia Chang）；
+     未登入過（或未登入看不到 Firestore）→ 字母圓點＋英文名；收集到但不在名單的 profile 也一併展示。 */
+  const MEM = { profiles: {}, unsub: null };
+  function memWatch() {
+    if (MEM.unsub) { MEM.unsub(); MEM.unsub = null; }
+    MEM.profiles = {};
+    renderMembers();
+    if (!FB.user) return;
+    MEM.unsub = FB.fs.onSnapshot(
+      FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "meta", "members"),
+      s => { const dd = s.data() || {}; MEM.profiles = dd.profiles || {}; renderMembers(); },
+      () => {}
+    );
+  }
+  function renderMembers() {
+    const box = $("#members-box");
+    if (!box) return;
+    const pub = TRIP_DATA.membersPublic || [];
+    const profs = Object.values(MEM.profiles || {}).filter(p => p && p.name);
+    if (!pub.length && !profs.length) { box.innerHTML = '<p class="muted">成員資料待補</p>'; return; }
+    const canon = s => String(s || "").toLowerCase().replace(/[^a-z]/g, "").split("").sort().join("");
+    const used = new Set();
+    const cards = pub.map(m => {
+      const hit = profs.find(p => !used.has(p) && canon(p.name) === canon(m.name));
+      if (hit) used.add(hit);
+      return { name: m.name, picture: hit ? (hit.picture || "") : "" };
+    });
+    profs.filter(p => !used.has(p)).forEach(p => cards.push({ name: p.name, picture: p.picture || "" }));
+    box.innerHTML = '<div class="mem-grid">' + cards.map(c => {
+      const letter = esc(String(c.name || "?").trim().charAt(0).toUpperCase());
+      const avatar = c.picture
+        ? '<img class="mem-ava" src="' + esc(c.picture) + '" alt="" referrerpolicy="no-referrer"'
+          + ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+          + '<span class="mem-ava mem-ava-letter" style="display:none;">' + letter + '</span>'
+        : '<span class="mem-ava mem-ava-letter">' + letter + '</span>';
+      return '<div class="mem-person">' + avatar + '<div class="mem-pname">' + esc(c.name) + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function refreshSecure() {
+    $$("[data-sec]").forEach(el => { el.innerHTML = secDisplay(el.dataset.sec); });
+    renderTravelers();
+    renderMembers();
+    const btn = $("#lock-btn");
+    if (btn) {
+      if (!TRIP_DATA.secure) btn.innerHTML = ic("lock", "sm") + ' 敏感資料未設定';
+      else if (SEC.data) btn.innerHTML = ic("unlock", "sm") + ' 已解鎖・點此鎖定';
+      else btn.innerHTML = ic("lock", "sm") + ' 解鎖敏感資料';
+    }
+  }
+
+  function openSecModal() {
+    if (!TRIP_DATA.secure || SEC.data || $(".sec-modal")) return;
+    const box = document.createElement("div");
+    box.className = "sec-modal";
+    box.innerHTML = '<div class="sec-card">'
+      + '<h4>' + ic("lock", "sm") + ' 解鎖敏感資料</h4>'
+      + '<p class="muted">輸入密碼顯示護照、訂位代號等資料。僅本分頁有效，關閉分頁自動上鎖。</p>'
+      + '<input type="password" id="sec-pass" placeholder="密碼" autocomplete="current-password">'
+      + '<div class="sec-err" id="sec-err"></div>'
+      + '<div class="sec-actions"><button type="button" class="sec-cancel">取消</button><button type="button" class="sec-ok">解鎖</button></div>'
+      + '</div>';
+    document.body.appendChild(box);
+    const input = $("#sec-pass", box), err = $("#sec-err", box);
+    input.focus();
+    const tryUnlock = async () => {
+      err.textContent = "";
+      try {
+        const data = await decryptBlob(TRIP_DATA.secure, input.value);
+        SEC.data = data;
+        try { sessionStorage.setItem(SS_KEY, JSON.stringify(data)); } catch (e) {}
+        box.remove();
+        refreshSecure();
+      } catch (e) { err.textContent = "密碼錯誤，請再試一次"; input.select(); }
+    };
+    $(".sec-ok", box).addEventListener("click", tryUnlock);
+    $(".sec-cancel", box).addEventListener("click", () => box.remove());
+    input.addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+    box.addEventListener("click", e => { if (e.target === box) box.remove(); });
+  }
+
+  const lockBtn = $("#lock-btn");
+  if (lockBtn) lockBtn.addEventListener("click", () => {
+    if (!TRIP_DATA.secure) return;
+    if (SEC.data) {
+      SEC.data = null;
+      try { sessionStorage.removeItem(SS_KEY); } catch (e) {}
+      refreshSecure();
+    } else openSecModal();
+  });
+  document.addEventListener("click", e => {
+    const t = e.target && e.target.closest ? e.target.closest(".sec-locked") : null;
+    if (t && !t.classList.contains("unset")) openSecModal();
+  });
+  refreshSecure();
+
+  /* ---------- Google 帳號登入：GIS 按鈕取得 ID token → 橋接 Firebase Auth ---------- */
+  /* Firebase：動態 import CDN modular SDK（app/auth/firestore，不含 analytics）。
+     載入失敗（斷網、舊瀏覽器）時 FB.failed=true，登入按鈕轉灰態，其餘頁面照常。 */
+  const FB = { auth: null, authM: null, fs: null, db: null, user: null, ready: false, failed: false };
+  const authProfile = () => FB.user
+    ? { name: FB.user.displayName || FB.user.email || "旅伴", email: FB.user.email || "", picture: FB.user.photoURL || "" }
+    : null;
+  async function fbInit() {
+    try {
+      const V = "https://www.gstatic.com/firebasejs/12.17.0/";
+      const [appM, authM, fsM] = await Promise.all([
+        import(V + "firebase-app.js"),
+        import(V + "firebase-auth.js"),
+        import(V + "firebase-firestore.js")
+      ]);
+      const app = appM.initializeApp(TRIP_DATA.firebase);
+      FB.authM = authM;
+      FB.fs = fsM;
+      FB.auth = authM.getAuth(app);
+      try {
+        FB.db = fsM.initializeFirestore(app, { localCache: fsM.persistentLocalCache() });
+      } catch (e) {
+        FB.db = fsM.getFirestore(app); // 無痕模式等 IndexedDB 不可用 → 退回記憶體快取
+      }
+      FB.ready = true;
+      authM.onAuthStateChanged(FB.auth, u => {
+        FB.user = u || null;
+        refreshAuth();
+        expWatch();
+        prepWatch();
+        memWatch();
+        /* 自動收集旅伴頭像：登入即 upsert {email,name,picture} 到 meta/members（email 正規化為 key） */
+        if (u && u.email) {
+          const prof = {};
+          prof[u.email.toLowerCase().replace(/[^a-z0-9]/g, "_")] = {
+            email: u.email, name: u.displayName || u.email, picture: u.photoURL || "", ts: Date.now()
+          };
+          FB.fs.setDoc(FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "meta", "members"),
+            { profiles: prof }, { merge: true }).catch(e => {});
+        }
+        const box = $(".auth-modal");
+        if (u && box) box.remove();
+        if (u && authPendingCb) { const cb = authPendingCb; authPendingCb = null; cb(); }
+      });
+    } catch (e) {
+      FB.failed = true;
+      refreshAuth();
+      refreshExpenses();
+    }
+  }
+  /* 頭像 HTML：img 載入失敗時退回字母圓點 */
+  const authAv = (p, cls) => {
+    const letter = '<span class="' + cls + '">' + esc(String(p.name || "?").slice(0, 1).toUpperCase()) + '</span>';
+    if (!p.picture) return letter;
+    return '<img class="' + cls + '" src="' + esc(p.picture) + '" alt="" referrerpolicy="no-referrer"'
+      + ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';">'
+      + '<span class="' + cls + '" style="display:none;">' + esc(String(p.name || "?").slice(0, 1).toUpperCase()) + '</span>';
+  };
+  let gsiReady = false;
+  let authPendingCb = null;
+  /* GIS 回呼：拿 ID token 換 Firebase 憑證登入（之後由 onAuthStateChanged 驅動 UI） */
+  async function onGoogleCred(resp) {
+    if (!resp || !resp.credential) return;
+    for (let i = 0; i < 50 && !FB.ready && !FB.failed; i++) await new Promise(r => setTimeout(r, 100));
+    if (!FB.ready) return;
+    try {
+      const cred = FB.authM.GoogleAuthProvider.credential(resp.credential);
+      await FB.authM.signInWithCredential(FB.auth, cred);
+    } catch (e) {
+      const box = $(".auth-modal .muted");
+      if (box) box.textContent = "登入失敗：" + String(e && e.code || e) + "，請再試一次。";
+    }
+  }
+  function gsiInit() {
+    if (gsiReady || !TRIP_DATA.googleClientId) return gsiReady;
+    if (!(window.google && google.accounts && google.accounts.id)) return false;
+    google.accounts.id.initialize({ client_id: TRIP_DATA.googleClientId, callback: onGoogleCred });
+    gsiReady = true;
+    return true;
+  }
+  function openAuthModal(cb) {
+    if ($(".auth-modal")) return;
+    authPendingCb = cb || null;
+    const box = document.createElement("div");
+    box.className = "sec-modal auth-modal";
+    const body = TRIP_DATA.googleClientId
+      ? (gsiInit()
+        ? '<p class="muted">使用 Google 帳號登入：僅作為記帳署名與頭像顯示，不會存取你的其他資料。</p><div class="gsi-host" id="gsi-host"></div>'
+        : '<p class="muted">Google 登入元件載入中或被瀏覽器阻擋，請稍後再試。</p>')
+      : '<p class="muted">Google 登入尚未設定：請先在 TRIP_DATA.googleClientId 填入 OAuth Client ID。</p>';
+    box.innerHTML = '<div class="sec-card"><h4>' + ic("user", "sm") + ' 使用 Google 登入</h4>'
+      + body + '<div class="sec-actions"><button type="button" class="sec-cancel">取消</button></div></div>';
+    document.body.appendChild(box);
+    if (TRIP_DATA.googleClientId && gsiReady) {
+      google.accounts.id.renderButton($("#gsi-host", box), { theme: "outline", size: "large", text: "signin_with", shape: "pill" });
+    }
+    box.addEventListener("click", e => {
+      if (e.target === box || e.target.closest(".sec-cancel")) { authPendingCb = null; box.remove(); }
+    });
+  }
+  function authLogout() {
+    if (gsiReady) { try { google.accounts.id.disableAutoSelect(); } catch (e) {} }
+    if (FB.ready) { try { FB.authM.signOut(FB.auth); } catch (e) {} } // onAuthStateChanged 會刷新 UI
+  }
+  function refreshAuth() {
+    const btn = $("#auth-btn");
+    if (!btn) return;
+    const p = authProfile();
+    if (p) {
+      btn.classList.remove("auth-off");
+      btn.innerHTML = authAv(p, "auth-av") + esc(p.name) + '・登出';
+      btn.title = esc(p.email);
+    } else if (FB.failed) {
+      btn.classList.add("auth-off");
+      btn.innerHTML = ic("user", "sm") + ' 登入服務載入失敗';
+      btn.title = "";
+    } else if (!TRIP_DATA.googleClientId) {
+      btn.classList.add("auth-off");
+      btn.innerHTML = ic("user", "sm") + ' Google 登入尚未設定';
+      btn.title = "";
+    } else {
+      btn.classList.remove("auth-off");
+      btn.innerHTML = ic("user", "sm") + ' 使用 Google 登入';
+      btn.title = "";
+    }
+  }
+  const authBtn = $("#auth-btn");
+  if (authBtn) authBtn.addEventListener("click", () => {
+    if (authProfile()) { authLogout(); return; }
+    openAuthModal();
+  });
+  refreshAuth();
+  fbInit();
+
+  /* ---------- Lightbox：點 .lb 圖片全螢幕放大，再點關閉 ---------- */
+  document.addEventListener("click", e => {
+    const t = e.target;
+    if (!t || !t.classList || !t.classList.contains("lb")) return;
+    const box = document.createElement("div");
+    box.className = "lightbox";
+    box.innerHTML = '<span class="lb-close" aria-hidden="true">×</span>';
+    const im = document.createElement("img");
+    im.src = t.src;
+    im.alt = t.alt || "";
+    box.appendChild(im);
+    box.addEventListener("click", () => box.remove());
+    document.body.appendChild(box);
+  });
+
+  /* ==================== 2. 行前準備 ==================== */
+  /* ---------- 行前準備：Firestore 共用（trips/{id}/meta/prep）＋打勾沉底＋自訂提醒 ---------- */
+  const PREP = {
+    checked: {},   // { itemId: true/false } 旅伴共用勾選狀態
+    custom: [],    // 自訂提醒 [{id,name,category,note,deadline}]
+    loaded: false, unsub: null,
+    mergedKey: "trip::" + TRIP_DATA.id + "::prep-ls-merged" // 此裝置舊 localStorage 勾選已合併過的標記
+  };
+  const prepRef = () => FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "meta", "prep");
+  /* 預設 13 項由 TRIP_DATA 種子化；id 固定為 d{分類序}-{項目序} */
+  const prepDefaults = () => {
+    const out = [];
+    TRIP_DATA.prep.forEach((cat, ci) => cat.items.forEach((it, ii) => out.push({
+      id: "d" + ci + "-" + ii, category: cat.category,
+      name: it.name, note: it.note || "", deadline: it.deadline || "",
+      isDefault: true, lsKey: "trip::" + TRIP_DATA.id + "::prep::" + ci + "::" + ii
+    })));
+    return out;
+  };
+  function prepWatch() {
+    if (PREP.unsub) { PREP.unsub(); PREP.unsub = null; }
+    PREP.checked = {}; PREP.custom = []; PREP.loaded = false;
+    if (!FB.user) { renderPrepList(); return; }
+    PREP.unsub = FB.fs.onSnapshot(prepRef(), s => {
+      const dd = s.data() || {};
+      PREP.checked = dd.checked || {};
+      PREP.custom = Array.isArray(dd.custom) ? dd.custom : [];
+      PREP.loaded = true;
+      prepMergeLS();
+      renderPrepList();
+    }, () => { PREP.loaded = true; renderPrepList(); });
+  }
+  /* 一次性：首次登入時把此裝置的舊 localStorage 勾選合併進 Firestore */
+  function prepMergeLS() {
+    try {
+      if (localStorage.getItem(PREP.mergedKey) === "1") return;
+      localStorage.setItem(PREP.mergedKey, "1");
+      const upd = {};
+      prepDefaults().forEach(it => {
+        if (localStorage.getItem(it.lsKey) === "1" && !PREP.checked[it.id]) upd[it.id] = true;
+      });
+      if (Object.keys(upd).length)
+        FB.fs.setDoc(prepRef(), { checked: upd }, { merge: true }).catch(e => {});
+    } catch (e) { /* 私密模式 */ }
+  }
+  function prepToggle(id, val) {
+    if (!FB.ready || !FB.user) return;
+    const upd = {}; upd[id] = !!val;
+    FB.fs.setDoc(prepRef(), { checked: upd }, { merge: true }).catch(e => {});
+  }
+  function prepAddItem(item) {
+    if (!FB.ready || !FB.user) return;
+    FB.fs.setDoc(prepRef(), { custom: FB.fs.arrayUnion(item) }, { merge: true }).catch(e => {});
+  }
+  function prepDelItem(id) {
+    if (!FB.ready || !FB.user) return;
+    const upd = {}; upd[id] = false;
+    FB.fs.setDoc(prepRef(), { custom: PREP.custom.filter(x => x.id !== id), checked: upd }, { merge: true }).catch(e => {});
+  }
+  function renderPrepList() {
+    const list = $("#prep-list");
+    if (!list) return;
+    const ro = !FB.user; // 未登入唯讀：顯示預設項目與此裝置舊勾選，不可操作
+    const lsChecked = it => { try { return localStorage.getItem(it.lsKey) === "1"; } catch (e) { return false; } };
+    const items = prepDefaults().concat(PREP.custom.map(c => Object.assign({ isDefault: false }, c)))
+      .map(it => Object.assign({}, it, { done: ro ? (it.isDefault && lsChecked(it)) : !!PREP.checked[it.id] }));
+    const fmtDl = d => /^\d{4}-\d{2}-\d{2}$/.test(d) ? fmtDate(d) : esc(d);
+    const itemHTML = it => '<label class="prep-item' + (it.done ? ' done' : '') + '" data-id="' + esc(it.id) + '">'
+      + '<input type="checkbox"' + (it.done ? ' checked' : '') + (ro ? ' disabled' : '') + '>'
+      + '<span class="txt"><span class="name">' + esc(it.name) + '</span>'
+      + (it.deadline ? '<span class="deadline">截止 ' + fmtDl(it.deadline) + '</span>' : '')
+      + (it.note ? '<br><span class="muted">' + esc(it.note) + '</span>' : '')
+      + '</span>'
+      + (!it.isDefault && !ro ? '<button type="button" class="row-act del prep-del" data-del="' + esc(it.id) + '" title="刪除自訂提醒">' + ic("trash", "sm") + '</button>' : '')
+      + '</label>';
+
+    let html = "";
+    TRIP_DATA.prep.forEach((cat, ci) => {
+      const group = items.filter(it => !it.done && it.category === cat.category);
+      if (!group.length) return;
+      html += '<div class="prep-cat c' + (ci % 4) + '"><h4>' + ic(catIcon(cat.category), "sm") + '<span class="no">(' + pad2(ci + 1) + ')</span>' + esc(cat.category) + '</h4>'
+        + group.map(itemHTML).join('') + '</div>';
+    });
+    const doneItems = items.filter(it => it.done);
+    if (doneItems.length) {
+      html += '<div class="prep-cat prep-done-sec"><h4>' + ic("check", "sm ic-sage") + '已完成 ✓（' + doneItems.length + '）</h4>'
+        + doneItems.map(itemHTML).join('') + '</div>';
+    }
+    list.innerHTML = html || '<p class="muted">尚無項目</p>';
+
+    const done = doneItems.length, total = items.length;
+    const cnt = $("#prep-count"), bar = $("#prep-bar"), hint = $("#prep-hint");
+    if (cnt) cnt.textContent = done + "/" + total + " 已完成";
+    if (bar) bar.style.width = (total ? Math.round(done / total * 100) : 0) + "%";
+    if (hint) hint.textContent = ro
+      ? "唯讀預覽：登入後可勾選與新增提醒，進度與旅伴即時同步"
+      : (PREP.loaded ? "勾選進度與旅伴即時同步；打勾的項目會移到最下方" : "同步載入中…");
+  }
+
+  (function initPrep() {
+    const p = panel("prep");
+    const cats = TRIP_DATA.prep.map(c => c.category);
+    p.innerHTML = '<div class="card"><h3>' + secTitle("01", "行前準備清單", "Checklist", "checksq") + '</h3>'
+      + '<div class="progress-wrap"><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;">'
+      + '<span class="muted" style="letter-spacing:.2em;">PROGRESS</span><b id="prep-count" style="font-weight:500;"></b></div>'
+      + '<div class="progress-bar"><div id="prep-bar" style="width:0%"></div></div></div>'
+      + '<div class="prep-hint" id="prep-hint"></div>'
+      + '<div style="margin:12px 0 4px;"><button type="button" class="ef-cancel" id="prep-add-btn">＋ 新增提醒</button></div>'
+      + '<form class="prep-add-form" id="prep-add-form" hidden><div class="ef-grid">'
+      + '<div class="ef-f ef-name"><label>提醒事項</label><input name="pname" required autocomplete="off"></div>'
+      + '<div class="ef-f"><label>分類</label><select name="pcat">' + cats.map(c => '<option>' + esc(c) + '</option>').join('') + '</select></div>'
+      + '<div class="ef-f"><label>截止日（選填）</label><input name="pdl" placeholder="2027-01-30" autocomplete="off"></div>'
+      + '<div class="ef-f ef-note"><label>備註（選填）</label><input name="pnote" autocomplete="off"></div>'
+      + '</div><div class="ef-actions">'
+      + '<button type="button" class="ef-cancel" id="prep-add-cancel">取消</button>'
+      + '<button type="submit" class="ef-submit">加入清單</button>'
+      + '</div></form>'
+      + '<div id="prep-list"></div></div>';
+
+    const form = $("#prep-add-form", p);
+    $("#prep-add-btn", p).addEventListener("click", () => {
+      if (!authProfile()) { openAuthModal(); return; }
+      form.hidden = !form.hidden;
+      if (!form.hidden) form.elements.pname.focus();
+    });
+    $("#prep-add-cancel", p).addEventListener("click", () => { form.reset(); form.hidden = true; });
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const name = form.elements.pname.value.trim();
+      if (!name) return;
+      prepAddItem({
+        id: newId(), name: name,
+        category: form.elements.pcat.value,
+        note: form.elements.pnote.value.trim(),
+        deadline: form.elements.pdl.value.trim()
+      });
+      form.reset(); form.hidden = true;
+    });
+
+    $("#prep-list", p).addEventListener("click", e => {
+      const del = e.target.closest(".prep-del");
+      if (del) {
+        e.preventDefault();
+        const it = PREP.custom.find(x => x.id === del.dataset.del);
+        if (it && confirm("刪除自訂提醒「" + it.name + "」？")) prepDelItem(it.id);
+      }
+    });
+    $("#prep-list", p).addEventListener("change", e => {
+      const cb = e.target;
+      if (!cb || cb.type !== "checkbox") return;
+      const lb = cb.closest(".prep-item");
+      if (!lb) return;
+      lb.classList.add("moving"); // 淡出過渡，snapshot 重繪後在新位置以動畫進場
+      prepToggle(lb.dataset.id, cb.checked);
+    });
+    renderPrepList();
+  })();
+
+  /* ==================== 3. 每日行程 ==================== */
+  function flowHTML(day) {
+    let h = '<div class="flow-scroll"><div class="flow">';
+    day.spots.forEach((s, i) => {
+      if (i > 0) h += '<div class="flow-link"></div>';
+      h += '<div class="flow-node"><div class="dot">' + (i + 1) + '</div>'
+        + '<div class="nm">' + esc(s.name) + '</div>'
+        + '<div class="st">' + esc(s.stay) + '</div></div>';
+    });
+    return h + '</div></div>';
+  }
+
+  function carouselHTML(imgs, alt) {
+    let h = '<div class="carousel"><div class="car-track">';
+    imgs.forEach(u => {
+      h += '<img src="' + esc(u) + '" alt="' + esc(alt) + '" loading="lazy" '
+        + 'onerror="this.onerror=null;this.src=phFallback(this.alt);">';
+    });
+    h += '</div>';
+    if (imgs.length > 1) {
+      h += '<button class="car-btn prev" type="button" aria-label="上一張">‹</button>'
+        + '<button class="car-btn next" type="button" aria-label="下一張">›</button>'
+        + '<div class="car-dots">' + imgs.map((_, i) => '<span' + (i === 0 ? ' class="on"' : '') + '></span>').join('') + '</div>';
+    }
+    return h + '</div>';
+  }
+
+  function initCarousels(scope) {
+    $$(".carousel", scope).forEach(c => {
+      const track = $(".car-track", c), dots = $$(".car-dots span", c);
+      if (!dots.length) return;
+      const idx = () => Math.round(track.scrollLeft / track.clientWidth);
+      const go = i => track.scrollTo({ left: i * track.clientWidth, behavior: "smooth" });
+      $(".car-btn.prev", c).addEventListener("click", () => go(Math.max(0, idx() - 1)));
+      $(".car-btn.next", c).addEventListener("click", () => go(Math.min(dots.length - 1, idx() + 1)));
+      track.addEventListener("scroll", () => {
+        const i = idx();
+        dots.forEach((d, j) => d.classList.toggle("on", j === i));
+      }, { passive: true });
+    });
+  }
+
+  TRIP_DATA.days.forEach((day, di) => {
+    const p = panel("day" + di);
+    let html = '<div class="card"><h3>' + secTitle("Route", "今日節點圖", "", "map")
+      + '<span class="en">' + fmtDate(day.date) + (day.theme ? '｜' + esc(day.theme) : '') + '</span></h3>'
+      + flowHTML(day) + '</div>';
+
+    day.spots.forEach((s, si) => {
+      /* 標題連結：mapQuery → Google Maps 定位（官網連結移至下方注意提醒） */
+      const mapsUrl = s.mapQuery
+        ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(s.mapQuery)
+        : "";
+      const title = mapsUrl
+        ? '<a href="' + esc(mapsUrl) + '" target="_blank" rel="noopener" title="在 Google Maps 開啟">' + esc(s.name) + ic("extlink") + '</a>'
+        : (s.url
+          ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name) + ic("extlink") + '</a>'
+          : esc(s.name));
+      html += '<div class="card spot">'
+        + '<div class="spot-head"><span class="order-badge">No.' + (si + 1) + '　第 ' + (si + 1) + ' 站</span>'
+        + '<h3>' + title + '</h3><div class="stay">' + ic("clock", "sm") + esc(s.stay) + '</div></div>'
+        + carouselHTML(s.images || [], s.name)
+        + '<div class="body"><div class="intro">' + lines(s.intro).map(t => '<p>' + esc(t) + '</p>').join('') + '</div>'
+        + '<div class="notice"><div class="nt-title">' + ic("alert", "sm ic-terra") + ' Notes ・ 注意提醒</div><ul>'
+        + '<li>' + ic("ticket", "sm ic-blue") + '<span>票券：' + esc(s.notice.ticket) + '</span></li>'
+        + '<li>' + ic("clock", "sm ic-gold") + '<span>開放時間：' + esc(s.notice.hours) + '</span></li>'
+        + (s.notice.tips || []).map(t => {
+            const ti = tipIcon(t);
+            const tc = ti === "alert" ? "ic-terra" : ti === "walk" ? "ic-sage" : "ic-blue";
+            return '<li>' + ic(ti, "sm " + tc) + '<span>' + esc(t) + '</span></li>';
+          }).join('')
+        + (mapsUrl && s.url
+          ? '<li>' + ic("extlink", "sm ic-blue") + '<span><a href="' + esc(s.url) + '" target="_blank" rel="noopener">官網 ↗</a></span></li>'
+          : '')
+        + '</ul></div></div></div>';
+    });
+
+    /* 文創店推薦（day.shops） */
+    if (Array.isArray(day.shops) && day.shops.length) {
+      html += '<div class="card"><h3>' + secTitle("Shop", "文創店推薦", "Select Shops", "tag") + '</h3>'
+        + day.shops.map(sh =>
+          '<div class="shop-item"><div><span class="sname">' + esc(sh.name) + '</span>'
+          + (sh.where ? '<span class="swhere">' + esc(sh.where) + '</span>' : '') + '</div>'
+          + lines(sh.desc).map(t => '<div class="sdesc">' + esc(t) + '</div>').join('')
+          + '</div>').join('')
+        + '</div>';
+    }
+
+    /* 明天去哪 */
+    const next = TRIP_DATA.days[di + 1];
+    if (next) {
+      html += '<div class="card tomorrow"><h3>' + secTitle("Next", "明天去哪", "", "sunrise")
+        + '<span class="en">' + fmtDate(next.date) + (next.theme ? '｜' + esc(next.theme) : '') + '</span></h3>'
+        + flowHTML(next) + '</div>';
+    } else {
+      html += '<div class="card tomorrow"><h3>' + secTitle("Home", "回程", "", "home") + '</h3>'
+        + '<p style="font-size:.88rem;">這是本次旅程的最後一天，收拾行李準備回家囉！記得檢查護照、伴手禮與退稅單。</p></div>';
+    }
+
+    p.innerHTML = html;
+    initCarousels(p);
+  });
+
+  /* ==================== 4. 記帳（Firebase Firestore：onSnapshot 即時同步＋內建離線持久化） ==================== */
+  const EXP = {
+    list: [],            // 目前快照（含本機樂觀更新）
+    pendingIds: new Set(), // 尚未寫進伺服器的 doc id
+    loaded: false, error: "", unsub: null, unsubCfg: null,
+    customCats: [],      // 自訂分類（Firestore trips/{id}/meta/config.categories，旅伴共用）
+    migratable: null     // null=尚未檢查；[]=無可匯入；[...]=可一鍵匯入的內嵌初始記錄
+  };
+  /* 預設分類固定不可刪；自訂分類接在後面，最後永遠是「＋新增分類」 */
+  const CATS_DEFAULT = ["事前"].concat(TRIP_DATA.days.map((d, i) => "第" + (i + 1) + "天")).concat(["其他"]);
+  function rebuildCats() {
+    const f = $("#exp-form");
+    if (!f) return;
+    const sel = f.elements.category;
+    const cur = sel.value;
+    const all = CATS_DEFAULT.concat(EXP.customCats.filter(c => CATS_DEFAULT.indexOf(c) < 0));
+    sel.innerHTML = all.map(c => '<option>' + esc(c) + '</option>').join('')
+      + '<option value="__add__">＋新增分類</option>';
+    if (cur && all.indexOf(cur) >= 0) sel.value = cur;
+  }
+  const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+  /* ---------- 匯率 THB↔TWD：open.er-api.com 主源＋jsDelivr(fawazahmed0) 備援 ---------- */
+  const FX = { rate: null, date: "", offline: false, K: "trip::" + TRIP_DATA.id + "::fxcache" };
+  const fxShortDate = d => { const m = String(d).match(/(\d{4})-(\d{2})-(\d{2})/); return m ? (+m[2]) + "/" + (+m[3]) : String(d); };
+  function fxNote() {
+    const el = $("#fx-note");
+    if (!el) return;
+    if (!FX.rate) el.textContent = "目前取不到匯率——兩邊金額請手動輸入";
+    else el.textContent = (FX.offline ? "離線匯率（" + fxShortDate(FX.date) + "）" : "匯率（" + fxShortDate(FX.date) + "）")
+      + "：1 THB ≈ " + FX.rate.toFixed(2) + " TWD。輸入任一欄自動換算，另一欄可手動微調。";
+  }
+  async function fxLoad() {
+    const cached = lsGet(FX.K, null);
+    if (cached && cached.rate) { FX.rate = cached.rate; FX.date = cached.date; FX.offline = true; }
+    const sources = [
+      { url: "https://open.er-api.com/v6/latest/THB",
+        pick: j => ({ rate: j && j.rates && j.rates.TWD,
+                      date: j && j.time_last_update_unix ? new Date(j.time_last_update_unix * 1000).toISOString().slice(0, 10) : "" }) },
+      { url: "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/thb.json",
+        pick: j => ({ rate: j && j.thb && j.thb.twd, date: (j && j.date) || "" }) }
+    ];
+    for (const s of sources) {
+      try {
+        const r = await fetch(s.url, { cache: "no-store" });
+        if (!r.ok) continue;
+        const v = s.pick(await r.json());
+        if (v.rate && isFinite(v.rate)) {
+          FX.rate = +v.rate;
+          FX.date = v.date || new Date().toISOString().slice(0, 10);
+          FX.offline = false;
+          lsSet(FX.K, { rate: FX.rate, date: FX.date, ts: Date.now() });
+          break;
+        }
+      } catch (e) { /* 換下一個來源 */ }
+    }
+    fxNote();
+    refreshExpenses();
+  }
+
+  /* 舊格式（單幣 {amount,currency}）自動遷移為雙幣顯示 */
+  function expNorm(e) {
+    if (e.amountTHB != null || e.amountTWD != null) return e;
+    const n = Object.assign({}, e);
+    if ((e.currency || "THB") === "TWD") {
+      n.amountTWD = e.amount;
+      n.amountTHB = FX.rate ? Math.round(e.amount / FX.rate) : null;
+    } else {
+      n.amountTHB = e.amount;
+      n.amountTWD = FX.rate ? Math.round(e.amount * FX.rate) : null;
+    }
+    n.inputCurrency = e.currency || "THB";
+    n.rate = FX.rate || null;
+    n.rateDate = FX.rate ? FX.date + "（自動補算）" : null;
+    return n;
+  }
+  const newId = () => Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  const expList = () => EXP.list;
+  const expDocRef = id => FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "expenses", id);
+
+  /* 登入後掛 onSnapshot 即時監聽（含離線快取與樂觀更新）；登出即拆除並清畫面 */
+  function expWatch() {
+    if (EXP.unsub) { EXP.unsub(); EXP.unsub = null; }
+    if (EXP.unsubCfg) { EXP.unsubCfg(); EXP.unsubCfg = null; }
+    EXP.list = []; EXP.pendingIds = new Set(); EXP.loaded = false; EXP.error = ""; EXP.migratable = null;
+    EXP.customCats = [];
+    rebuildCats();
+    if (!FB.user) { refreshExpenses(); return; }
+    /* 自訂分類：共用設定文件即時同步（規則未開放 meta 路徑時靜默略過） */
+    EXP.unsubCfg = FB.fs.onSnapshot(
+      FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "meta", "config"),
+      s => {
+        const dd = s.data();
+        EXP.customCats = (dd && Array.isArray(dd.categories)) ? dd.categories.filter(x => typeof x === "string" && x.trim()) : [];
+        rebuildCats();
+      },
+      () => {}
+    );
+    EXP.unsub = FB.fs.onSnapshot(
+      FB.fs.collection(FB.db, "trips", TRIP_DATA.id, "expenses"),
+      { includeMetadataChanges: true },
+      snap => {
+        EXP.list = snap.docs.map(d => d.data())
+          .sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+        EXP.pendingIds = new Set(snap.docs.filter(d => d.metadata.hasPendingWrites).map(d => d.id));
+        EXP.loaded = true; EXP.error = "";
+        if (!snap.size && EXP.migratable === null) expCheckMigrate();
+        refreshExpenses();
+      },
+      err => { EXP.error = String(err && err.code || err); EXP.loaded = true; refreshExpenses(); }
+    );
+  }
+
+  /* Firestore 為空時提供內嵌初始資料（TRIP_DATA.seedExpenses）一鍵匯入 */
+  async function expCheckMigrate() {
+    EXP.migratable = Array.isArray(TRIP_DATA.seedExpenses) ? TRIP_DATA.seedExpenses.slice() : [];
+    refreshExpenses();
+  }
+  async function expMigrate() {
+    if (!FB.user || !EXP.migratable || !EXP.migratable.length) return;
+    try {
+      const batch = FB.fs.writeBatch(FB.db);
+      EXP.migratable.forEach(e => {
+        const id = e.id || newId();
+        batch.set(expDocRef(id), Object.assign({}, e, { id: id }));
+      });
+      EXP.migratable = [];
+      refreshExpenses();
+      await batch.commit();
+    } catch (e) { EXP.error = "匯入失敗：" + String(e && e.code || e); refreshExpenses(); }
+  }
+
+  /* 寫入/刪除：不 await 伺服器回應（離線時由本機快取樂觀更新，回線自動送出） */
+  function expUpsert(item) {
+    if (!FB.ready || !FB.user) return;
+    FB.fs.setDoc(expDocRef(item.id), item).catch(e => { EXP.error = String(e && e.code || e); refreshExpenses(); });
+  }
+  function expDelete(id) {
+    if (!FB.ready || !FB.user) return;
+    FB.fs.deleteDoc(expDocRef(id)).catch(e => { EXP.error = String(e && e.code || e); refreshExpenses(); });
+  }
+
+  function refreshExpenses() {
+    const stats = $("#exp-stats"), table = $("#exp-table");
+    if (!stats || !table) return;
+    const badge = $("#exp-sync-badge");
+
+    /* 未登入：不顯示資料（Firestore 規則也會擋），提示先登入 */
+    if (!FB.user) {
+      stats.innerHTML = "";
+      table.innerHTML = '<div class="muted" style="text-align:center;padding:34px 12px;">'
+        + ic("user", "sm") + ' 登入後可記帳與查看</div>';
+      if (badge) badge.innerHTML = ic("key", "sm") + (FB.failed ? ' 登入服務載入失敗' : ' 未登入');
+      return;
+    }
+    const list = expList().map(expNorm);
+    const queuedIds = EXP.pendingIds;
+
+    const addTo = (map, key, cur, amt) => {
+      if (amt == null || isNaN(amt)) return;
+      if (!map[key]) map[key] = {};
+      map[key][cur] = (map[key][cur] || 0) + amt;
+    };
+    const moneyStr = obj => Object.entries(obj).map(([c, a]) => c + " " + fmtMoney(c === "THB" || c === "TWD" ? Math.round(a) : +a.toFixed(2))).join("　·　") || "—";
+    const totals = {}, byPayer = {}, byCat = {};
+    list.forEach(e => {
+      if (e.status === "已退款") return;
+      addTo(totals, "t", "THB", e.amountTHB); addTo(totals, "t", "TWD", e.amountTWD);
+      addTo(byPayer, e.payer || "未填", "THB", e.amountTHB); addTo(byPayer, e.payer || "未填", "TWD", e.amountTWD);
+      addTo(byCat, e.category || "其他", "THB", e.amountTHB); addTo(byCat, e.category || "其他", "TWD", e.amountTWD);
+    });
+    stats.innerHTML =
+      '<div class="stat-card"><div class="t">' + ic("wallet", "sm ic-blue") + '總花費（不含已退款）</div><div class="big">' + moneyStr(totals.t || {}) + '</div></div>'
+      + '<div class="stat-card"><div class="t">' + ic("user", "sm ic-terra") + '依「誰付的」小計</div>'
+      + (Object.keys(byPayer).length
+        ? Object.entries(byPayer).map(([k, v]) => '<div class="row"><span>' + esc(k) + '</span><b>' + moneyStr(v) + '</b></div>').join('')
+        : '<div class="muted">尚無資料</div>')
+      + '</div>'
+      + '<div class="stat-card"><div class="t">' + ic("tag", "sm ic-sage") + '依分類小計</div>'
+      + (Object.keys(byCat).length
+        ? Object.entries(byCat).map(([k, v]) => '<div class="row"><span>' + esc(k) + '</span><b>' + moneyStr(v) + '</b></div>').join('')
+        : '<div class="muted">尚無資料</div>')
+      + '</div>';
+
+    const badgeCls = s => s === "已付款" ? "paid" : s === "待付款" ? "pending" : s === "已退款" ? "refund" : "other";
+    let rows = "", cards = "";
+    list.forEach(e => {
+      /* 記錄者頭像：新格式 recordedBy={name,email,picture}；舊字串格式僅取名字 */
+      const rb = e.recordedBy;
+      const rec = rb ? (typeof rb === "object" ? rb : { name: String(rb) }) : null;
+      const recAv = rec && rec.name
+        ? '<span title="記錄：' + esc(rec.name) + (rec.email ? "（" + esc(rec.email) + "）" : "") + '">' + authAv(rec, "rec-av") + '</span>'
+        : '';
+      const pend = queuedIds.has(e.id) ? ' <span class="exp-pending">●未同步</span>' : '';
+      const actBtns = '<button type="button" class="row-act" data-edit="' + esc(e.id) + '" title="編輯">' + ic("edit", "sm") + '</button>'
+        + '<button type="button" class="row-act del" data-del="' + esc(e.id) + '" title="刪除">' + ic("trash", "sm") + '</button>';
+      rows += '<tr><td>' + esc(e.name) + pend + '</td>'
+        + '<td class="amt">' + (e.amountTHB != null ? "THB " + fmtMoney(e.amountTHB) : '<span class="muted">—</span>')
+        + '<br><span class="muted">' + (e.amountTWD != null ? "TWD " + fmtMoney(e.amountTWD) : "—") + '</span></td>'
+        + '<td><span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span></td>'
+        + '<td><span class="chip">' + esc(e.category) + '</span></td>'
+        + '<td>' + (recAv || ic("user", "sm ic-terra") + ' ') + esc(e.payer) + '</td>'
+        + '<td class="muted">' + esc(e.note) + '</td>'
+        + '<td class="acts">' + actBtns + '</td></tr>';
+      /* 手機卡片：項目＋分類 / 雙幣金額 / 付款人・狀態・日期 */
+      const dm = String(e.createdAt || "").match(/^\d{4}-(\d{2})-(\d{2})/);
+      const dstr = dm ? (+dm[1]) + "/" + (+dm[2]) : "";
+      cards += '<div class="exp-card">'
+        + '<div class="xc-acts">' + actBtns + '</div>'
+        + '<div class="xc-head"><span class="xc-name">' + esc(e.name) + '</span><span class="chip">' + esc(e.category) + '</span></div>'
+        + '<div class="xc-amt">' + (e.amountTHB != null ? "THB " + fmtMoney(e.amountTHB) : '<span class="muted">THB —</span>')
+        + '<span class="sub">TWD ' + (e.amountTWD != null ? fmtMoney(e.amountTWD) : "—") + '</span></div>'
+        + '<div class="xc-meta">' + (recAv || ic("user", "sm ic-terra") + ' ') + '<span>' + esc(e.payer) + '</span>'
+        + '<span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span>'
+        + (dstr ? '<span>' + dstr + '</span>' : '')
+        + (e.note ? '<span>' + esc(e.note) + '</span>' : '') + pend + '</div>'
+        + '</div>';
+    });
+    /* 一次性匯入：Firestore 為空且有內嵌初始資料 → 提供匯入按鈕 */
+    const migBar = (EXP.loaded && !list.length && EXP.migratable && EXP.migratable.length)
+      ? '<div style="text-align:center;padding:16px 0 6px;">'
+        + '<button type="button" class="ef-submit" id="exp-migrate">匯入初始資料（' + EXP.migratable.length + ' 筆）</button>'
+        + '<p class="muted" style="margin-top:8px;">把內建的初始記錄（機加酒）一次寫入雲端資料庫</p></div>'
+      : '';
+    const emptyMsg = EXP.loaded ? "尚無記帳資料，用上方表單記第一筆吧！" : "載入中…";
+    table.innerHTML = migBar
+      + '<div class="table-wrap"><table class="expense"><thead><tr>'
+      + '<th>項目名稱</th><th>金額</th><th>Status</th><th>分類</th><th>誰付的</th><th>備註</th><th></th>'
+      + '</tr></thead><tbody>'
+      + (rows || '<tr><td colspan="7" class="muted" style="text-align:center;padding:26px;white-space:normal;">' + emptyMsg + '</td></tr>')
+      + '</tbody></table></div>'
+      + '<div class="exp-cards">'
+      + (cards || '<div class="muted" style="text-align:center;padding:20px 8px;">' + emptyMsg + '</div>')
+      + '</div>'
+      + '<p class="muted" style="margin-top:10px;">＊「已退款」不計入統計。</p>';
+
+    if (badge) {
+      if (EXP.error) badge.innerHTML = ic("alert", "sm ic-terra") + ' ' + esc(EXP.error);
+      else if (queuedIds.size) badge.innerHTML = ic("sync", "sm") + ' ' + queuedIds.size + ' 筆待同步（回線自動送出）';
+      else if (EXP.loaded) badge.innerHTML = ic("check", "sm ic-sage") + ' 雲端即時同步';
+      else badge.innerHTML = ic("sync", "sm") + ' 連線中…';
+    }
+    const off = $("#exp-offline");
+    if (off) off.textContent = "";
+  }
+
+  (function renderMoney() {
+    const p = panel("money");
+    p.innerHTML =
+      '<div class="card"><h3>' + secTitle("01", "新增花費", "Add Expense", "plus")
+      + '<span class="en" id="exp-sync-badge" style="cursor:pointer;"></span></h3>'
+      + '<form id="exp-form"><div class="ef-grid">'
+      + '<div class="ef-f ef-name"><label>項目名稱</label><input name="name" required autocomplete="off"></div>'
+      + '<div class="ef-f"><label>金額 THB ฿</label><input name="amountTHB" type="number" step="1" min="0" inputmode="decimal"></div>'
+      + '<div class="ef-f"><label>金額 TWD NT$</label><input name="amountTWD" type="number" step="1" min="0" inputmode="decimal"></div>'
+      + '<div class="ef-f"><label>狀態</label><select name="status"><option>已付款</option><option>待付款</option><option>已退款</option></select></div>'
+      + '<div class="ef-f"><label>分類</label><select name="category"></select></div>'
+      + '<div class="ef-f ef-note"><label>備註</label><input name="note" autocomplete="off"></div>'
+      + '</div><div class="muted" id="fx-note" style="margin-top:8px;"></div>'
+      + '<div class="ef-actions">'
+      + '<button type="button" class="ef-cancel" id="exp-cancel" style="display:none;">取消編輯</button>'
+      + '<button type="submit" class="ef-submit" id="exp-submit">新增</button>'
+      + '</div></form></div>'
+      + '<div class="card"><h3>' + secTitle("02", "花費總覽", "Overview", "wallet")
+      + '<span class="en" id="exp-offline"></span></h3>'
+      + '<div id="exp-stats" class="stats"></div><div id="exp-table"></div></div>';
+
+    const form = $("#exp-form", p);
+    const fe = n => form.elements[n];
+    let editingId = null;
+    rebuildCats();
+    /* 「＋新增分類」：輸入即用並寫入共用設定（arrayUnion 併發安全），未登入先登入 */
+    let lastCat = CATS_DEFAULT[0];
+    fe("category").addEventListener("change", () => {
+      const v = fe("category").value;
+      if (v !== "__add__") { lastCat = v; return; }
+      const revert = () => { fe("category").value = lastCat; };
+      if (!authProfile()) { revert(); openAuthModal(); return; }
+      const name = (prompt("新分類名稱：") || "").trim();
+      if (!name || name === "__add__") { revert(); return; }
+      if (CATS_DEFAULT.indexOf(name) < 0 && EXP.customCats.indexOf(name) < 0) {
+        EXP.customCats.push(name); // 樂觀更新，snapshot 回來會覆蓋成伺服器版本
+        if (FB.ready && FB.user) {
+          FB.fs.setDoc(FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "meta", "config"),
+            { categories: FB.fs.arrayUnion(name) }, { merge: true })
+            .catch(err => { EXP.error = String(err && err.code || err); refreshExpenses(); });
+        }
+      }
+      rebuildCats();
+      fe("category").value = name;
+      lastCat = name;
+    });
+    /* 雙幣即時換算：輸入任一欄補另一欄；被手動改過的欄不再覆蓋 */
+    const touched = { THB: false, TWD: false };
+    let lastInput = "THB";
+    fe("amountTHB").addEventListener("input", () => {
+      touched.THB = true; lastInput = "THB";
+      if (FX.rate && fe("amountTHB").value !== "" && !touched.TWD)
+        fe("amountTWD").value = Math.round(parseFloat(fe("amountTHB").value || 0) * FX.rate);
+    });
+    fe("amountTWD").addEventListener("input", () => {
+      touched.TWD = true; lastInput = "TWD";
+      if (FX.rate && fe("amountTWD").value !== "" && !touched.THB)
+        fe("amountTHB").value = Math.round(parseFloat(fe("amountTWD").value || 0) / FX.rate);
+    });
+    const resetForm = () => {
+      editingId = null; form.reset();
+      touched.THB = touched.TWD = false; lastInput = "THB";
+      rebuildCats(); // form.reset 後回到第一個分類，並清掉可能殘留的 __add__ 選取
+      lastCat = fe("category").value;
+      $("#exp-submit", p).textContent = "新增";
+      $("#exp-cancel", p).style.display = "none";
+    };
+    const doSubmit = () => {
+      const prev = editingId ? expNorm(expList().find(x => x.id === editingId) || {}) : null;
+      const thb = parseFloat(fe("amountTHB").value);
+      const twd = parseFloat(fe("amountTWD").value);
+      const name = fe("name").value.trim();
+      if (!name || (isNaN(thb) && isNaN(twd))) return;
+      const u = authProfile();
+      const item = {
+        id: editingId || newId(),
+        name: name,
+        amountTHB: isNaN(thb) ? null : Math.round(thb),
+        amountTWD: isNaN(twd) ? null : Math.round(twd),
+        inputCurrency: lastInput,
+        rate: FX.rate || null,
+        rateDate: FX.rate ? FX.date : null,
+        /* 舊欄位相容 */
+        amount: lastInput === "TWD" ? (isNaN(twd) ? null : Math.round(twd)) : (isNaN(thb) ? null : Math.round(thb)),
+        currency: lastInput,
+        status: fe("status").value,
+        category: fe("category").value === "__add__" ? lastCat : fe("category").value,
+        /* 誰付的＝登入者；編輯既有記錄時保留原付款人 */
+        payer: prev ? (prev.payer || (u ? u.name : "")) : (u ? u.name : ""),
+        note: fe("note").value.trim(),
+        recordedBy: u ? { name: u.name, email: u.email, picture: u.picture || "" } : null,
+        createdAt: (prev && prev.createdAt) || new Date().toISOString()
+      };
+      resetForm();
+      expUpsert(item);
+    };
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      /* 記帳一律需登入（Firestore 規則也要求 request.auth），登入成功後自動送出 */
+      if (!authProfile()) { openAuthModal(doSubmit); return; }
+      doSubmit();
+    });
+    $("#exp-cancel", p).addEventListener("click", resetForm);
+
+    $("#exp-table", p).addEventListener("click", e => {
+      const eb = e.target.closest("[data-edit]"), db = e.target.closest("[data-del]");
+      if (e.target.closest("#exp-migrate")) { expMigrate(); return; }
+      if (eb) {
+        const raw = expList().find(x => x.id === eb.dataset.edit);
+        if (!raw) return;
+        const item = expNorm(raw);
+        editingId = item.id;
+        touched.THB = touched.TWD = false;
+        lastInput = item.inputCurrency || "THB";
+        fe("name").value = item.name;
+        fe("amountTHB").value = item.amountTHB != null ? item.amountTHB : "";
+        fe("amountTWD").value = item.amountTWD != null ? item.amountTWD : "";
+        fe("status").value = item.status;
+        rebuildCats();
+        if (item.category && !Array.from(fe("category").options).some(o => o.value === item.category)) {
+          /* 舊記錄的分類已不在清單（例如自訂分類被移除）→ 臨時補一個選項讓編輯不跳類 */
+          const o = document.createElement("option"); o.textContent = item.category;
+          fe("category").insertBefore ? fe("category").insertBefore(o, fe("category").lastElementChild) : fe("category").appendChild(o);
+        }
+        fe("category").value = item.category; lastCat = item.category;
+        fe("note").value = item.note;
+        $("#exp-submit", p).textContent = "更新";
+        $("#exp-cancel", p).style.display = "";
+        if (form.scrollIntoView) form.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (db) {
+        const item = expList().find(x => x.id === db.dataset.del);
+        if (item && confirm("刪除「" + item.name + "」？")) expDelete(item.id);
+      }
+    });
+
+    resetForm();
+    fxLoad();
+    refreshExpenses(); // 先畫未登入態；登入後由 onAuthStateChanged → expWatch 接手
+  })();
+
+  activate("info");
+})();
+</script>
+</body>
+</html>
