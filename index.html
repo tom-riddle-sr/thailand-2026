@@ -777,7 +777,7 @@ const TRIP_DATA = {
       items: [
         { name: "Safari World 共乘接送＋門票（9/25）", note: "Klook 預約含 CentralWorld 集合共乘大巴（尚未預約）", deadline: "2026-09-18" },
         { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" },
-        { name: "LIVING GREEN 大象保護區（10/1）", note: "Klook 預約含飯店接送，選早班 07:00–14:30 場次（尚未預約）", deadline: "2026-09-24" }
+        { name: "LIVING GREEN 大象保護區（10/1）", note: "Klook 預約含飯店接送，選午班 11:00–18:30 場次（尚未預約）", deadline: "2026-09-24" }
       ]
     },
     {
@@ -1373,39 +1373,39 @@ const TRIP_DATA = {
     },
     {
       date: "2026-10-01",
-      theme: "大象保護區一日遊（07:00 出發）＋ Asiatique 河岸夜市（16:00 出發）",
+      theme: "大象保護區一日遊（11:00 出發）＋ Asiatique 河岸夜市（19:00 出發）",
       spots: [
         {
           name: "LIVING GREEN 大象保護區一日遊",
           url: "https://www.klook.com/zh-TW/activity/144699-living-green-elephant-sanctuary-chonburi-from-bangkok-or-pattaya/",
           mapQuery: "Living Green Elephant Sanctuary Chonburi",
-          stay: "約7~7.5小時（含接送）",
+          stay: "約7~7.5小時（含接送），午班場次不用早起",
           coords: [13.25, 101.09],
           images: [],
           intro: [
             "春武里府考基奧山區的道德大象保護區，180° 環山景",
             "近距離餵食、與大象互動，不騎乘，支持當地社區永續發展",
-            "飯店往返接送，中午前結束，回飯店後還有充足時間換裝休息，銜接晚上的 Asiatique 行程"
+            "飯店往返接送，傍晚 18:30 左右送回飯店，簡單梳洗換裝就能接著去 Asiatique"
           ],
           notice: {
             ticket: "Klook 連結先預約訂購，取票方式：憑訂購成功的電子憑證（QR Code）現場報到即可",
-            hours: "飯店接送 07:00–14:30（曼谷早班場次）",
+            hours: "飯店接送 11:00–18:30（曼谷午班場次）",
             openDays: "每日均有場次",
-            tips: [ "行前準備清單記得先在 Klook 預約（選早班場次）", "建議著輕便衣物、好走的鞋，體驗中可能弄濕弄髒", "評價 4.8/5（244 則）；車程約 1.5–2 小時（春武里府）" ]
+            tips: [ "行前準備清單記得先在 Klook 預約（選午班場次）", "建議著輕便衣物、好走的鞋，體驗中可能弄濕弄髒", "評價 4.8/5（244 則）；車程約 1.5–2 小時（春武里府）" ]
           }
         },
         {
           name: "BTS＋免費接駁船",
           url: "",
           mapQuery: "Sathorn Pier Bangkok",
-          stay: "16:00–17:00",
+          stay: "18:45–19:00",
           coords: [13.7184, 100.5126],
           base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Chao_Phraya_Express_Boat_Service%2C_Sathorn_Pier%2C_Bangkok_%286906973718%29.jpg/960px-Chao_Phraya_Express_Boat_Service%2C_Sathorn_Pier%2C_Bangkok_%286906973718%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Phra_Arthit_Pier%2C_Chao_Phraya_Express_Boat_Service%2C_Bangkok_%287053053215%29.jpg/960px-Phra_Arthit_Pier%2C_Chao_Phraya_Express_Boat_Service%2C_Bangkok_%287053053215%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Chao_Phraya_Express_Boat_Service%2C_Bangkok%2C_Thailand_%287053021537%29.jpg/960px-Chao_Phraya_Express_Boat_Service%2C_Bangkok%2C_Thailand_%287053021537%29.jpg"],
           intro: [
             "BTS 到 Saphan Taksin，走到 Sathorn Pier",
             "搭 Asiatique 免費接駁船順流而下",
-            "傍晚的河面最舒服"
+            "入夜後河面吹風更舒服，遠遠就能看到摩天輪的燈"
           ],
           notice: {
             ticket: "接駁船免費",
@@ -1417,13 +1417,13 @@ const TRIP_DATA = {
           name: "Asiatique The Riverfront",
           url: "https://www.asiatiquethailand.com/",
           mapQuery: "Asiatique The Riverfront Bangkok",
-          stay: "17:00–21:30",
+          stay: "19:00–23:00",
           coords: [13.7045, 100.5023],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Asiatique_%2811384515613%29.jpg/960px-Asiatique_%2811384515613%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Asiatique_The_Riverfront_at_nignt_01.jpg/960px-Asiatique_The_Riverfront_at_nignt_01.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Asiatique_The_Riverfront_at_nignt_09.jpg/960px-Asiatique_The_Riverfront_at_nignt_09.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Asiatique_The_Riverfront_at_nignt_14.jpg/960px-Asiatique_The_Riverfront_at_nignt_14.jpg"],
           intro: [
             "老碼頭倉庫改建的河岸夜市",
             "摩天輪上看昭披耶河夜景",
-            "夜市美食吃一輪，最後購物補貨在這裡收尾"
+            "官網營業到 24:00，攤位主要 16:00 後才陸續開，晚一點來完全不影響體驗，甚至更熱鬧"
           ],
           notice: {
             ticket: "免門票；摩天輪約 400–500 THB，以現場為準",
