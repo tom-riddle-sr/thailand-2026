@@ -2702,6 +2702,7 @@ const TRIP_DATA = {
     if (n <= 0) return;
     const saved = loadColW();
     const widths = ths.slice(0, n).map((th, i) => saved[i] || Math.round(th.getBoundingClientRect().width));
+    const lastW = Math.round(ths[n].getBoundingClientRect().width); // 操作欄不可調但寬度要算進總寬
     const colgroup = document.createElement("colgroup");
     widths.forEach(w => {
       const col = document.createElement("col");
@@ -2710,8 +2711,14 @@ const TRIP_DATA = {
     });
     tbl.insertBefore(colgroup, tbl.firstChild);
     tbl.style.tableLayout = "fixed";
-    tbl.style.width = "auto";
+    tbl.style.minWidth = "0"; // 蓋掉 CSS 的 min-width:640px；否則總寬與欄寬之和不一致時瀏覽器會按比例壓縮各欄，拖曳看起來沒反應
     const cols = Array.from(colgroup.children);
+    /* table 總寬須明確等於各欄寬之和，否則 table-layout:fixed 搭配 width:auto 會把可用寬度當上限，
+       拖曳超出時瀏覽器改用比例壓縮所有欄位（包含剛拖的那欄），視覺上完全看不出拖曳效果 */
+    const syncTableWidth = () => {
+      tbl.style.width = (cols.reduce((s, c) => s + parseFloat(c.style.width), 0) + lastW) + "px";
+    };
+    syncTableWidth();
     ths.slice(0, n).forEach((th, i) => {
       const handle = document.createElement("span");
       handle.className = "col-resizer";
@@ -2719,6 +2726,7 @@ const TRIP_DATA = {
       let startX = 0, startW = 0;
       const onMove = clientX => {
         cols[i].style.width = Math.max(COLW_MIN, Math.round(startW + (clientX - startX))) + "px";
+        syncTableWidth();
       };
       const onEnd = () => {
         handle.classList.remove("is-active");
