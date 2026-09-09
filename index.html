@@ -776,7 +776,8 @@ const TRIP_DATA = {
       category: "要提前預約的",
       items: [
         { name: "Safari World 共乘接送＋門票（9/25）", note: "Klook 預約含 CentralWorld 集合共乘大巴（尚未預約）", deadline: "2026-09-18" },
-        { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" }
+        { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" },
+        { name: "LIVING GREEN 大象保護區（10/1）", note: "Klook 預約含飯店接送，選早班 07:00–14:30 場次（尚未預約）", deadline: "2026-09-24" }
       ]
     },
     {
@@ -1372,8 +1373,27 @@ const TRIP_DATA = {
     },
     {
       date: "2026-10-01",
-      theme: "Asiatique 河岸夜市（16:00 出發）",
+      theme: "大象保護區一日遊（07:00 出發）＋ Asiatique 河岸夜市（16:00 出發）",
       spots: [
+        {
+          name: "LIVING GREEN 大象保護區一日遊",
+          url: "https://www.klook.com/zh-TW/activity/144699-living-green-elephant-sanctuary-chonburi-from-bangkok-or-pattaya/",
+          mapQuery: "Living Green Elephant Sanctuary Chonburi",
+          stay: "約7~7.5小時（含接送）",
+          coords: [13.25, 101.09],
+          images: [],
+          intro: [
+            "春武里府考基奧山區的道德大象保護區，180° 環山景",
+            "近距離餵食、與大象互動，不騎乘，支持當地社區永續發展",
+            "飯店往返接送，中午前結束，回飯店後還有充足時間換裝休息，銜接晚上的 Asiatique 行程"
+          ],
+          notice: {
+            ticket: "Klook 連結先預約訂購，取票方式：憑訂購成功的電子憑證（QR Code）現場報到即可",
+            hours: "飯店接送 07:00–14:30（曼谷早班場次）",
+            openDays: "每日均有場次",
+            tips: [ "行前準備清單記得先在 Klook 預約（選早班場次）", "建議著輕便衣物、好走的鞋，體驗中可能弄濕弄髒", "評價 4.8/5（244 則）；車程約 1.5–2 小時（春武里府）" ]
+          }
+        },
         {
           name: "BTS＋免費接駁船",
           url: "",
@@ -1463,6 +1483,10 @@ const TRIP_DATA = {
   /* 交通資訊：這趟會用到的交通方式（價格為參考值，以現場公告為準） */
   transport: {
     intro: "整理這趟會用到的交通方式與購票建議。票價為 2026 年前後參考值，實際以現場公告為準。",
+    notices: [
+      "BTS、MRT 票卡系統不互通，各自要重新購票（Rabbit Card 只能搭 BTS，感應信用卡搭 MRT 不通用於 BTS）",
+      "轉乘（BTS↔MRT 或不同線路間）多半需要先出站，再重新入站付費，不是站內直接轉乘免加價"
+    ],
     maps: [
       { title: "曼谷捷運路線圖（BTS／MRT／ARL）", images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Bangkok-transit-map.png/1280px-Bangkok-transit-map.png"] }
     ],
@@ -1471,8 +1495,9 @@ const TRIP_DATA = {
         name: "ARL 機場快線", icon: "train",
         when: [ "第一天 BKK 機場 → 市區", "第十二天 市區 → BKK 機場" ],
         ticket: [
-          "依站數計價約 15–45 THB",
-          "自動售票機可用零錢與小額紙鈔",
+          "購票方式：信用卡｜現金",
+          "依站數計價約 15–45 THB；自動售票機可用零錢與小額紙鈔",
+          "路線：機場快線 ARL（曼谷市區↔BKK 素萬那普機場）；另有深紅線 Dark Red Line（曼谷市區↔DMK 廊曼機場），此行不會用到",
           "以現場公告為準"
         ],
         hours: "約 05:30–24:00，班距 10–15 分鐘",
@@ -1483,8 +1508,9 @@ const TRIP_DATA = {
         name: "BTS 空鐵", icon: "train",
         when: [ "每天市區移動的主力（Siam、Asok、Silom、Chatuchak 全在沿線）", "飯店最近車站：Surasak／Saphan Taksin" ],
         ticket: [
-          "依站數計價約 17–62 THB／趟",
-          "建議買 Rabbit Card（發卡費＋儲值），逢閘門直接刷",
+          "購票方式：兔子卡 Rabbit Card｜一日券｜現金｜LINE Pay",
+          "依站數計價約 17–62 THB／趟；建議買 Rabbit Card（發卡費＋儲值），逢閘門直接刷",
+          "路線：深綠線 Sukhumvit Line、淺綠線 Silom Line、金線 Gold Line（觀光客最常搭深綠線、淺綠線）",
           "以現場公告為準"
         ],
         hours: "約 06:00–24:00，班距 3–8 分鐘",
@@ -1494,7 +1520,12 @@ const TRIP_DATA = {
       {
         name: "MRT 地鐵", icon: "train",
         when: [ "唐人街、喬德夜市、大皇宮周邊（Sanam Chai 站）", "第十天：Sala Daeng 轉 MRT 至 Khlong Toei" ],
-        ticket: [ "依站數計價約 17–45 THB", "單程代幣（token）或感應信用卡皆可", "以現場公告為準" ],
+        ticket: [
+          "購票方式：VISA／Mastercard 感應卡（免另外買票，直接刷卡搭乘）｜現金",
+          "依站數計價約 17–45 THB；現金可在站內購買單程代幣（token）",
+          "路線：藍線 Blue Line、紫線 Purple Line、粉紅線 Pink Line、黃線 Yellow Line（觀光客最常搭藍線）",
+          "以現場公告為準"
+        ],
         hours: "約 06:00–24:00",
         tips: [ "BTS 與 MRT 是不同系統，票卡不通用", "Sala Daeng（BTS）↔ Si Lom（MRT）站內指標清楚，跟著走即可" ],
         images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/MRT_BLUE_LINE_EMU-BLE.jpg/960px-MRT_BLUE_LINE_EMU-BLE.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Bangkok_MRT_Blue_Line_Siemens_Modular_Metro_22%2C_Bang_Yi_Khan_%2820240629%29_%2854222540526%29.jpg/960px-Bangkok_MRT_Blue_Line_Siemens_Modular_Metro_22%2C_Bang_Yi_Khan_%2820240629%29_%2854222540526%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Lat_Phrao_Station_-_platform_level_%282%29.jpg/960px-Lat_Phrao_Station_-_platform_level_%282%29.jpg"]
@@ -1917,7 +1948,13 @@ const TRIP_DATA = {
       + (T.intro ? '<p style="font-size:.92rem;margin-bottom:10px;">' + esc(T.intro) + '</p>' : '')
       + '<div class="tr-imgs">'
       + (T.maps || []).map(m => (Array.isArray(m.images) ? m.images : []).map(u => lbImg(u, m.title)).join('')).join('')
-      + '</div><div class="tr-map-hint">點路線圖可放大檢視，再點一下關閉</div></div>';
+      + '</div><div class="tr-map-hint">點路線圖可放大檢視，再點一下關閉</div>'
+      + ((T.notices || []).length
+        ? '<div class="notice"><div class="nt-title">' + ic("alert", "sm ic-terra") + ' Notes ・ 重要提示</div><ul>'
+          + T.notices.map(t => '<li>' + ic("alert", "sm ic-terra") + '<span>' + esc(t) + '</span></li>').join('')
+          + '</ul></div>'
+        : '')
+      + '</div>';
 
     (T.modes || []).forEach((m, i) => {
       const imgs = Array.isArray(m.images) ? m.images : [];
