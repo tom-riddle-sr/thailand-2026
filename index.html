@@ -281,8 +281,15 @@
   .stat-card .row b{font-variant-numeric:tabular-nums;font-weight:600;}
 
   .table-wrap{
+    position:relative;
     overflow-x:auto;-webkit-overflow-scrolling:touch;
     background:transparent;border:none;border-radius:0;box-shadow:none;
+  }
+  /* 表格內容比容器寬時的捲動提示（右側漸層陰影），checkTableScroll() 判斷後加 class */
+  .table-wrap.has-scroll::after{
+    content:"";position:absolute;top:0;right:0;bottom:0;width:26px;
+    background:linear-gradient(to right, transparent, rgba(60,58,54,.14));
+    pointer-events:none;z-index:1;
   }
   table.expense{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem;}
   table.expense th{
@@ -292,6 +299,11 @@
     border-bottom:1px solid var(--ink);
   }
   table.expense th:first-child{padding-left:0;}
+  /* 操作欄表頭：跟 td.acts 一起 sticky 對齊，避免捲動時表頭欄位對不上 */
+  table.expense th:last-child{
+    position:sticky;right:0;z-index:2;
+    background:var(--bg);box-shadow:-6px 0 6px -6px rgba(0,0,0,.18);
+  }
   table.expense td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
   table.expense td:first-child{padding-left:0;}
   table.expense td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
@@ -421,6 +433,10 @@
   .ef-f input:focus,.ef-f select:focus{outline:none;border-color:var(--blue);}
   .ef-name{grid-column:span 2;}
   .ef-note{grid-column:span 2;}
+  /* 幣別下拉＋金額輸入同一列 */
+  .ef-amt-row{display:flex;gap:6px;}
+  .ef-amt-row select{width:74px;flex:0 0 74px;}
+  .ef-amt-row input{width:auto;flex:1;min-width:0;}
   .ef-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
   .ef-submit,.ef-cancel{
     appearance:none;cursor:pointer;font-family:var(--sans);font-size:.88rem;letter-spacing:.06em;
@@ -432,7 +448,11 @@
   .row-act{appearance:none;cursor:pointer;background:none;border:none;color:var(--soft);padding:2px 5px;}
   .row-act:hover{color:var(--blue);}
   .row-act.del:hover{color:var(--terra);}
-  table.expense td.acts{white-space:nowrap;}
+  /* 操作欄（編輯/刪除）sticky 固定右側：窄視窗下不用捲動也看得到，左側陰影提示有東西可捲 */
+  table.expense td.acts{
+    white-space:nowrap;position:sticky;right:0;z-index:2;
+    background:var(--bg);box-shadow:-6px 0 6px -6px rgba(0,0,0,.18);
+  }
   .exp-pending{color:var(--gold);font-size:.72rem;letter-spacing:.04em;font-weight:600;}
 
   /* ===== Google 登入與記錄者頭像 ===== */
@@ -621,6 +641,7 @@ const TRIP_DATA = {
   subtitle: "雨季尾聲的曼谷慢遊",
   timezone: "Asia/Bangkok",         // 旅遊地時區（IANA 名稱）
   timezoneLabel: "曼谷",
+  baseCurrency: "THB",       // 記帳表單幣別下拉的預設幣別
   dates: { start: "2026-09-21", end: "2026-10-02" },  // 9/21（一）台北出發、10/2（五）返抵台北
 
   /* 旅伴護照資料屬敏感資訊，已移入 secure 加密區（見下方 secure 欄位說明） */
@@ -2506,36 +2527,55 @@ const TRIP_DATA = {
   const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
-  /* ---------- 匯率 THB↔TWD：open.er-api.com 主源＋jsDelivr(fawazahmed0) 備援 ---------- */
-  const FX = { rate: null, date: "", offline: false, K: "trip::" + TRIP_DATA.id + "::fxcache" };
+  /* ---------- 匯率：任意幣別↔TWD，一次抓「1 TWD = 各幣別多少」，換算時取倒數 ----------
+     open.er-api.com 主源＋jsDelivr(fawazahmed0) 備援；兩者皆免金鑰、支援 TWD 為基準幣。 */
+  const CCY_LIST = ["THB", "EUR", "TWD", "USD", "JPY", "CNY", "GBP", "SGD", "HKD", "KRW"];
+  const ZERO_DECIMAL = ["TWD", "THB", "JPY", "KRW"]; // 顯示/四捨五入不留小數的幣別
+  const fmtAmt = (n, ccy) => fmtMoney(ZERO_DECIMAL.indexOf(ccy) >= 0 ? Math.round(n) : Math.round(n * 100) / 100);
+  const roundAmt = (n, ccy) => ZERO_DECIMAL.indexOf(ccy) >= 0 ? Math.round(n) : Math.round(n * 100) / 100;
+  const FX = { rates: null, date: "", offline: false, K: "trip::" + TRIP_DATA.id + "::fxrates" };
   const fxShortDate = d => { const m = String(d).match(/(\d{4})-(\d{2})-(\d{2})/); return m ? (+m[2]) + "/" + (+m[3]) : String(d); };
+  /* 1 單位 ccy 換算成多少 TWD；ccy 為 TWD 時固定 1（不查表，避免來源缺 TWD:1 這筆） */
+  const fxRate = ccy => {
+    if (ccy === "TWD") return 1;
+    if (!FX.rates) return null;
+    const r = FX.rates[ccy];
+    return (r && isFinite(r)) ? 1 / r : null;
+  };
   function fxNote() {
     const el = $("#fx-note");
     if (!el) return;
-    if (!FX.rate) el.textContent = "目前取不到匯率——兩邊金額請手動輸入";
-    else el.textContent = (FX.offline ? "離線匯率（" + fxShortDate(FX.date) + "）" : "匯率（" + fxShortDate(FX.date) + "）")
-      + "：1 THB ≈ " + FX.rate.toFixed(2) + " TWD。輸入任一欄自動換算，另一欄可手動微調。";
+    const form = $("#exp-form");
+    const ccy = form ? form.elements.currency.value : (TRIP_DATA.baseCurrency || "THB");
+    if (ccy === "TWD") { el.textContent = "台幣不需換算，兩欄會自動同值。"; return; }
+    const rate = fxRate(ccy);
+    if (!rate) { el.textContent = "目前取不到匯率——兩邊金額請手動輸入"; return; }
+    el.textContent = (FX.offline ? "離線匯率（" + fxShortDate(FX.date) + "）" : "匯率（" + fxShortDate(FX.date) + "）")
+      + "：1 " + ccy + " ≈ " + rate.toFixed(4) + " TWD。輸入任一欄自動換算，另一欄可手動微調。";
   }
   async function fxLoad() {
     const cached = lsGet(FX.K, null);
-    if (cached && cached.rate) { FX.rate = cached.rate; FX.date = cached.date; FX.offline = true; }
+    if (cached && cached.rates) { FX.rates = cached.rates; FX.date = cached.date; FX.offline = true; }
     const sources = [
-      { url: "https://open.er-api.com/v6/latest/THB",
-        pick: j => ({ rate: j && j.rates && j.rates.TWD,
-                      date: j && j.time_last_update_unix ? new Date(j.time_last_update_unix * 1000).toISOString().slice(0, 10) : "" }) },
-      { url: "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/thb.json",
-        pick: j => ({ rate: j && j.thb && j.thb.twd, date: (j && j.date) || "" }) }
+      { url: "https://open.er-api.com/v6/latest/TWD",
+        pick: j => ({ rates: j && j.rates, date: j && j.time_last_update_unix ? new Date(j.time_last_update_unix * 1000).toISOString().slice(0, 10) : "" }) },
+      { url: "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/twd.json",
+        pick: j => {
+          const raw = j && j.twd, rates = {};
+          if (raw) Object.keys(raw).forEach(k => { rates[k.toUpperCase()] = raw[k]; });
+          return { rates: rates, date: (j && j.date) || "" };
+        } }
     ];
     for (const s of sources) {
       try {
         const r = await fetch(s.url, { cache: "no-store" });
         if (!r.ok) continue;
         const v = s.pick(await r.json());
-        if (v.rate && isFinite(v.rate)) {
-          FX.rate = +v.rate;
+        if (v.rates && Object.keys(v.rates).length) {
+          FX.rates = v.rates;
           FX.date = v.date || new Date().toISOString().slice(0, 10);
           FX.offline = false;
-          lsSet(FX.K, { rate: FX.rate, date: FX.date, ts: Date.now() });
+          lsSet(FX.K, { rates: FX.rates, date: FX.date, ts: Date.now() });
           break;
         }
       } catch (e) { /* 換下一個來源 */ }
@@ -2544,22 +2584,21 @@ const TRIP_DATA = {
     refreshExpenses();
   }
 
-  /* 舊格式（單幣 {amount,currency}）自動遷移為雙幣顯示 */
+  /* 正規化：泛化多幣別記錄＋相容舊格式（泰國舊雙幣 amountTHB）＋ spentAt 缺值退回 createdAt。
+     不強制遷移寫回 Firestore，只在讀取顯示時正規化。 */
   function expNorm(e) {
-    if (e.amountTHB != null || e.amountTWD != null) return e;
-    const n = Object.assign({}, e);
-    if ((e.currency || "THB") === "TWD") {
-      n.amountTWD = e.amount;
-      n.amountTHB = FX.rate ? Math.round(e.amount / FX.rate) : null;
-    } else {
-      n.amountTHB = e.amount;
-      n.amountTWD = FX.rate ? Math.round(e.amount * FX.rate) : null;
+    let amount = e.amount, currency = e.currency;
+    if (amount == null && e.amountTHB != null) { amount = e.amountTHB; currency = "THB"; }
+    currency = currency || TRIP_DATA.baseCurrency || "THB";
+    const n = Object.assign({}, e, { amount: amount, currency: currency });
+    if (n.amountTWD == null) {
+      n.amountTWD = currency === "TWD" ? amount
+        : (amount != null && fxRate(currency) != null ? Math.round(amount * fxRate(currency)) : null);
     }
-    n.inputCurrency = e.currency || "THB";
-    n.rate = FX.rate || null;
-    n.rateDate = FX.rate ? FX.date + "（自動補算）" : null;
+    n.spentAt = e.spentAt || e.createdAt || null; // 舊資料無 spentAt 時退回 createdAt，顯示用
     return n;
   }
+  window.__expNorm = expNorm; // 測試/工具用：暴露正規化函式供驗證相容性，不影響正式邏輯（同 __tripDecrypt 慣例）
   const newId = () => Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
   const expList = () => EXP.list;
   const expDocRef = id => FB.fs.doc(FB.db, "trips", TRIP_DATA.id, "expenses", id);
@@ -2626,6 +2665,13 @@ const TRIP_DATA = {
     FB.fs.deleteDoc(expDocRef(id)).catch(e => { EXP.error = String(e && e.code || e); refreshExpenses(); });
   }
 
+  /* 表格內容寬度超過容器就加 has-scroll class（CSS 顯示右側漸層陰影提示）；resize 監聽只掛一次 */
+  function checkTableScroll() {
+    const wrap = document.querySelector('#exp-table .table-wrap');
+    if (wrap) wrap.classList.toggle('has-scroll', wrap.scrollWidth > wrap.clientWidth + 2);
+  }
+  window.addEventListener('resize', checkTableScroll, { passive: true });
+
   function refreshExpenses() {
     const stats = $("#exp-stats"), table = $("#exp-table");
     if (!stats || !table) return;
@@ -2647,13 +2693,13 @@ const TRIP_DATA = {
       if (!map[key]) map[key] = {};
       map[key][cur] = (map[key][cur] || 0) + amt;
     };
-    const moneyStr = obj => Object.entries(obj).map(([c, a]) => c + " " + fmtMoney(c === "THB" || c === "TWD" ? Math.round(a) : +a.toFixed(2))).join("　·　") || "—";
+    const moneyStr = obj => Object.entries(obj).map(([c, a]) => c + " " + fmtAmt(a, c)).join("　·　") || "—";
     const totals = {}, byPayer = {}, byCat = {};
     list.forEach(e => {
       if (e.status === "已退款") return;
-      addTo(totals, "t", "THB", e.amountTHB); addTo(totals, "t", "TWD", e.amountTWD);
-      addTo(byPayer, e.payer || "未填", "THB", e.amountTHB); addTo(byPayer, e.payer || "未填", "TWD", e.amountTWD);
-      addTo(byCat, e.category || "其他", "THB", e.amountTHB); addTo(byCat, e.category || "其他", "TWD", e.amountTWD);
+      addTo(totals, "t", e.currency, e.amount); addTo(totals, "t", "TWD", e.amountTWD);
+      addTo(byPayer, e.payer || "未填", e.currency, e.amount); addTo(byPayer, e.payer || "未填", "TWD", e.amountTWD);
+      addTo(byCat, e.category || "其他", e.currency, e.amount); addTo(byCat, e.category || "其他", "TWD", e.amountTWD);
     });
     stats.innerHTML =
       '<div class="stat-card"><div class="t">' + ic("wallet", "sm ic-blue") + '總花費（不含已退款）</div><div class="big">' + moneyStr(totals.t || {}) + '</div></div>'
@@ -2680,22 +2726,23 @@ const TRIP_DATA = {
       const pend = queuedIds.has(e.id) ? ' <span class="exp-pending">●未同步</span>' : '';
       const actBtns = '<button type="button" class="row-act" data-edit="' + esc(e.id) + '" title="編輯">' + ic("edit", "sm") + '</button>'
         + '<button type="button" class="row-act del" data-del="' + esc(e.id) + '" title="刪除">' + ic("trash", "sm") + '</button>';
-      rows += '<tr><td>' + esc(e.name) + pend + '</td>'
-        + '<td class="amt">' + (e.amountTHB != null ? "THB " + fmtMoney(e.amountTHB) : '<span class="muted">—</span>')
-        + '<br><span class="muted">' + (e.amountTWD != null ? "TWD " + fmtMoney(e.amountTWD) : "—") + '</span></td>'
+      /* 花費日期（spentAt，已由 expNorm 退回 createdAt 保底）：欄位數不再增加，併入項目名稱那格顯示小字 */
+      const dm = String(e.spentAt || "").match(/^\d{4}-(\d{2})-(\d{2})/);
+      const dstr = dm ? (+dm[1]) + "/" + (+dm[2]) : "";
+      rows += '<tr><td>' + esc(e.name) + pend + (dstr ? ' <span class="muted" style="font-size:.82em;">' + dstr + '</span>' : '') + '</td>'
+        + '<td class="amt">' + (e.amount != null ? esc(e.currency) + " " + fmtAmt(e.amount, e.currency) : '<span class="muted">—</span>')
+        + '<br><span class="muted">' + (e.amountTWD != null ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "—") + '</span></td>'
         + '<td><span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span></td>'
         + '<td><span class="chip">' + esc(e.category) + '</span></td>'
         + '<td>' + (recAv || ic("user", "sm ic-terra") + ' ') + esc(e.payer) + '</td>'
         + '<td class="muted">' + esc(e.note) + '</td>'
         + '<td class="acts">' + actBtns + '</td></tr>';
-      /* 手機卡片：項目＋分類 / 雙幣金額 / 付款人・狀態・日期 */
-      const dm = String(e.createdAt || "").match(/^\d{4}-(\d{2})-(\d{2})/);
-      const dstr = dm ? (+dm[1]) + "/" + (+dm[2]) : "";
+      /* 手機卡片：項目＋分類 / 原幣＋台幣金額 / 付款人・狀態・日期 */
       cards += '<div class="exp-card">'
         + '<div class="xc-acts">' + actBtns + '</div>'
         + '<div class="xc-head"><span class="xc-name">' + esc(e.name) + '</span><span class="chip">' + esc(e.category) + '</span></div>'
-        + '<div class="xc-amt">' + (e.amountTHB != null ? "THB " + fmtMoney(e.amountTHB) : '<span class="muted">THB —</span>')
-        + '<span class="sub">TWD ' + (e.amountTWD != null ? fmtMoney(e.amountTWD) : "—") + '</span></div>'
+        + '<div class="xc-amt">' + (e.amount != null ? esc(e.currency) + " " + fmtAmt(e.amount, e.currency) : '<span class="muted">—</span>')
+        + '<span class="sub">TWD ' + (e.amountTWD != null ? fmtAmt(e.amountTWD, "TWD") : "—") + '</span></div>'
         + '<div class="xc-meta">' + (recAv || ic("user", "sm ic-terra") + ' ') + '<span>' + esc(e.payer) + '</span>'
         + '<span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span>'
         + (dstr ? '<span>' + dstr + '</span>' : '')
@@ -2719,6 +2766,7 @@ const TRIP_DATA = {
       + (cards || '<div class="muted" style="text-align:center;padding:20px 8px;">' + emptyMsg + '</div>')
       + '</div>'
       + '<p class="muted" style="margin-top:10px;">＊「已退款」不計入統計。</p>';
+    checkTableScroll();
 
     if (badge) {
       if (EXP.error) badge.innerHTML = ic("alert", "sm ic-terra") + ' ' + esc(EXP.error);
@@ -2737,8 +2785,11 @@ const TRIP_DATA = {
       + '<span class="en" id="exp-sync-badge" style="cursor:pointer;"></span></h3>'
       + '<form id="exp-form"><div class="ef-grid">'
       + '<div class="ef-f ef-name"><label>項目名稱</label><input name="name" required autocomplete="off"></div>'
-      + '<div class="ef-f"><label>金額 THB ฿</label><input name="amountTHB" type="number" step="1" min="0" inputmode="decimal"></div>'
+      + '<div class="ef-f"><label>金額</label><div class="ef-amt-row">'
+      + '<select name="currency">' + CCY_LIST.map(c => '<option' + (c === (TRIP_DATA.baseCurrency || "THB") ? ' selected' : '') + '>' + c + '</option>').join('') + '</select>'
+      + '<input name="amount" type="number" step="0.01" min="0" inputmode="decimal"></div></div>'
       + '<div class="ef-f"><label>金額 TWD NT$</label><input name="amountTWD" type="number" step="1" min="0" inputmode="decimal"></div>'
+      + '<div class="ef-f"><label>花費日期時間</label><input name="spentAt" type="datetime-local"></div>'
       + '<div class="ef-f"><label>狀態</label><select name="status"><option>已付款</option><option>待付款</option><option>已退款</option></select></div>'
       + '<div class="ef-f"><label>分類</label><select name="category"></select></div>'
       + '<div class="ef-f ef-note"><label>備註</label><input name="note" autocomplete="off"></div>'
@@ -2776,45 +2827,72 @@ const TRIP_DATA = {
       fe("category").value = name;
       lastCat = name;
     });
-    /* 雙幣即時換算：輸入任一欄補另一欄；被手動改過的欄不再覆蓋 */
-    const touched = { THB: false, TWD: false };
-    let lastInput = "THB";
-    fe("amountTHB").addEventListener("input", () => {
-      touched.THB = true; lastInput = "THB";
-      if (FX.rate && fe("amountTHB").value !== "" && !touched.TWD)
-        fe("amountTWD").value = Math.round(parseFloat(fe("amountTHB").value || 0) * FX.rate);
+    /* 任意幣別↔TWD 即時換算：輸入任一欄補另一欄；被手動改過的欄不再覆蓋；換幣別也重算未手動改過的那欄 */
+    const touched = { amount: false, TWD: false };
+    fe("amount").addEventListener("input", () => {
+      touched.amount = true;
+      const rate = fxRate(fe("currency").value);
+      if (rate && fe("amount").value !== "" && !touched.TWD)
+        fe("amountTWD").value = Math.round(parseFloat(fe("amount").value || 0) * rate);
     });
     fe("amountTWD").addEventListener("input", () => {
-      touched.TWD = true; lastInput = "TWD";
-      if (FX.rate && fe("amountTWD").value !== "" && !touched.THB)
-        fe("amountTHB").value = Math.round(parseFloat(fe("amountTWD").value || 0) / FX.rate);
+      touched.TWD = true;
+      const rate = fxRate(fe("currency").value);
+      if (rate && fe("amountTWD").value !== "" && !touched.amount)
+        fe("amount").value = roundAmt(parseFloat(fe("amountTWD").value || 0) / rate, fe("currency").value);
     });
+    fe("currency").addEventListener("change", () => {
+      fxNote();
+      const rate = fxRate(fe("currency").value);
+      if (rate == null) return;
+      if (!touched.TWD && fe("amount").value !== "") {
+        fe("amountTWD").value = Math.round(parseFloat(fe("amount").value || 0) * rate);
+      } else if (!touched.amount && fe("amountTWD").value !== "") {
+        fe("amount").value = roundAmt(parseFloat(fe("amountTWD").value || 0) / rate, fe("currency").value);
+      }
+    });
+    /* 花費日期時間：預設現在；日期落在某天行程範圍內就自動預選對應「第N天」分類（使用者之後仍可手動改分類） */
+    const nowLocalDT = () => {
+      const d = new Date(), pad = n => String(n).padStart(2, "0");
+      return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+    };
+    const applySpentAtDayInference = () => {
+      const val = fe("spentAt").value;
+      if (!val) return;
+      const idx = TRIP_DATA.days.findIndex(d => d.date === val.slice(0, 10));
+      if (idx >= 0) { const cat = "第" + (idx + 1) + "天"; fe("category").value = cat; lastCat = cat; }
+      /* 找不到對應天數（行前或行程外）→ 維持使用者原本分類，不強制覆蓋 */
+    };
+    fe("spentAt").addEventListener("change", applySpentAtDayInference);
     const resetForm = () => {
       editingId = null; form.reset();
-      touched.THB = touched.TWD = false; lastInput = "THB";
+      touched.amount = touched.TWD = false;
       rebuildCats(); // form.reset 後回到第一個分類，並清掉可能殘留的 __add__ 選取
       lastCat = fe("category").value;
+      fe("currency").value = TRIP_DATA.baseCurrency || "THB";
+      fe("spentAt").value = nowLocalDT();
+      applySpentAtDayInference();
       $("#exp-submit", p).textContent = "新增";
       $("#exp-cancel", p).style.display = "none";
     };
     const doSubmit = () => {
       const prev = editingId ? expNorm(expList().find(x => x.id === editingId) || {}) : null;
-      const thb = parseFloat(fe("amountTHB").value);
+      const ccy = fe("currency").value;
+      const amt = parseFloat(fe("amount").value);
       const twd = parseFloat(fe("amountTWD").value);
       const name = fe("name").value.trim();
-      if (!name || (isNaN(thb) && isNaN(twd))) return;
+      if (!name || (isNaN(amt) && isNaN(twd))) return;
       const u = authProfile();
+      const rate = fxRate(ccy);
       const item = {
         id: editingId || newId(),
         name: name,
-        amountTHB: isNaN(thb) ? null : Math.round(thb),
+        amount: isNaN(amt) ? null : roundAmt(amt, ccy),
+        currency: ccy,
         amountTWD: isNaN(twd) ? null : Math.round(twd),
-        inputCurrency: lastInput,
-        rate: FX.rate || null,
-        rateDate: FX.rate ? FX.date : null,
-        /* 舊欄位相容 */
-        amount: lastInput === "TWD" ? (isNaN(twd) ? null : Math.round(twd)) : (isNaN(thb) ? null : Math.round(thb)),
-        currency: lastInput,
+        rate: rate || null,
+        rateDate: rate ? FX.date : null,
+        spentAt: fe("spentAt").value || nowLocalDT(),
         status: fe("status").value,
         category: fe("category").value === "__add__" ? lastCat : fe("category").value,
         /* 誰付的＝登入者；編輯既有記錄時保留原付款人 */
@@ -2842,11 +2920,12 @@ const TRIP_DATA = {
         if (!raw) return;
         const item = expNorm(raw);
         editingId = item.id;
-        touched.THB = touched.TWD = false;
-        lastInput = item.inputCurrency || "THB";
+        touched.amount = touched.TWD = false;
         fe("name").value = item.name;
-        fe("amountTHB").value = item.amountTHB != null ? item.amountTHB : "";
+        fe("currency").value = item.currency || TRIP_DATA.baseCurrency || "THB";
+        fe("amount").value = item.amount != null ? item.amount : "";
         fe("amountTWD").value = item.amountTWD != null ? item.amountTWD : "";
+        fe("spentAt").value = (item.spentAt || nowLocalDT()).slice(0, 16);
         fe("status").value = item.status;
         rebuildCats();
         if (item.category && !Array.from(fe("category").options).some(o => o.value === item.category)) {
