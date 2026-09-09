@@ -300,16 +300,31 @@
     white-space:nowrap;font-weight:600;font-size:.75rem;
     letter-spacing:.1em;text-transform:uppercase;
     border-bottom:1px solid var(--ink);
+    overflow:hidden;
   }
   table.expense th:first-child{padding-left:0;}
+  table.expense th:not(:last-child){position:relative;}
   /* 操作欄表頭：跟 td.acts 一起 sticky 對齊，避免捲動時表頭欄位對不上 */
   table.expense th:last-child{
     position:sticky;right:0;z-index:2;
     background:var(--bg);box-shadow:-6px 0 6px -6px rgba(0,0,0,.18);
   }
-  table.expense td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
+  table.expense td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap;overflow:hidden;}
   table.expense td:first-child{padding-left:0;}
   table.expense td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
+  /* 欄寬拖曳把手：低調細線，hover 才明顯（表頭右緣，最後的操作欄不可調） */
+  .col-resizer{
+    position:absolute;top:0;right:0;width:8px;height:100%;
+    cursor:col-resize;z-index:3;touch-action:none;
+  }
+  .col-resizer::after{
+    content:"";position:absolute;top:18%;bottom:18%;left:50%;width:1px;
+    background:var(--line);opacity:.55;
+    transition:opacity .15s,background-color .15s,width .15s;
+  }
+  .col-resizer:hover::after,.col-resizer.is-active::after{
+    width:2px;background:var(--blue);opacity:1;
+  }
   .badge{
     display:inline-block;border-radius:999px;padding:1px 12px;
     font-size:.75rem;font-weight:500;letter-spacing:.12em;
@@ -1721,6 +1736,30 @@ const TRIP_DATA = {
       + '<div class="clock"><div class="zone">' + esc(D.timezoneLabel) + ' Local</div><div class="time" id="clk-local">--:--:--</div><div class="date" id="clkd-local"></div></div>'
       + '</div></div>';
 
+    /* --- 天氣：橫向一排 11 天小卡（每天都要查看，移到最前面） --- */
+    html += '<div class="card"><h3>' + secTitle("01", "天氣與濕度", "Weather", wxIcon(lines(D.weather.overall).join("、"))) + '</h3>'
+      + '<div class="wx-overall">' + lines(D.weather.overall).map(t => '<p>' + esc(t) + '</p>').join('') + '</div><div class="wx-grid">';
+    D.weather.daily.forEach(w => {
+      const wi = wxIcon(w.desc);
+      html += '<div class="wx-day"><div class="d">' + fmtDate(w.date) + '</div>'
+        + '<div class="muted">' + ic(wi, "sm " + (wi === "sun" ? "ic-gold" : "ic-blue")) + ' ' + esc(w.desc) + '</div>'
+        + '<div class="t">' + w.tempMin + '–' + w.tempMax + '°C</div>'
+        + '<div class="muted">濕度 ' + esc(w.humidity) + '｜降雨 ' + esc(w.rain) + '</div></div>';
+    });
+    html += '</div></div>';
+
+    /* --- 日出日落＋建議穿著：一條橫向資訊帶 --- */
+    html += '<div class="card"><h3>' + secTitle("02", "日出日落・建議穿著", "Sun & Dress", "sunrise") + '</h3>'
+      + '<div class="sun-strip">'
+      + '<div class="ss-sun">'
+      + '<div>' + ic("sunrise", "sm ic-gold") + ' 日出<b>' + esc(D.sun.sunrise) + '</b></div>'
+      + '<div>' + ic("sun", "sm ic-terra") + ' 日落<b>' + esc(D.sun.sunset) + '</b></div>'
+      + '<div class="muted">當地時間</div>'
+      + '</div>'
+      + '<div class="ss-dress">' + lines(D.clothing).map((t, i) =>
+          '<div class="dl">' + (i === 0 ? ic("shirt", "sm ic-blue") + ' ' : '') + esc(t) + '</div>').join('') + '</div>'
+      + '</div></div>';
+
     /* --- 不對稱兩欄：左＝航班時間軸（寬），右＝護照＋飯店（窄） --- */
     const fl = (Array.isArray(D.flights) ? D.flights : [D.flights.outbound, D.flights.inbound]).filter(Boolean);
     const splitTime = t => {
@@ -1749,17 +1788,17 @@ const TRIP_DATA = {
     };
 
     html += '<div class="info-grid"><div class="ig-main">'
-      + '<div class="card"><h3>' + secTitle("01", "航班時間軸", "Flights", "plane") + '</h3>'
+      + '<div class="card"><h3>' + secTitle("03", "航班時間軸", "Flights", "plane") + '</h3>'
       + flGroup("去程") + flGroup("回程") + '</div>'
       + '</div><aside class="ig-side">';
 
-    html += '<div class="card"><h3>' + secTitle("02", "旅伴", "Members", "user") + '</h3>'
+    html += '<div class="card"><h3>' + secTitle("04", "旅伴", "Members", "user") + '</h3>'
       + '<div id="members-box"></div></div>';
 
-    html += '<div class="card"><h3>' + secTitle("03", "護照資訊", "Passport", "idcard") + '</h3>'
+    html += '<div class="card"><h3>' + secTitle("05", "護照資訊", "Passport", "idcard") + '</h3>'
       + '<div id="travelers-box"></div></div>';
 
-    html += '<div class="card"><h3>' + secTitle("04", "飯店資訊", "Hotel", "home") + '</h3>';
+    html += '<div class="card"><h3>' + secTitle("06", "飯店資訊", "Hotel", "home") + '</h3>';
     D.hotels.forEach((h, hi) => {
       const nm = h.url
         ? '<a href="' + esc(h.url) + '" target="_blank" rel="noopener">' + esc(h.name) + '</a>'
@@ -1773,30 +1812,6 @@ const TRIP_DATA = {
         + '<div class="kv"><span class="k">訂房編號</span><span class="v">' + secHTML("hotelBookingRefs." + hi) + '</span></div></div>';
     });
     html += '</div></aside></div>';
-
-    /* --- 天氣：橫向一排 11 天小卡 --- */
-    html += '<div class="card"><h3>' + secTitle("05", "天氣與濕度", "Weather", wxIcon(lines(D.weather.overall).join("、"))) + '</h3>'
-      + '<div class="wx-overall">' + lines(D.weather.overall).map(t => '<p>' + esc(t) + '</p>').join('') + '</div><div class="wx-grid">';
-    D.weather.daily.forEach(w => {
-      const wi = wxIcon(w.desc);
-      html += '<div class="wx-day"><div class="d">' + fmtDate(w.date) + '</div>'
-        + '<div class="muted">' + ic(wi, "sm " + (wi === "sun" ? "ic-gold" : "ic-blue")) + ' ' + esc(w.desc) + '</div>'
-        + '<div class="t">' + w.tempMin + '–' + w.tempMax + '°C</div>'
-        + '<div class="muted">濕度 ' + esc(w.humidity) + '｜降雨 ' + esc(w.rain) + '</div></div>';
-    });
-    html += '</div></div>';
-
-    /* --- 日出日落＋建議穿著：一條橫向資訊帶 --- */
-    html += '<div class="card"><h3>' + secTitle("06", "日出日落・建議穿著", "Sun & Dress", "sunrise") + '</h3>'
-      + '<div class="sun-strip">'
-      + '<div class="ss-sun">'
-      + '<div>' + ic("sunrise", "sm ic-gold") + ' 日出<b>' + esc(D.sun.sunrise) + '</b></div>'
-      + '<div>' + ic("sun", "sm ic-terra") + ' 日落<b>' + esc(D.sun.sunset) + '</b></div>'
-      + '<div class="muted">當地時間</div>'
-      + '</div>'
-      + '<div class="ss-dress">' + lines(D.clothing).map((t, i) =>
-          '<div class="dl">' + (i === 0 ? ic("shirt", "sm ic-blue") + ' ' : '') + esc(t) + '</div>').join('') + '</div>'
-      + '</div></div>';
 
     p.innerHTML = html;
 
@@ -2675,6 +2690,66 @@ const TRIP_DATA = {
   }
   window.addEventListener('resize', checkTableScroll, { passive: true });
 
+  /* 記帳表格欄寬可拖曳調整；欄寬存 localStorage（依 trip id 分站），只存個人裝置顯示偏好，不進 Firestore */
+  const COLW_KEY = "trip::" + TRIP_DATA.id + "::exp-colw";
+  const COLW_MIN = 70;
+  const loadColW = () => { try { return JSON.parse(localStorage.getItem(COLW_KEY) || "{}"); } catch (e) { return {}; } };
+  const saveColW = map => { try { localStorage.setItem(COLW_KEY, JSON.stringify(map)); } catch (e) {} };
+  function initColResize(tbl) {
+    if (!tbl) return;
+    const ths = Array.from(tbl.querySelectorAll("thead th"));
+    const n = ths.length - 1; // 最後一欄（操作）sticky 固定寬度，不可調
+    if (n <= 0) return;
+    const saved = loadColW();
+    const widths = ths.slice(0, n).map((th, i) => saved[i] || Math.round(th.getBoundingClientRect().width));
+    const colgroup = document.createElement("colgroup");
+    widths.forEach(w => {
+      const col = document.createElement("col");
+      col.style.width = w + "px";
+      colgroup.appendChild(col);
+    });
+    tbl.insertBefore(colgroup, tbl.firstChild);
+    tbl.style.tableLayout = "fixed";
+    tbl.style.width = "auto";
+    const cols = Array.from(colgroup.children);
+    ths.slice(0, n).forEach((th, i) => {
+      const handle = document.createElement("span");
+      handle.className = "col-resizer";
+      th.appendChild(handle);
+      let startX = 0, startW = 0;
+      const onMove = clientX => {
+        cols[i].style.width = Math.max(COLW_MIN, Math.round(startW + (clientX - startX))) + "px";
+      };
+      const onEnd = () => {
+        handle.classList.remove("is-active");
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onEnd);
+        document.removeEventListener("touchmove", onTouchMove);
+        document.removeEventListener("touchend", onEnd);
+        const map = loadColW();
+        map[i] = parseFloat(cols[i].style.width) || widths[i];
+        saveColW(map);
+        checkTableScroll();
+      };
+      const onMouseMove = e => onMove(e.clientX);
+      const onTouchMove = e => { if (e.touches[0]) { e.preventDefault(); onMove(e.touches[0].clientX); } };
+      handle.addEventListener("mousedown", e => {
+        e.preventDefault(); e.stopPropagation();
+        handle.classList.add("is-active");
+        startX = e.clientX; startW = cols[i].getBoundingClientRect().width;
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onEnd);
+      });
+      handle.addEventListener("touchstart", e => {
+        e.stopPropagation();
+        handle.classList.add("is-active");
+        const t = e.touches[0]; startX = t.clientX; startW = cols[i].getBoundingClientRect().width;
+        document.addEventListener("touchmove", onTouchMove, { passive: false });
+        document.addEventListener("touchend", onEnd);
+      }, { passive: true });
+    });
+  }
+
   function refreshExpenses() {
     const stats = $("#exp-stats"), table = $("#exp-table");
     if (!stats || !table) return;
@@ -2780,6 +2855,7 @@ const TRIP_DATA = {
       + (cards || '<div class="muted" style="text-align:center;padding:20px 8px;">' + emptyMsg + '</div>')
       + '</div>'
       + '<p class="muted" style="margin-top:10px;">＊「已退款」不計入統計。</p>';
+    initColResize(table.querySelector("table.expense"));
     checkTableScroll();
 
     if (badge) {
