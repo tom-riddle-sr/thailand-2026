@@ -881,6 +881,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "免門票（花串香燭現場買，小額泰銖）",
             hours: "約 06:00–22:00，以現場為準",
+            openDays: "每日開放",
             tips: [ "交通：BTS Surasak → Chit Lom，下車即到", "拜拜順時針方向，四面都拜" ]
           }
         },
@@ -1070,6 +1071,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "套票含野生動物區＋海洋公園，以訂單為準",
             hours: "約 09:00–17:00，以官網為準",
+            openDays: "每日開放",
             tips: [ "表演場次時刻表進場先拍下來，動線照場次排", "防曬與水壺必帶，園區大又熱" ]
           }
         },
@@ -1112,6 +1114,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "免門票",
             hours: "週六日約 09:00–18:00（六日才全開），以現場為準",
+            openDays: "僅週六、日開放（平日多半休市）",
             tips: [ "交通：BTS Surasak → Mo Chit 1 號出口", "現金多帶，攤位大多不收卡", "越早去越涼快、人也少" ]
           }
         },
@@ -1174,6 +1177,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "免門票",
             hours: "市場約 06:00–18:00；火車時刻以現場公告為準",
+            openDays: "每日營業（火車照常進站，僅班次較少）",
             tips: [ "交通：包車或 Grab，車程約 1.5 小時", "火車來時務必退到攤位後方，聽從攤販指揮" ]
           }
         },
@@ -1192,6 +1196,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "免門票（螢火蟲船遊約 60–100 THB／人）",
             hours: "約 12:00–20:00，只開五六日（今天週日有開），以現場為準",
+            openDays: "僅週五、六、日開放（黃昏後）",
             tips: [ "從美功車程約 20 分", "回程：包車／Grab 回飯店，車程約 1.5 小時" ]
           }
         }
@@ -1216,6 +1221,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "門票 500 THB，以官網為準",
             hours: "約 08:30–15:30，以官網為準",
+            openDays: "每日開放（若有王室儀式可能臨時關閉，以官網公告為準）",
             tips: [ "交通：BTS Surasak → Saphan Taksin 2 號出口 → 交通船（藍旗或橘旗）→ Tha Chang 碼頭", "服儀檢查嚴格：長袖長褲，無袖短褲不能進", "門口自稱「今天沒開」的攬客一律不理" ]
           }
         },
@@ -1234,6 +1240,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "門票 300 THB（含飲用水一瓶），以現場為準",
             hours: "約 08:00–18:30，以現場為準",
+            openDays: "每日開放",
             tips: [ "步行：大皇宮 → 臥佛寺約 10 分", "投 108 個缽的銅板祈福記得換零錢" ]
           }
         },
@@ -1252,6 +1259,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "門票 100 THB，以現場為準",
             hours: "約 08:00–18:00，以現場為準",
+            openDays: "每日開放",
             tips: [ "渡輪：臥佛寺旁 Tha Tien 碼頭過河約 5 THB", "回程：渡輪回東岸 → 交通船回 Saphan Taksin → BTS 回 Surasak" ]
           }
         }
@@ -1398,6 +1406,7 @@ const TRIP_DATA = {
           notice: {
             ticket: "免門票；摩天輪約 400–500 THB，以現場為準",
             hours: "約 16:00–24:00，以官網為準",
+            openDays: "每日開放",
             tips: [ "回程：接駁船回 Sathorn Pier → 步行回飯店", "明天中午的飛機，今晚回去先打包行李" ]
           }
         }
@@ -2485,6 +2494,7 @@ const TRIP_DATA = {
         + '<div class="notice"><div class="nt-title">' + ic("alert", "sm ic-terra") + ' Notes ・ 注意提醒</div><ul>'
         + '<li>' + ic("ticket", "sm ic-blue") + '<span>票券：' + esc(s.notice.ticket) + '</span></li>'
         + '<li>' + ic("clock", "sm ic-gold") + '<span>開放時間：' + esc(s.notice.hours) + '</span></li>'
+        + (s.notice.openDays ? '<li>' + ic("calendar", "sm ic-sage") + '<span>開放星期：' + esc(s.notice.openDays) + '</span></li>' : '')
         + (s.notice.tips || []).map(t => {
             const ti = tipIcon(t);
             const tc = ti === "alert" ? "ic-terra" : ti === "walk" ? "ic-sage" : "ic-blue";
