@@ -305,7 +305,7 @@
     white-space:nowrap;font-weight:600;font-size:.75rem;
     letter-spacing:.1em;text-transform:uppercase;
     border-bottom:1px solid var(--ink);
-    overflow:hidden;
+    overflow:hidden;text-overflow:ellipsis;
   }
   table.expense th:first-child{padding-left:0;}
   table.expense th:not(:last-child){position:relative;}
@@ -314,7 +314,8 @@
     position:sticky;right:0;z-index:2;
     background:var(--bg);box-shadow:-6px 0 6px -6px rgba(0,0,0,.18);
   }
-  table.expense td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap;overflow:hidden;}
+  /* 欄寬不夠時用...提示還有更多內容被裁掉，不要讓文字被硬生生截斷到看不出原意（例如姓名) */
+  table.expense td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   table.expense td:first-child{padding-left:0;}
   table.expense td.amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
   /* 欄寬拖曳把手：低調細線，hover 才明顯（表頭右緣，最後的操作欄不可調） */
@@ -2847,6 +2848,9 @@ const TRIP_DATA = {
   /* 記帳表格欄寬可拖曳調整；欄寬存 localStorage（依 trip id 分站），只存個人裝置顯示偏好，不進 Firestore */
   const COLW_KEY = "trip::" + TRIP_DATA.id + "::exp-colw";
   const COLW_MIN = 70;
+  /* 「誰付的」欄要放頭像圓圈＋姓名，需要比其他欄位更高的下限，否則長姓名（如 Rongjia Chang）會被截斷到看不出原意 */
+  const COLW_MIN_PAYER = 130;
+  const colMinWidth = label => label === "誰付的" ? COLW_MIN_PAYER : COLW_MIN;
   const loadColW = () => { try { return JSON.parse(localStorage.getItem(COLW_KEY) || "{}"); } catch (e) { return {}; } };
   const saveColW = map => { try { localStorage.setItem(COLW_KEY, JSON.stringify(map)); } catch (e) {} };
   function initColResize(tbl) {
@@ -2855,7 +2859,14 @@ const TRIP_DATA = {
     const n = ths.length - 1; // 最後一欄（操作）sticky 固定寬度，不可調
     if (n <= 0) return;
     const saved = loadColW();
-    const widths = ths.slice(0, n).map((th, i) => saved[i] || Math.round(th.getBoundingClientRect().width));
+    /* 下限保護：無論是 localStorage 殘留的舊窄值，還是表格在分頁隱藏（display:none）時量到的 0/過窄天然寬度，
+       套用時都拉回各欄自己的最小寬度，不會再讓文字被硬生生截斷成看不懂的殘字 */
+    const minWidths = ths.slice(0, n).map(th => colMinWidth(th.textContent.trim()));
+    const widths = ths.slice(0, n).map((th, i) => {
+      const natural = Math.round(th.getBoundingClientRect().width);
+      const base = saved[i] != null ? saved[i] : natural;
+      return Math.max(minWidths[i], base);
+    });
     const lastW = Math.round(ths[n].getBoundingClientRect().width); // 操作欄不可調但寬度要算進總寬
     const colgroup = document.createElement("colgroup");
     widths.forEach(w => {
@@ -2879,7 +2890,7 @@ const TRIP_DATA = {
       th.appendChild(handle);
       let startX = 0, startW = 0;
       const onMove = clientX => {
-        cols[i].style.width = Math.max(COLW_MIN, Math.round(startW + (clientX - startX))) + "px";
+        cols[i].style.width = Math.max(minWidths[i], Math.round(startW + (clientX - startX))) + "px";
         syncTableWidth();
       };
       const onEnd = () => {
