@@ -712,6 +712,7 @@ const TRIP_DATA = {
       name: "曼谷是隆希爾頓花園飯店 Hilton Garden Inn Bangkok Silom",
       url: "",
       address: "320 Silom Rd, Suriya Wong, Bang Rak, Bangkok 10500",
+      coords: [13.7232, 100.5185],
       checkIn: "2026-09-21", checkOut: "2026-10-02",
       access: [
         "機場鐵路 ARL 至 Phaya Thai 轉 BTS",
@@ -2521,6 +2522,13 @@ const TRIP_DATA = {
     const pts = (day.spots || [])
       .map((s, i) => ({ name: s.name, coords: s.coords, base: s.base, no: i + 1 }))
       .filter(x => Array.isArray(x.coords) && x.coords.length === 2);
+    /* 飯店固定標示：每天都畫，來源統一為 TRIP_DATA.hotels[0]，
+       跟當天流程裡若剛好已有同座標的 base:"hotel" spot 時不重複疊加 */
+    const hotel = (TRIP_DATA.hotels || [])[0];
+    if (hotel && Array.isArray(hotel.coords) && hotel.coords.length === 2) {
+      const dup = pts.some(x => x.base === "hotel" && x.coords[0] === hotel.coords[0] && x.coords[1] === hotel.coords[1]);
+      if (!dup) pts.push({ name: hotel.name, coords: hotel.coords, base: "hotel", no: null });
+    }
     if (!pts.length) { dayMapFallback(el, di, zone); return; }
     if (!(window.L && L.map)) {
       /* Leaflet 以 defer 載入，可能還沒好：短暫重試幾次，仍失敗才降級 */
