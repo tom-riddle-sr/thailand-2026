@@ -2786,10 +2786,18 @@ const TRIP_DATA = {
     } catch (e) { EXP.error = "匯入失敗：" + String(e && e.code || e); refreshExpenses(); }
   }
 
-  /* 寫入/刪除：不 await 伺服器回應（離線時由本機快取樂觀更新，回線自動送出） */
-  function expUpsert(item) {
+  /* 寫入/刪除：不 await 伺服器回應（離線時由本機快取樂觀更新，回線自動送出）。
+     離線排隊中的寫入 Promise 會一直 pending 到重新連線才 resolve，不會走到 catch；
+     只有真的寫入失敗（權限、格式等）才會進 catch，所以這裡用 alert 提醒是安全的，不會誤擾離線使用者。
+     加 onError callback：新增/編輯表單送出失敗時彈出明顯提示，避免使用者以為「送出了但沒生效」卻只看到一行小字。 */
+  function expUpsert(item, onError) {
     if (!FB.ready || !FB.user) return;
-    FB.fs.setDoc(expDocRef(item.id), item).catch(e => { EXP.error = String(e && e.code || e); refreshExpenses(); });
+    FB.fs.setDoc(expDocRef(item.id), item).catch(e => {
+      const code = String(e && e.code || e);
+      EXP.error = code;
+      refreshExpenses();
+      if (onError) onError(code);
+    });
   }
   function expDelete(id) {
     if (!FB.ready || !FB.user) return;
@@ -2910,7 +2918,10 @@ const TRIP_DATA = {
     const totalLines = totalEntries.length
       ? totalEntries.map(([c, a]) => '<div class="big-line">' + c + ' ' + fmtAmt(a, c) + '</div>').join('')
       : '<div class="muted" style="font-size:.9rem;">尚無資料</div>';
-    const twdLine = twdSum ? '<div class="big-line big-approx">≈ TWD ' + fmtAmt(twdSum, "TWD") + '</div>' : '';
+    /* 只有單一幣別且本身就是 TWD 時，≈TWD 換算行會跟上面原幣總計完全同一個數字（重複顯示、像多算一次）；
+       這種情況略過換算行，多幣別時才顯示（不重複，且提供原幣清單看不到的合併總額）。 */
+    const onlyTWD = totalEntries.length === 1 && totalEntries[0][0] === "TWD";
+    const twdLine = (twdSum && !onlyTWD) ? '<div class="big-line big-approx">≈ TWD ' + fmtAmt(twdSum, "TWD") + '</div>' : '';
     stats.innerHTML =
       '<div class="stat-card"><div class="t">' + ic("wallet", "sm ic-blue") + '總花費（不含已退款）</div><div class="big-list">' + totalLines + twdLine + '</div></div>'
       + '<div class="stat-card"><div class="t">' + ic("user", "sm ic-terra") + '依「誰付的」小計</div>'
@@ -2939,9 +2950,11 @@ const TRIP_DATA = {
       /* 花費日期（spentAt，已由 expNorm 退回 createdAt 保底）：欄位數不再增加，併入項目名稱那格顯示小字 */
       const dm = String(e.spentAt || "").match(/^\d{4}-(\d{2})-(\d{2})/);
       const dstr = dm ? (+dm[1]) + "/" + (+dm[2]) : "";
+      /* 幣別本身就是 TWD 時，換算欄會跟原幣欄顯示同一個數字（看起來像同一筆錢算了兩次），這種情況不重複顯示 */
+      const twdCaption = e.currency === "TWD" ? "" : (e.amountTWD != null ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "—");
       rows += '<tr><td>' + esc(e.name) + pend + (dstr ? ' <span class="muted" style="font-size:.82em;">' + dstr + '</span>' : '') + '</td>'
         + '<td class="amt">' + (e.amount != null ? esc(e.currency) + " " + fmtAmt(e.amount, e.currency) : '<span class="muted">—</span>')
-        + '<br><span class="muted">' + (e.amountTWD != null ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "—") + '</span></td>'
+        + (twdCaption ? '<br><span class="muted">' + twdCaption + '</span>' : '') + '</td>'
         + '<td><span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span></td>'
         + '<td><span class="chip">' + esc(e.category) + '</span></td>'
         + '<td>' + (recAv || ic("user", "sm ic-terra") + ' ') + esc(e.payer) + '</td>'
@@ -2952,7 +2965,7 @@ const TRIP_DATA = {
         + '<div class="xc-acts">' + actBtns + '</div>'
         + '<div class="xc-head"><span class="xc-name">' + esc(e.name) + '</span><span class="chip">' + esc(e.category) + '</span></div>'
         + '<div class="xc-amt">' + (e.amount != null ? esc(e.currency) + " " + fmtAmt(e.amount, e.currency) : '<span class="muted">—</span>')
-        + '<span class="sub">TWD ' + (e.amountTWD != null ? fmtAmt(e.amountTWD, "TWD") : "—") + '</span></div>'
+        + (twdCaption ? '<span class="sub">' + twdCaption + '</span>' : '') + '</div>'
         + '<div class="xc-meta">' + (recAv || ic("user", "sm ic-terra") + ' ') + '<span>' + esc(e.payer) + '</span>'
         + '<span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span>'
         + (dstr ? '<span>' + dstr + '</span>' : '')
@@ -3087,6 +3100,7 @@ const TRIP_DATA = {
       $("#exp-cancel", p).style.display = "none";
     };
     const doSubmit = () => {
+      const wasEdit = !!editingId; // resetForm() 稍後會清空 editingId，先記住這次送出是新增還是編輯，供失敗提示用
       const prev = editingId ? expNorm(expList().find(x => x.id === editingId) || {}) : null;
       const ccy = fe("currency").value;
       const amt = parseFloat(fe("amount").value);
@@ -3113,7 +3127,7 @@ const TRIP_DATA = {
         createdAt: (prev && prev.createdAt) || new Date().toISOString()
       };
       resetForm();
-      expUpsert(item);
+      expUpsert(item, code => alert((wasEdit ? "更新" : "新增") + "失敗（" + code + "），請檢查網路後再試一次；剛剛的內容沒有存進雲端。"));
     };
     form.addEventListener("submit", e => {
       e.preventDefault();
