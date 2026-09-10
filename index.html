@@ -2738,6 +2738,10 @@ const TRIP_DATA = {
         : (amount != null && fxRate(currency) != null ? Math.round(amount * fxRate(currency)) : null);
     }
     n.spentAt = e.spentAt || e.createdAt || null; // 舊資料無 spentAt 時退回 createdAt，顯示用
+    /* 加總/顯示共用容錯：amount 缺失但 amountTWD 有值時，退回用 amountTWD（視為 TWD）當代表金額，
+       避免這類記錄被統計卡的加總邏輯跳過；單筆顯示與加總都改吃這兩個欄位，不再各寫一套判斷 */
+    n.aggAmount = amount != null ? amount : n.amountTWD;
+    n.aggCurrency = amount != null ? currency : "TWD";
     return n;
   }
   window.__expNorm = expNorm; // 測試/工具用：暴露正規化函式供驗證相容性，不影響正式邏輯（同 __tripDecrypt 慣例）
@@ -2920,10 +2924,10 @@ const TRIP_DATA = {
     let twdSum = 0;
     list.forEach(e => {
       if (e.status === "已退款") return;
-      addTo(totalsByCur, "t", e.currency, e.amount);
+      addTo(totalsByCur, "t", e.aggCurrency, e.aggAmount);
       if (e.amountTWD != null) twdSum += e.amountTWD;
-      addTo(byPayer, e.payer || "未填", e.currency, e.amount);
-      addTo(byCat, e.category || "其他", e.currency, e.amount);
+      addTo(byPayer, e.payer || "未填", e.aggCurrency, e.aggAmount);
+      addTo(byCat, e.category || "其他", e.aggCurrency, e.aggAmount);
     });
     const totalEntries = Object.entries(totalsByCur.t || {}).sort((a, b) => b[1] - a[1]);
     const totalLines = totalEntries.length
@@ -2966,10 +2970,10 @@ const TRIP_DATA = {
       const noAmt = e.amount == null;
       const curr = e.currency || "TWD";
       const mainAmt = noAmt
-        ? (e.amountTWD != null
-            ? (curr === "TWD" ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "≈TWD " + fmtAmt(e.amountTWD, "TWD"))
+        ? (e.aggAmount != null
+            ? (curr === "TWD" ? "TWD " + fmtAmt(e.aggAmount, "TWD") : "≈TWD " + fmtAmt(e.aggAmount, "TWD"))
             : '<span class="muted">—</span>')
-        : esc(curr) + " " + fmtAmt(e.amount, curr);
+        : esc(curr) + " " + fmtAmt(e.aggAmount, curr);
       const twdCaption = noAmt ? "" : (curr === "TWD" ? "" : (e.amountTWD != null ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "—"));
       rows += '<tr><td>' + esc(e.name) + pend + (dstr ? ' <span class="muted" style="font-size:.82em;">' + dstr + '</span>' : '') + '</td>'
         + '<td class="amt">' + mainAmt
