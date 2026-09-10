@@ -776,7 +776,7 @@ const TRIP_DATA = {
       category: "要提前預約的",
       items: [
         { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" },
-        { name: "LIVING GREEN 大象保護區（10/1）", note: "Klook 預約含飯店接送，選午班 11:00–18:30 場次（尚未預約）", deadline: "2026-09-24" }
+        { name: "LIVING GREEN 大象保護區（9/29）", note: "Klook 預約含飯店接送，選午班 11:00–18:30 場次（尚未預約）", deadline: "2026-09-24" }
       ]
     },
     {
@@ -1286,42 +1286,43 @@ const TRIP_DATA = {
     },
     {
       date: "2026-09-29",
-      theme: "自由日｜SPA 放鬆（建議 12:00 出發）",
+      theme: "大象保護區一日遊（11:00 出發）＋ Silom 晚間美食／按摩放鬆",
       spots: [
         {
-          name: "高級 SPA 放鬆（建議）",
-          url: "",
-          mapQuery: "Silom Road Bangkok",
-          stay: "12:00–15:00",
-          coords: [13.7248, 100.5285],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Classical_Thai_Massage_at_Tara_Angkor_Hotel_%285918685202%29.jpg/960px-Classical_Thai_Massage_at_Tara_Angkor_Hotel_%285918685202%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/201304021427a_HJartmann_Massage_Andaman_Princess_Resort_%26_Spa.jpg/960px-201304021427a_HJartmann_Massage_Andaman_Princess_Resort_%26_Spa.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Thai_massage_%282362463368%29.jpg/960px-Thai_massage_%282362463368%29.jpg"],
+          name: "LIVING GREEN 大象保護區一日遊",
+          url: "https://www.klook.com/zh-TW/activity/144699-living-green-elephant-sanctuary-chonburi-from-bangkok-or-pattaya/",
+          mapQuery: "Living Green Elephant Sanctuary Chonburi",
+          stay: "約7~7.5小時（含接送），午班場次不用早起",
+          coords: [13.25, 101.09],
+          images: [],
           intro: [
-            "行程過半，安排一個下午給高級 SPA",
-            "精油按摩、草本熱敷球、花瓣浴看喜好選",
-            "熱門店家建議前一兩天先訂位"
+            "春武里府考基奧山區的道德大象保護區，180° 環山景",
+            "近距離餵食、與大象互動，不騎乘，支持當地社區永續發展",
+            "飯店往返接送，傍晚 18:30 左右送回飯店，晚上再悠閒安排 Silom 美食或按摩"
           ],
           notice: {
-            ticket: "高級 SPA 約 1,500–3,500 THB／2 小時課程，以店家為準",
-            hours: "多數 10:00–22:00",
-            tips: [ "Silom／Sathorn 一帶名店密集，Grab 都在 10 分鐘內", "按摩前吃七分飽就好" ]
+            ticket: "Klook 連結先預約訂購，取票方式：憑訂購成功的電子憑證（QR Code）現場報到即可",
+            hours: "飯店接送 11:00–18:30（曼谷午班場次）",
+            openDays: "每日均有場次",
+            tips: [ "行前準備清單記得先在 Klook 預約（選午班場次）", "建議著輕便衣物、好走的鞋，體驗中可能弄濕弄髒", "評價 4.8/5（244 則）；車程約 1.5–2 小時（春武里府）" ]
           }
         },
         {
-          name: "Silom 區美食補點",
+          name: "晚間 Silom 美食／按摩放鬆",
           url: "",
           mapQuery: "Silom Road Bangkok",
-          stay: "15:00–20:00",
+          stay: "18:30–22:00",
           coords: [13.7276, 100.534],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Insect_food_stall.JPG/960px-Insect_food_stall.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Juice_Stall_%28240634907%29.jpeg/960px-Juice_Stall_%28240634907%29.jpeg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Food_stall_%288270030829%29_%282%29.jpg/960px-Food_stall_%288270030829%29_%282%29.jpg"],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Classical_Thai_Massage_at_Tara_Angkor_Hotel_%285918685202%29.jpg/960px-Classical_Thai_Massage_at_Tara_Angkor_Hotel_%285918685202%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Thai_massage_%282362463368%29.jpg/960px-Thai_massage_%282362463368%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Insect_food_stall.JPG/960px-Insect_food_stall.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Juice_Stall_%28240634907%29.jpeg/960px-Juice_Stall_%28240634907%29.jpeg"],
           intro: [
-            "SPA 完就在 Silom 區或飯店周邊覓食",
-            "把清單上還沒吃到的泰式料理補一補",
-            "船麵、青木瓜沙拉、泰奶甜點都在步行圈內"
+            "大象保護區約 18:30 送回飯店，簡單梳洗換裝",
+            "想放鬆就找 Silom／Sathorn 一帶的高級 SPA，精油按摩、草本熱敷球看喜好選",
+            "不想按摩就直接覓食，把清單上還沒吃到的船麵、青木瓜沙拉、泰奶甜點補一補"
           ],
           notice: {
-            ticket: "餐費另計",
-            hours: "小吃攤傍晚開始最熱鬧",
-            tips: [ "步行：飯店周邊即可", "晚上想走遠一點就 Grab" ]
+            ticket: "SPA 約 1,500–3,500 THB／2 小時課程；餐費另計，以店家為準",
+            hours: "SPA 多數 10:00–22:00；小吃攤傍晚開始最熱鬧",
+            tips: [ "Silom／Sathorn 一帶名店密集，Grab 都在 10 分鐘內", "行程滿的一天，按摩或吃飽就早點回房休息" ]
           }
         }
       ]
@@ -1389,63 +1390,25 @@ const TRIP_DATA = {
     },
     {
       date: "2026-10-01",
-      theme: "大象保護區一日遊（11:00 出發）＋ Asiatique 河岸夜市（19:00 出發）",
+      theme: "Asiatique 河岸夜市（16:00 出發）",
       spots: [
-        {
-          name: "LIVING GREEN 大象保護區一日遊",
-          url: "https://www.klook.com/zh-TW/activity/144699-living-green-elephant-sanctuary-chonburi-from-bangkok-or-pattaya/",
-          mapQuery: "Living Green Elephant Sanctuary Chonburi",
-          stay: "約7~7.5小時（含接送），午班場次不用早起",
-          coords: [13.25, 101.09],
-          images: [],
-          intro: [
-            "春武里府考基奧山區的道德大象保護區，180° 環山景",
-            "近距離餵食、與大象互動，不騎乘，支持當地社區永續發展",
-            "飯店往返接送，傍晚 18:30 左右送回飯店，簡單梳洗換裝就能接著去 Asiatique"
-          ],
-          notice: {
-            ticket: "Klook 連結先預約訂購，取票方式：憑訂購成功的電子憑證（QR Code）現場報到即可",
-            hours: "飯店接送 11:00–18:30（曼谷午班場次）",
-            openDays: "每日均有場次",
-            tips: [ "行前準備清單記得先在 Klook 預約（選午班場次）", "建議著輕便衣物、好走的鞋，體驗中可能弄濕弄髒", "評價 4.8/5（244 則）；車程約 1.5–2 小時（春武里府）" ]
-          }
-        },
-        {
-          name: "BTS＋免費接駁船",
-          url: "",
-          mapQuery: "Sathorn Pier Bangkok",
-          stay: "18:45–19:00",
-          coords: [13.7184, 100.5126],
-          base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Chao_Phraya_Express_Boat_Service%2C_Sathorn_Pier%2C_Bangkok_%286906973718%29.jpg/960px-Chao_Phraya_Express_Boat_Service%2C_Sathorn_Pier%2C_Bangkok_%286906973718%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Phra_Arthit_Pier%2C_Chao_Phraya_Express_Boat_Service%2C_Bangkok_%287053053215%29.jpg/960px-Phra_Arthit_Pier%2C_Chao_Phraya_Express_Boat_Service%2C_Bangkok_%287053053215%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Chao_Phraya_Express_Boat_Service%2C_Bangkok%2C_Thailand_%287053021537%29.jpg/960px-Chao_Phraya_Express_Boat_Service%2C_Bangkok%2C_Thailand_%287053021537%29.jpg"],
-          intro: [
-            "BTS 到 Saphan Taksin，走到 Sathorn Pier",
-            "搭 Asiatique 免費接駁船順流而下",
-            "入夜後河面吹風更舒服，遠遠就能看到摩天輪的燈"
-          ],
-          notice: {
-            ticket: "接駁船免費",
-            hours: "接駁船約 16:00–23:30，班距 15–30 分",
-            tips: [ "交通：BTS Surasak → Saphan Taksin → Sathorn Pier → 免費接駁船", "排隊人多時提早一班搭" ]
-          }
-        },
         {
           name: "Asiatique The Riverfront",
           url: "https://www.asiatiquethailand.com/",
           mapQuery: "Asiatique The Riverfront Bangkok",
-          stay: "19:00–23:00",
+          stay: "16:00–23:00",
           coords: [13.7045, 100.5023],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Asiatique_%2811384515613%29.jpg/960px-Asiatique_%2811384515613%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Asiatique_The_Riverfront_at_nignt_01.jpg/960px-Asiatique_The_Riverfront_at_nignt_01.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Asiatique_The_Riverfront_at_nignt_09.jpg/960px-Asiatique_The_Riverfront_at_nignt_09.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Asiatique_The_Riverfront_at_nignt_14.jpg/960px-Asiatique_The_Riverfront_at_nignt_14.jpg"],
           intro: [
             "老碼頭倉庫改建的河岸夜市",
             "摩天輪上看昭披耶河夜景",
-            "官網營業到 24:00，攤位主要 16:00 後才陸續開，晚一點來完全不影響體驗，甚至更熱鬧"
+            "傍晚各攤位陸續營業，天黑後最熱鬧，可以待到閉園"
           ],
           notice: {
             ticket: "免門票；摩天輪約 400–500 THB，以現場為準",
             hours: "官網公告全區 11:00–24:00；夜市攤位與多數店家實際約 16:00 後才陸續開，18:00 後最熱鬧（官網＋查證來源）",
             openDays: "每日開放",
-            tips: [ "回程：接駁船回 Sathorn Pier → 步行回飯店", "明天中午的飛機，今晚回去先打包行李" ]
+            tips: [ "交通：BTS Surasak → Saphan Taksin → Sathorn Pier → 免費接駁船（約 16:00 起開航，班距 15–30 分）", "回程：接駁船回 Sathorn Pier → 步行回飯店", "明天中午的飛機，今晚回去先打包行李" ]
           }
         }
       ]
