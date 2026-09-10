@@ -776,7 +776,9 @@ const TRIP_DATA = {
       category: "要提前預約的",
       items: [
         { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" },
-        { name: "LIVING GREEN 大象保護區（9/29）", note: "已訂妥｜訂單 VQY542365，NT$1,726；2026-09-28 11:00 前可取消（曼谷時間）", deadline: "2026-09-24" }
+        { name: "LIVING GREEN 大象保護區（9/29）", note: "已訂妥｜訂單 VQY542365，NT$1,726；2026-09-28 11:00 前可取消（曼谷時間）", deadline: "2026-09-24" },
+        { name: "安帕瓦水上市場・螢火蟲遊船（9/26）", note: "無固定曼谷來回 Klook 行程，建議包車或現場向當地船家報名螢火蟲遊船團（尚未預約）", deadline: "2026-09-20" },
+        { name: "北碧府一日遊 Kanchanaburi（9/27）", note: "Klook 預約（尚未預約），NT$1,591 起，注意方案選擇；集合地點為曼谷 CentralWorld 貴賓廳 G 層，非飯店接送，08:00 前 10 分鐘抵達", deadline: "2026-09-20" }
       ]
     },
     {
@@ -1116,7 +1118,7 @@ const TRIP_DATA = {
     },
     {
       date: "2026-09-26",
-      theme: "恰圖恰週末市集（建議 09:30 出發）",
+      theme: "恰圖恰週末市集＋安帕瓦水上市場・螢火蟲遊船（建議 09:30 出發）",
       spots: [
         {
           name: "Chatuchak 恰圖恰週末市集",
@@ -1141,36 +1143,37 @@ const TRIP_DATA = {
           name: "回飯店放戰利品",
           url: "",
           mapQuery: "Hilton Garden Inn Bangkok Silom",
-          stay: "14:00–15:30",
+          stay: "14:00–14:30",
           coords: [13.7232, 100.5185],
           base: "hotel",  // 出發/返程點：照常顯示但不參與 fitBounds
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/BTS_Skytrain%2C_Bangkok%2C_Thailand.jpg/960px-BTS_Skytrain%2C_Bangkok%2C_Thailand.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/BTS_Sukhumvit_Line_EMU-B3_train_at_Mo_Chit_station.jpg/960px-BTS_Sukhumvit_Line_EMU-B3_train_at_Mo_Chit_station.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Bangkok_skytrain_sunset.jpg/960px-Bangkok_skytrain_sunset.jpg"],
           intro: [
-            "戰利品先搬回飯店",
-            "順便吹冷氣休息，避開最熱的時段"
+            "戰利品先搬回飯店，快速卸貨不逗留",
+            "順便換件輕便衣物，準備出發安帕瓦"
           ],
           notice: {
             ticket: "BTS 車資約 17–62 THB",
             hours: "—",
-            tips: [ "交通：BTS Mo Chit → Surasak", "買太多就直接 Grab 回去" ]
+            tips: [ "交通：BTS Mo Chit → Surasak", "放好行李直接叫車前往安帕瓦，車程約 1.5–2 小時" ]
           }
         },
         {
-          name: "附近咖啡廳・泰式按摩",
-          url: "",
-          mapQuery: "Silom Road Bangkok",
-          stay: "15:30–19:00",
-          coords: [13.7262, 100.5299],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Thai_massage_Ao_Nang_1.jpg/960px-Thai_massage_Ao_Nang_1.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Thai_massage_Ao_Nang_2.jpg/960px-Thai_massage_Ao_Nang_2.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Traditional_Thai_massage.jpg/960px-Traditional_Thai_massage.jpg"],
+          name: "Amphawa 安帕瓦水上市場・螢火蟲遊船",
+          url: "https://www.klook.com/zh-TW/activity/37406-amphawa-floating-market-and-fireflies-watching-boat-cruise-tour/",
+          mapQuery: "Amphawa Floating Market",
+          stay: "14:30–21:30（含往返車程）",
+          coords: [13.4259, 99.9549],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Amphawa_market_at_night.jpg/960px-Amphawa_market_at_night.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Amphawa_Floating_Market_5.jpg/960px-Amphawa_Floating_Market_5.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Amphawa_Floating_Market_10.jpg/960px-Amphawa_Floating_Market_10.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Amphawa_Floating_Market_%28I%29.jpg/960px-Amphawa_Floating_Market_%28I%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Amphawa_Floating_Market%2C_%E0%B8%AD%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%A7%E0%B8%B2%2C_Thailand_%28Unsplash%29.jpg/960px-Amphawa_Floating_Market%2C_%E0%B8%AD%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%A7%E0%B8%B2%2C_Thailand_%28Unsplash%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Dayyy.jpg/960px-Dayyy.jpg"],
           intro: [
-            "飯店周邊找間咖啡廳放空，或直接來一場泰式按摩",
-            "推薦：Silom Bodyworks（老字號按摩店，力道拿捏準）、So Thai Spa（評價高、環境乾淨舒適）、Urban Thai Massage（價格實惠、手法紮實）",
-            "把逛市集的腳救回來"
+            "從曼谷出發車程約 1.5–2 小時，抵達夜功府（Samut Songkhram）安帕瓦運河小鎮",
+            "16:00 後水上市場陸續開攤，船家現烤海鮮、椰子冰、泰式甜點一路吃到天黑",
+            "重點行程：入夜後搭長尾船遊夜功河賞螢火蟲（泰語稱 hing hoi），沿岸紅樹林點點螢光是這趟最浪漫的畫面"
           ],
           notice: {
-            ticket: "泰式按摩約 300–600 THB／小時，以店家為準",
-            hours: "按摩店多營業至 22:00 後",
-            tips: [ "步行：Silom Bodyworks／So Thai Spa／Urban Thai Massage 都在步行範圍，用 Google Map 搜尋店名", "腳底按摩對走一天的行程最有感" ]
+            ticket: "水上市場免門票；螢火蟲觀賞船遊約 60–100 THB／人（依包船／拼船而定）",
+            hours: "水上市場約 16:00–21:00（週五六日限定）；螢火蟲遊船多在天黑後 18:00–20:00 進行",
+            openDays: "僅週五、六、日開放；9/26 為週六，正常營業",
+            tips: [ "沒有固定的曼谷來回接送 Klook 行程，建議包車或現場向當地船家報名螢火蟲遊船團", "已查到可參考行程：Klook「Amphawa Floating Market and Fireflies Watching Boat Cruise Tour」", "回程：包車／Grab 回飯店，車程約 1.5–2 小時，建議 21:30 前離開安帕瓦", "船上搖晃＋夜間視線差，貴重物品收好，防蚊液先噴" ]
           }
         }
       ],
@@ -1180,44 +1183,116 @@ const TRIP_DATA = {
     },
     {
       date: "2026-09-27",
-      theme: "美功鐵道市場＋安帕瓦水上市場（11:30 出發）",
+      theme: "北碧府一日遊 Kanchanaburi（桂河大橋・死亡鐵路・螢火蟲級景觀天空步道｜08:00 出發）",
       spots: [
         {
-          name: "Maeklong 美功鐵道市場",
-          url: "",
-          mapQuery: "Maeklong Railway Market",
-          stay: "13:00–15:00",
-          coords: [13.4067, 99.9553],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Maeklong_Railway_Market_-_SRT_NKF_1212_%2820241012a%29_%2854222669863%29.jpg/960px-Maeklong_Railway_Market_-_SRT_NKF_1212_%2820241012a%29_%2854222669863%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Maeklong_Railway_Market_-_SRT_NKF_1227_%2820241012b%29_%2854222672984%29.jpg/960px-Maeklong_Railway_Market_-_SRT_NKF_1227_%2820241012b%29_%2854222672984%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Train_passing_through_Maeklong_Railway_Market_%28public_domain%29.jpg/960px-Train_passing_through_Maeklong_Railway_Market_%28public_domain%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Maeklong_Railway_Market_05.jpg/960px-Maeklong_Railway_Market_05.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Maeklong_Railway_Market_%287996361646%29.jpg/960px-Maeklong_Railway_Market_%287996361646%29.jpg"],
+          name: "桂河大橋 Bridge over the River Kwai",
+          url: "https://www.klook.com/zh-TW/activity/13209-kanchanaburi-full-day-tour-by-ak-travel-kanchanaburi/",
+          mapQuery: "Bridge over the River Kwai Kanchanaburi",
+          stay: "10:30–11:30",
+          coords: [14.0491, 99.5024],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Bridge_over_River_Kwai.jpg/960px-Bridge_over_River_Kwai.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Railway_bridge_over_the_river_kwai.JPG/960px-Railway_bridge_over_the_river_kwai.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Khwae_Yai_River.jpg/960px-Khwae_Yai_River.jpg"],
           intro: [
-            "攤販直接擺在鐵軌上的傳奇市場",
-            "火車來時整排遮陽棚秒速收起，車過再秒速擺回",
-            "鎖定 13:45 或 14:30 的火車進站時刻"
+            "08:00 於曼谷 CentralWorld 貴賓廳集合出發，車程約 2.5 小時抵達北碧府",
+            "二戰時期泰緬鐵路的核心地標，鋼骨橋身橫跨桂河，電影《桂河大橋》原型現場",
+            "導覽解說歷史背景，橋頭周邊也有小市集可順道逛"
           ],
           notice: {
-            ticket: "免門票",
-            hours: "市場約 06:20–17:40；列車進站約 08:30／11:10／14:30／17:40，發車約 06:20／09:00／11:30／15:30（查證來源，建議現場再核對公告）",
-            openDays: "每日營業",
-            tips: [ "交通：包車或 Grab，車程約 1.5 小時", "火車來時務必退到攤位後方，聽從攤販指揮" ]
+            ticket: "NT$1,591 起（方案含經典拼團、含午餐、網紅路線、私人遊多種，行程費用一次包含天空步道門票等項目，詳見下方）",
+            hours: "全天行程 08:00 出發，19:30–20:00 返抵 CentralWorld，共 11.5–12.25 小時",
+            openDays: "每日出團",
+            tips: [ "集合地點：曼谷尚泰 CentralWorld 專屬貴賓廳 G 層，非飯店直接接送，08:00 前 10 分鐘抵達，找 Klook 或 AK GO TOUR 標誌人員", "費用包含：北碧府天空步道門票、中英泰語導遊、集合點來回接送、過路費停車費燃油費、供應商保險、火車票、船票、傳統甜點、瓶裝水", "費用不含：餐食飲料（含午餐方案除外）、個人消費、小費", "建議攜帶：防曬乳、太陽眼鏡、休閒帽、現金", "取消政策：活動前 24 小時可全額退款" ]
           }
         },
         {
-          name: "Amphawa 安帕瓦水上市場",
+          name: "The Village Farm To Café 午餐",
           url: "",
-          mapQuery: "Amphawa Floating Market",
-          stay: "15:30–20:00",
-          coords: [13.4259, 99.9549],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Amphawa_market_at_night.jpg/960px-Amphawa_market_at_night.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Amphawa_Floating_Market_5.jpg/960px-Amphawa_Floating_Market_5.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Amphawa_Floating_Market_10.jpg/960px-Amphawa_Floating_Market_10.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Amphawa_Floating_Market_%28I%29.jpg/960px-Amphawa_Floating_Market_%28I%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Amphawa_Floating_Market%2C_%E0%B8%AD%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%A7%E0%B8%B2%2C_Thailand_%28Unsplash%29.jpg/960px-Amphawa_Floating_Market%2C_%E0%B8%AD%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%A7%E0%B8%B2%2C_Thailand_%28Unsplash%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Dayyy.jpg/960px-Dayyy.jpg"],
+          mapQuery: "The Village Farm to Table Kanchanaburi",
+          stay: "11:30–13:00",
+          coords: [14.12, 99.40],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Rice_fields_Chiang_Mai.jpg/960px-Rice_fields_Chiang_Mai.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/A_grass_field_with_road_and_tree_in_Thailand.jpg/960px-A_grass_field_with_road_and_tree_in_Thailand.jpg"],
           intro: [
-            "運河兩岸木屋與船上小吃攤，黃昏開始最有味道",
-            "船家現烤海鮮、椰子冰、泰式甜點一路吃",
-            "入夜後可搭小船看螢火蟲（雨季水量足）"
+            "田園景觀餐廳，坐擁大片綠地與花園造景",
+            "邊吃飯邊放空，是這趟死亡鐵路行程中段最悠閒的一段",
+            "餐費採自理制，價位中等，鄉村景致是主要賣點"
           ],
           notice: {
-            ticket: "免門票（螢火蟲船遊約 60–100 THB／人）",
-            hours: "約 14:00–20:00（部分攤販中午後陸續開），16:00–19:00 傍晚最熱鬧；9/27 為週日，正常營業（查證來源）",
-            openDays: "僅週五、六、日開放",
-            tips: [ "從美功車程約 20 分", "回程：包車／Grab 回飯店，車程約 1.5 小時" ]
+            ticket: "餐費自理（經典含午餐方案除外，未含在基本套裝行程費用內）",
+            hours: "配合行程約 11:30–13:00",
+            tips: [ "價位約 150–300 THB／人，現場點餐", "拍照打卡的花園景觀是這站重點" ]
+          }
+        },
+        {
+          name: "Old Death Railway Station・死亡鐵路小火車",
+          url: "",
+          mapQuery: "Tham Krasae Bridge Kanchanaburi",
+          stay: "13:00–14:40",
+          coords: [14.2266, 99.2075],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Burma_Railway_%28I%29.jpg/960px-Burma_Railway_%28I%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/THAI_RAILWAYS_KRUPPS_LOCO_HAULED_TRAIN_BANGKOK_BOUND_ON_THE_WAMPO_VIADUCT_ON_THE_RIVER_KWAI_NEAR_NAMTOK_THAILAND_%288491696119%29.jpg/960px-THAI_RAILWAYS_KRUPPS_LOCO_HAULED_TRAIN_BANGKOK_BOUND_ON_THE_WAMPO_VIADUCT_ON_THE_RIVER_KWAI_NEAR_NAMTOK_THAILAND_%288491696119%29.jpg"],
+          intro: [
+            "老車站周邊先逛 Tham Krasae 鐵路橋附近的小市集",
+            "接著搭乘 death railway 小火車約 20 分鐘，沿懸崖邊木造棧橋前行，一側就是桂河",
+            "泰緬鐵路最驚險的一段，火車貼著山壁與河面行駛，畫面震撼"
+          ],
+          notice: {
+            ticket: "行程費用已含火車票",
+            hours: "配合行程約 13:00–14:40",
+            tips: [ "靠河側車窗景觀最好，建議提前找位子", "車速不快，適合手機錄影" ]
+          }
+        },
+        {
+          name: "桂河遊船",
+          url: "",
+          mapQuery: "Khwae Noi River cruise Kanchanaburi",
+          stay: "14:40–15:30",
+          coords: [14.20, 99.23],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/River_Kwai_and_the_railway_%283195263552%29.jpg/960px-River_Kwai_and_the_railway_%283195263552%29.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Longtail_Boat_At_Maya_Bay%2C_Krabi%2C_Thailand.jpg/960px-Longtail_Boat_At_Maya_Bay%2C_Krabi%2C_Thailand.jpg"],
+          intro: [
+            "依當日人數安排長尾船或大型遊船，沿桂河欣賞沿岸山水",
+            "從水面角度回望剛搭過的死亡鐵路棧橋，視角完全不同",
+            "船上有微風，是全天行程中最放鬆的一段"
+          ],
+          notice: {
+            ticket: "行程費用已含船票",
+            hours: "配合行程約 14:40–15:30",
+            tips: [ "怕曬可準備帽子／薄外套，河面反光強", "船身會晃，貴重物品收好" ]
+          }
+        },
+        {
+          name: "北碧府天空步道 Sky Walk",
+          url: "",
+          mapQuery: "Kanchanaburi Sky Walk",
+          stay: "15:30–16:30",
+          coords: [14.0194, 99.5311],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Nong_Nooch_Skywalk.JPG/960px-Nong_Nooch_Skywalk.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Kanchanaburi%2C_Sunset_over_Kwai_River%2C_Thailand.jpg/960px-Kanchanaburi%2C_Sunset_over_Kwai_River%2C_Thailand.jpg"],
+          intro: [
+            "透明玻璃步道架高於三河交會處，俯瞰北碧府山水景觀",
+            "行程費用已含門票，天氣好時視野遼闊，是全天最上鏡的一站",
+            "傍晚時段光線柔和，適合拍河景與夕陽"
+          ],
+          notice: {
+            ticket: "行程費用已含門票（現場另收鞋套清潔費約 60 THB）",
+            hours: "09:00–17:00，每日開放（以現場公告為準）",
+            openDays: "每日開放",
+            tips: [ "玻璃步道需套鞋套或脫鞋，注意腳下", "有懼高症斟酌，步道透明可看到腳下河面" ]
+          }
+        },
+        {
+          name: "Pakprak Heritage Street 老街",
+          url: "",
+          mapQuery: "Pak Phraek Heritage Street Kanchanaburi",
+          stay: "16:30–17:30",
+          coords: [14.0227, 99.5316],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Sino-Portugese_Buildings_in_Phuket_Town_%28III%29.jpg/960px-Sino-Portugese_Buildings_in_Phuket_Town_%28III%29.jpg"],
+          intro: [
+            "北碧府二戰時期最繁華的商業街，保留 10 多座當時建築",
+            "老屋立面混合中式、歐式與泰式風格，適合散步拍照",
+            "17:30 集合搭車返回曼谷，車程約 2.5–3 小時"
+          ],
+          notice: {
+            ticket: "免門票，自由散步",
+            hours: "街區全天開放，店家營業時間各異",
+            tips: [ "17:30 準時上車返程，19:30–20:00 返抵 CentralWorld", "全天行程約 11.5–12.25 小時，建議提前休息應付長時間車程" ]
           }
         }
       ]
@@ -1529,7 +1604,7 @@ const TRIP_DATA = {
       },
       {
         name: "Grab／Bolt 叫車", icon: "taxi",
-        when: [ "飯店 ↔ 景點的點對點移動", "下雨、晚歸、拖行李、第七天包車替代方案" ],
+        when: [ "飯店 ↔ 景點的點對點移動", "下雨、晚歸、拖行李、第六天安帕瓦包車替代方案" ],
         ticket: [
           "App 內先報價，不用議價；市區短程約 60–150 THB",
           "Bolt 通常比 Grab 便宜一些，兩個都先下載比價",
