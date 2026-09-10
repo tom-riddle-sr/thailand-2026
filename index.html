@@ -264,23 +264,28 @@
   }
 
   /* ===== Expense ===== */
-  .stats{display:grid;grid-template-columns:1fr;gap:0;margin-bottom:26px;border-top:1px solid var(--line);}
-  @media(min-width:640px){.stats{grid-template-columns:1fr 1fr 1fr;}}
+  /* grid-template-columns 用 minmax(0,1fr) 而非裸 1fr：1fr 軌道預設 min-width:auto，
+     卡片內若有寬內容（長分類名＋金額）就會撐開軌道、把整排推出容器右側（視覺上像被切邊）；
+     minmax(0,1fr) 允許軌道縮到 0，內容改由卡片內部換行處理 */
+  .stats{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-bottom:26px;border-top:1px solid var(--line);}
+  @media(min-width:640px){.stats{grid-template-columns:repeat(3, minmax(0,1fr));gap:0;}}
   .stat-card{
+    min-width:0;
     background:transparent;border:none;border-bottom:1px solid var(--line-soft);
     border-radius:0;padding:16px 4px;box-shadow:none;
   }
   @media(min-width:640px){
-    .stat-card{border-bottom:none;border-left:1px solid var(--line-soft);padding:18px 18px;}
+    .stat-card{border-bottom:none;border-left:1px solid var(--line-soft);padding:18px 22px;}
     .stat-card:first-child{border-left:none;padding-left:4px;}
   }
   .stat-card .t{font-size:.74rem;color:var(--soft);margin-bottom:6px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;}
   .stat-card .t .ic{margin-right:6px;}
   .stat-card .big{font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:.01em;font-variant-numeric:tabular-nums;}
-  .stat-card .big-list .big-line{font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:.01em;font-variant-numeric:tabular-nums;}
+  .stat-card .big-list .big-line{font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:.01em;font-variant-numeric:tabular-nums;overflow-wrap:break-word;}
   .stat-card .big-list .big-approx{font-size:.82rem;font-weight:500;color:var(--soft);margin-top:2px;}
-  .stat-card .row{display:flex;justify-content:space-between;font-size:.88rem;padding:3px 0;}
-  .stat-card .row b{font-variant-numeric:tabular-nums;font-weight:600;}
+  .stat-card .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;font-size:.88rem;padding:3px 0;}
+  .stat-card .row span{min-width:0;overflow-wrap:break-word;}
+  .stat-card .row b{min-width:0;overflow-wrap:break-word;font-variant-numeric:tabular-nums;font-weight:600;text-align:right;}
   .stat-card .row-sub{padding-top:0;opacity:.82;}
 
   .table-wrap{
@@ -2950,10 +2955,18 @@ const TRIP_DATA = {
       /* 花費日期（spentAt，已由 expNorm 退回 createdAt 保底）：欄位數不再增加，併入項目名稱那格顯示小字 */
       const dm = String(e.spentAt || "").match(/^\d{4}-(\d{2})-(\d{2})/);
       const dstr = dm ? (+dm[1]) + "/" + (+dm[2]) : "";
-      /* 幣別本身就是 TWD 時，換算欄會跟原幣欄顯示同一個數字（看起來像同一筆錢算了兩次），這種情況不重複顯示 */
-      const twdCaption = e.currency === "TWD" ? "" : (e.amountTWD != null ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "—");
+      /* 幣別本身就是 TWD 時，換算欄會跟原幣欄顯示同一個數字（看起來像同一筆錢算了兩次），這種情況不重複顯示；
+         舊資料相容：amount 缺失（null/undefined）但 amountTWD 有值時，不要顯示「—」，退回用 amountTWD 當主要金額 */
+      const noAmt = e.amount == null;
+      const curr = e.currency || "TWD";
+      const mainAmt = noAmt
+        ? (e.amountTWD != null
+            ? (curr === "TWD" ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "≈TWD " + fmtAmt(e.amountTWD, "TWD"))
+            : '<span class="muted">—</span>')
+        : esc(curr) + " " + fmtAmt(e.amount, curr);
+      const twdCaption = noAmt ? "" : (curr === "TWD" ? "" : (e.amountTWD != null ? "TWD " + fmtAmt(e.amountTWD, "TWD") : "—"));
       rows += '<tr><td>' + esc(e.name) + pend + (dstr ? ' <span class="muted" style="font-size:.82em;">' + dstr + '</span>' : '') + '</td>'
-        + '<td class="amt">' + (e.amount != null ? esc(e.currency) + " " + fmtAmt(e.amount, e.currency) : '<span class="muted">—</span>')
+        + '<td class="amt">' + mainAmt
         + (twdCaption ? '<br><span class="muted">' + twdCaption + '</span>' : '') + '</td>'
         + '<td><span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span></td>'
         + '<td><span class="chip">' + esc(e.category) + '</span></td>'
@@ -2964,7 +2977,7 @@ const TRIP_DATA = {
       cards += '<div class="exp-card">'
         + '<div class="xc-acts">' + actBtns + '</div>'
         + '<div class="xc-head"><span class="xc-name">' + esc(e.name) + '</span><span class="chip">' + esc(e.category) + '</span></div>'
-        + '<div class="xc-amt">' + (e.amount != null ? esc(e.currency) + " " + fmtAmt(e.amount, e.currency) : '<span class="muted">—</span>')
+        + '<div class="xc-amt">' + mainAmt
         + (twdCaption ? '<span class="sub">' + twdCaption + '</span>' : '') + '</div>'
         + '<div class="xc-meta">' + (recAv || ic("user", "sm ic-terra") + ' ') + '<span>' + esc(e.payer) + '</span>'
         + '<span class="badge ' + badgeCls(e.status) + '">' + esc(e.status) + '</span>'
