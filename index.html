@@ -775,7 +775,6 @@ const TRIP_DATA = {
     {
       category: "要提前預約的",
       items: [
-        { name: "Safari World 共乘接送＋門票（9/25）", note: "Klook 預約含 CentralWorld 集合共乘大巴（尚未預約）", deadline: "2026-09-18" },
         { name: "大皇宮一日遊／導覽（9/28）", note: "Klook 預約（尚未預約）；自由行也可，門票現場買", deadline: "2026-09-18" },
         { name: "LIVING GREEN 大象保護區（10/1）", note: "Klook 預約含飯店接送，選午班 11:00–18:30 場次（尚未預約）", deadline: "2026-09-24" }
       ]
@@ -1038,62 +1037,79 @@ const TRIP_DATA = {
     },
     {
       date: "2026-09-25",
-      theme: "Safari World 賽佛瑞野生動物園（07:30 出發）",
+      theme: "Ari／Ekkamai 文青選品店＋質感咖啡廳（10:00 出發）",
       spots: [
         {
-          name: "CentralWorld 集合搭共乘大巴",
+          name: "Ari 巷弄選物店（MADBACON 等）",
           url: "",
-          mapQuery: "CentralWorld Bangkok",
-          stay: "07:30–09:00",
-          coords: [13.7466, 100.5393],
-          base: true,  // 出發/返程點：照常顯示但不參與 fitBounds
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/CentralWorld_exterior.jpg/960px-CentralWorld_exterior.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/CentralWorld_in_Bangkok_viewed_from_the_adjacent_corner.jpg/960px-CentralWorld_in_Bangkok_viewed_from_the_adjacent_corner.jpg"],
+          mapQuery: "MADBACON Ari Bangkok",
+          stay: "10:45–12:15",
+          coords: [13.7799, 100.5443],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Ari_BTS_Station.jpg/960px-Ari_BTS_Station.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Samsen_nai%2C_Phaya_thai%2Cbangkok_10400%2C_Thailand_-_panoramio.jpg/960px-Samsen_nai%2C_Phaya_thai%2Cbangkok_10400%2C_Thailand_-_panoramio.jpg"],
           intro: [
-            "一早 BTS 到 Chit Lom，CentralWorld 門口集合",
-            "搭 Klook／KKday 共乘大巴前往 Safari World",
-            "車程約 1 小時"
+            "睡飽再出發：BTS Surasak → Siam 轉車 → Ari 站，車程約 35–40 分",
+            "Ari Soi 5 巷弄裡的 MADBACON，泰國本土設計師選物店：手繪明信片、手工蠟燭、不規則陶器、回收布料改造服飾",
+            "老屋改建、巷弄安靜，逛起來步調很慢，適合慢慢挖寶"
           ],
           notice: {
-            ticket: "共乘接送＋門票套票以 Klook／KKday 訂單為準（行前準備清單記得先預約）",
-            hours: "集合時間以訂單通知為準（約 07:45–08:00）",
-            tips: [ "交通：BTS Surasak → Chit Lom → 步行集合點", "早餐先買好帶上車" ]
+            ticket: "免門票入店，消費另計",
+            hours: "約 11:00–19:00（各店略有不同，以現場公告為準）",
+            openDays: "多數店家週一或週二公休，出發前先查證",
+            tips: [ "交通：BTS Surasak → Siam（轉乘）→ Ari", "巷弄店家招牌不明顯，用 Google Map 定位門牌號" ]
           }
         },
         {
-          name: "Safari World 賽佛瑞野生動物園",
-          url: "https://www.safariworld.com/",
-          mapQuery: "Safari World Bangkok",
-          stay: "09:00–16:30",
-          coords: [13.8650, 100.7030],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Giraffes-_safari-_bangkok.JPG/960px-Giraffes-_safari-_bangkok.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Safari_World.jpg/960px-Safari_World.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/0710_Tierpark_Bangkok_Safari_World.jpg/960px-0710_Tierpark_Bangkok_Safari_World.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/1000_Tierpark_Bangkok_Safari_World.jpg/960px-1000_Tierpark_Bangkok_Safari_World.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Ara_macaws_at_Safari_World_-Bangkok-8a.jpg/960px-Ara_macaws_at_Safari_World_-Bangkok-8a.jpg"],
+          name: "Ari 巷弄咖啡廳午餐",
+          url: "",
+          mapQuery: "Ari Bangkok cafe",
+          stay: "12:15–13:30",
+          coords: [13.7797, 100.5450],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Samsen_nai%2C_Phaya_thai%2Cbangkok_10400%2C_Thailand_-_panoramio.jpg/960px-Samsen_nai%2C_Phaya_thai%2Cbangkok_10400%2C_Thailand_-_panoramio.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Ari_BTS_Station.jpg/960px-Ari_BTS_Station.jpg"],
           intro: [
-            "大巴直接開進野生動物區，長頸鹿、斑馬、老虎近距離看",
-            "海洋公園區有海豚秀、海獅秀等多場表演",
-            "重頭戲：親手餵長頸鹿"
+            "Ari 是曼谷本地人才愛去的老社區，巷弄裡藏了大量獨立咖啡館",
+            "挑一間順眼的老屋咖啡廳坐下吃午餐、喝手沖，步調放慢",
+            "很多店家小小一間、位子不多，人多的話先查營業時間"
           ],
           notice: {
-            ticket: "套票含野生動物區＋海洋公園，以訂單為準",
-            hours: "平日（二至五）野生動物區 09:00–16:30、海洋公園 09:00–17:00；週末假日野生動物區 09:00–17:00、海洋公園 09:00–17:30（查證來源）",
-            openDays: "每週一公休；9/25 為週五，正常營業",
-            tips: [ "表演場次時刻表進場先拍下來，動線照場次排", "防曬與水壺必帶，園區大又熱" ]
+            ticket: "免門票，餐飲現場點",
+            hours: "多數約 08:00–18:00，各店不同",
+            tips: [ "不特別指定店名，Ari 巷弄咖啡廳密度極高，跟著評價挑即可", "吃完想續逛書店／選物店可以多走幾條巷子" ]
           }
         },
         {
-          name: "回程＋CentralWorld 補逛",
+          name: "Fill in the Blank 咖啡選物店",
           url: "",
-          mapQuery: "CentralWorld Bangkok",
-          stay: "16:30–20:00",
-          coords: [13.7466, 100.5393],
-          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/CentralWorld%D8%8C_Bangkok%D8%8C_Christmas_tree.jpg/960px-CentralWorld%D8%8C_Bangkok%D8%8C_Christmas_tree.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Phra_Trimurti_and_Christmas.jpg/960px-Phra_Trimurti_and_Christmas.jpg"],
+          mapQuery: "Fill in the Blank Cafe Bangkok Ekkamai",
+          stay: "14:15–15:45",
+          coords: [13.7211, 100.5836],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Khlong_Toei_Nuea%2C_Watthana%2C_Bangkok_10110%2C_Thailand_-_panoramio.jpg/960px-Khlong_Toei_Nuea%2C_Watthana%2C_Bangkok_10110%2C_Thailand_-_panoramio.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/BTS%E3%82%A8%E3%82%AB%E3%83%9E%E3%82%A4%E9%A7%85%E3%81%AE%E9%A7%85%E8%88%8E.jpg/960px-BTS%E3%82%A8%E3%82%AB%E3%83%9E%E3%82%A4%E9%A7%85%E3%81%AE%E9%A7%85%E8%88%8E.jpg"],
           intro: [
-            "傍晚大巴回 CentralWorld",
-            "補逛寶可夢中心、吃晚餐",
-            "第一天沒買齊的這次補齊"
+            "BTS Ari → Ekkamai 同一條線直達，不用轉車，車程約 25 分",
+            "普羅旺斯風格咖啡選物店，前身是 JJ 市集起家的家飾品牌，木質調空間裡賣包包、抱枕、茶巾、服飾，也供應茶飲甜點",
+            "從 Ekkamai 站走過去約 5 分鐘，庭院綠意很好拍"
           ],
           notice: {
-            ticket: "免門票（晚餐費另計）",
-            hours: "商場約 10:00–22:00",
-            tips: [ "回程：BTS Chit Lom → Surasak", "累的話直接 Grab 回飯店" ]
+            ticket: "免門票，消費約 200–400 THB／人",
+            hours: "約 10:30–22:00（以現場公告為準）",
+            tips: [ "交通：BTS Ari → Ekkamai（同線直達，約 25 分）", "走 Sukhumvit 61 巷子進去，店面不算顯眼" ]
+          }
+        },
+        {
+          name: "Ink & Lion Cafe 黑膠藝廊咖啡",
+          url: "",
+          mapQuery: "Ink and Lion Cafe Bangkok",
+          stay: "15:45–17:30",
+          coords: [13.7194, 100.5849],
+          images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/BTS%E3%82%A8%E3%82%AB%E3%83%9E%E3%82%A4%E9%A7%85%E3%81%AE%E9%A7%85%E8%88%8E.jpg/960px-BTS%E3%82%A8%E3%82%AB%E3%83%9E%E3%82%A4%E9%A7%85%E3%81%AE%E9%A7%85%E8%88%8E.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Khlong_Toei_Nuea%2C_Watthana%2C_Bangkok_10110%2C_Thailand_-_panoramio.jpg/960px-Khlong_Toei_Nuea%2C_Watthana%2C_Bangkok_10110%2C_Thailand_-_panoramio.jpg"],
+          intro: [
+            "從 Fill in the Blank 步行約 10 分鐘到 Ekkamai 2 巷",
+            "老式復古風咖啡廳，黑膠唱片不間斷播放，牆上展示本地與國際藝術家作品，像個小型藝廊",
+            "本地設計師的生活選物也在這裡寄賣，喝咖啡順便挖寶"
+          ],
+          notice: {
+            ticket: "免門票，消費約 150–300 THB／人",
+            hours: "平日約 08:00–16:00、週末約 09:00–17:00（以現場公告為準）",
+            tips: [ "回程：BTS Ekkamai → Siam（轉乘）→ Surasak，回飯店約 35–40 分", "傍晚人潮較多，想找位子建議 16:00 前抵達" ]
           }
         }
       ]
