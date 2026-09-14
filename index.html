@@ -460,6 +460,13 @@
   /* 幣別下拉＋金額輸入同一列 */
   .ef-amt-row{display:flex;gap:6px;}
   .ef-amt-row select{width:74px;flex:0 0 74px;}
+  /* 手機窄螢幕（同 <640px 斷點）：2欄擠壓會讓金額/TWD、日期/狀態被迫並排，改單欄堆疊；
+     ef-name/ef-note 的 span 2 若不一併降成 span 1，會逼 grid 生出第二個隱性欄位，等於白改。
+     這條規則必須排在 .ef-name/.ef-note 基礎規則之後，同權重下才能真正覆蓋。 */
+  @media(max-width:639px){
+    .ef-grid{grid-template-columns:1fr;}
+    .ef-name,.ef-note{grid-column:span 1;}
+  }
   .ef-amt-row input{width:auto;flex:1;min-width:0;}
   .ef-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
   .ef-submit,.ef-cancel{
