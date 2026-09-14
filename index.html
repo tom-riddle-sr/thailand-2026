@@ -733,6 +733,14 @@ const TRIP_DATA = {
     }
   ],
 
+  /* 機場固定標示用座標統一來源，跟 hotels 同一套結構，供每天地圖畫機場 icon */
+  airports: [
+    {
+      name: "曼谷蘇凡納布機場 BKK Suvarnabhumi Airport",
+      coords: [13.69, 100.7501]
+    }
+  ],
+
   /* ============================================================
      secure：敏感資料加密區（護照、訂位代號、訂房編號）
      - null＝尚未設定。用本機的 encrypt.html 輸入資料與密碼產生密文後，
@@ -2565,6 +2573,12 @@ const TRIP_DATA = {
     if (hotel && Array.isArray(hotel.coords) && hotel.coords.length === 2) {
       const dup = pts.some(x => x.base === "hotel" && x.coords[0] === hotel.coords[0] && x.coords[1] === hotel.coords[1]);
       if (!dup) pts.push({ name: hotel.name, coords: hotel.coords, base: "hotel", no: null });
+    }
+    /* 機場固定標示：邏輯同飯店，來源統一為 TRIP_DATA.airports[0]，當天若已有 base:"airport" 的 spot（如第1、12天）就不重複疊加 */
+    const airport = (TRIP_DATA.airports || [])[0];
+    if (airport && Array.isArray(airport.coords) && airport.coords.length === 2) {
+      const dup = pts.some(x => x.base === "airport");
+      if (!dup) pts.push({ name: airport.name, coords: airport.coords, base: "airport", no: null });
     }
     if (!pts.length) { dayMapFallback(el, di, zone); return; }
     if (!(window.L && L.map)) {
