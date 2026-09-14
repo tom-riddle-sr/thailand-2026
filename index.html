@@ -1063,7 +1063,7 @@ const TRIP_DATA = {
     },
     {
       date: "2026-09-25",
-      theme: "Ari／Ekkamai 文青選品店＋質感咖啡廳（10:00 出發）",
+      theme: "Ari／Ekkamai 文青選品店＋質感咖啡廳＋BENKOFF 臘腸狗盲盒（10:00 出發）",
       spots: [
         {
           name: "Ari 巷弄選物店（MADBACON 等）",
@@ -1099,32 +1099,51 @@ const TRIP_DATA = {
           notice: {
             ticket: "免門票，餐飲現場點",
             hours: "多數約 08:00–18:00，各店不同",
-            tips: [ "用 Google Map 搜尋店名（Salt／Casa Lapin Specialty Coffee／Yellow Lane）導航最準", "吃完想續逛書店／選物店可以多走幾條巷子" ]
+            tips: [ "用 Google Map 搜尋店名（Salt／Casa Lapin Specialty Coffee／Yellow Lane）導航最準", "吃完往 BTS Thong Lo 方向移動，準備去 BENKOFF 買臘腸狗盲盒" ]
+          }
+        },
+        {
+          name: "BENKOFF 臘腸狗盲盒",
+          url: "https://www.instagram.com/benkoff.cafe/",
+          mapQuery: "BENKOFF Cafe Bangkok Thonglor",
+          stay: "14:00–14:45",
+          coords: [13.7239, 100.5789],
+          images: [],
+          intro: [
+            "BTS Thong Lo 站旁巷內的臘腸狗主題咖啡廳，同時是自創品牌 Saus.bkk 門市，主打「Sauschestra」臘腸狗吊飾盲盒（一套 8 款＋1 隱藏版）",
+            "這站的目的是買盲盒紀念品，不是安排寵物咖啡廳互動體驗——店內兩隻臘腸狗店長多在 14:00–16:00 才「上班」，遇到算加碼，沒遇到也不影響行程",
+            "地理位置正好卡在 Ari 與 Ekkamai 中間（BTS Thong Lo 站），從 Ari 過來順路插進來，不繞路"
+          ],
+          notice: {
+            ticket: "盲盒（Sauschestra 系列）現場泰銖售價以店內公告為準，海外代購行情約 NT$890–980／顆換算約 350–450 THB，僅供參考",
+            hours: "07:30–16:00（打烊較早，務必抓在 16:00 前結束，別排太晚）",
+            openDays: "無固定公休，但盲盒補貨與「狗店長」出勤日期以官方 IG 公告為準，出發前先查證",
+            tips: [ "盲盒近期常缺貨、限量供應，泰國本地也常見排隊仍不一定買到的情況，到店先確認當日有無現貨", "交通：BTS Ari → Thong Lo（同線直達，不轉車，約 20–25 分）", "建議出發前追蹤 IG @benkoff.cafe 確認補貨與營業狀況" ]
           }
         },
         {
           name: "Fill in the Blank 咖啡選物店",
           url: "",
           mapQuery: "Fill in the Blank Cafe Bangkok Ekkamai",
-          stay: "14:15–15:45",
+          stay: "15:00–16:00",
           coords: [13.7211, 100.5836],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Phuket%2C_Thailand_-_House_Cafe.jpg/960px-Phuket%2C_Thailand_-_House_Cafe.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/%ED%88%AC%EC%8D%B8%ED%94%8C%EB%A0%88%EC%9D%B4%EC%8A%A4_%EC%B2%AD%EC%9B%90%EC%98%A4%EC%B0%BD%ED%98%B8%EC%88%98%EA%B3%B5%EC%9B%90%EC%A0%90_3.jpg/960px-%ED%88%AC%EC%8D%B8%ED%94%8C%EB%A0%88%EC%9D%B4%EC%8A%A4_%EC%B2%AD%EC%9B%90%EC%98%A4%EC%B0%BD%ED%98%B8%EC%88%98%EA%B3%B5%EC%9B%90%EC%A0%90_3.jpg"],
           intro: [
-            "BTS Ari → Ekkamai 同一條線直達，不用轉車，車程約 25 分",
+            "從 BENKOFF 所在的 Thong Lo 站坐一站到 Ekkamai，同一條線不用轉車，車程約 5 分",
             "普羅旺斯風格咖啡選物店，前身是 JJ 市集起家的家飾品牌，木質調空間裡賣包包、抱枕、茶巾、服飾，也供應茶飲甜點",
             "從 Ekkamai 站走過去約 5 分鐘，庭院綠意很好拍"
           ],
           notice: {
             ticket: "免門票，消費約 200–400 THB／人",
             hours: "約 10:30–22:00（以現場公告為準）",
-            tips: [ "交通：BTS Ari → Ekkamai（同線直達，約 25 分）", "走 Sukhumvit 61 巷子進去，店面不算顯眼" ]
+            tips: [ "交通：BTS Thong Lo → Ekkamai（同線一站直達，約 5 分）", "走 Sukhumvit 61 巷子進去，店面不算顯眼" ]
           }
         },
         {
           name: "Ink & Lion Cafe 黑膠藝廊咖啡",
           url: "",
           mapQuery: "Ink and Lion Cafe Bangkok",
-          stay: "15:45–17:30",
+          stay: "16:10–17:30",
           coords: [13.7194, 100.5849],
           images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/2nd_Hand_Record_Store%2C_Flensburg%2C_2012%2C_ubt.JPG/960px-2nd_Hand_Record_Store%2C_Flensburg%2C_2012%2C_ubt.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Klang.KOMBINAT_%28record_shop%29%2C_Leipzig.jpg/960px-Klang.KOMBINAT_%28record_shop%29%2C_Leipzig.jpg"],
           intro: [
