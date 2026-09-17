@@ -413,7 +413,14 @@
   .sun-strip{display:flex;flex-wrap:wrap;gap:16px 44px;align-items:flex-start;}
   .ss-sun{flex:0 0 auto;font-size:.95rem;}
   .ss-sun b{font-weight:700;margin-left:4px;}
+  .ss-sun .arrow{color:var(--soft);margin:0 2px;}
   .ss-dress{flex:1;min-width:250px;font-size:.92rem;}
+  .sun-detail{margin-top:8px;}
+  .sun-detail summary{cursor:pointer;font-size:.85rem;color:var(--soft);}
+  .sun-detail-grid{margin-top:8px;font-size:.85rem;font-variant-numeric:tabular-nums;}
+  .sd-row{display:flex;gap:14px;padding:3px 0;border-bottom:1px solid var(--line-soft);}
+  .sd-row:last-child{border-bottom:none;}
+  .sd-date{flex:0 0 64px;color:var(--soft);}
 
   /* ===== 旅程總覽 ===== */
   .ov-summary{font-size:1.05rem;font-weight:600;letter-spacing:.06em;margin-bottom:4px;}
@@ -685,6 +692,7 @@ const TRIP_DATA = {
   subtitle: "雨季尾聲的曼谷慢遊",
   timezone: "Asia/Bangkok",         // 旅遊地時區（IANA 名稱）
   timezoneLabel: "曼谷",
+  sunTzOffset: 7,                   // 當地標準時間 UTC 偏移（小時），供日出日落公式計算用；曼谷全年 GMT+7 無夏令時間
   baseCurrency: "THB",       // 記帳表單幣別下拉的預設幣別
   dates: { start: "2026-09-21", end: "2026-10-02" },  // 9/21（一）台北出發、10/2（五）返抵台北
 
@@ -789,7 +797,7 @@ const TRIP_DATA = {
     ]
   },
 
-  sun: { sunrise: "約 06:05（9 月底平均預估）", sunset: "約 18:10（9 月底平均預估）" },
+  /* 日出日落已改為前端 NOAA 太陽方程式即時精算（見 calcSunTimes），不再需要寫死文字 */
 
   clothing: [
     "曼谷 9 月底仍炎熱潮濕（依平均氣候預估），透氣短袖＋防曬為主",
@@ -1779,6 +1787,51 @@ const TRIP_DATA = {
   const fmtMoney = n => Number(n).toLocaleString("zh-Hant-TW");
   const pad2 = n => String(n).padStart(2, "0");
 
+  /* ---------- 日出日落：NOAA 太陽方程式精算（緯度＋經度＋日期＋UTC偏移→當地時刻），純數學無需外部API ---------- */
+  function calcSunTimes(dateISO, lat, lon, tzOffsetHours) {
+    const m0 = dateISO.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m0) return null;
+    let y = +m0[1], mo = +m0[2], d = +m0[3];
+    const toJulian = (yy, mm, dd) => {
+      if (mm <= 2) { yy -= 1; mm += 12; }
+      const A = Math.floor(yy / 100), B = 2 - A + Math.floor(A / 4);
+      return Math.floor(365.25 * (yy + 4716)) + Math.floor(30.6001 * (mm + 1)) + dd + B - 1524.5;
+    };
+    const JD = toJulian(y, mo, d) + 0.5; // 當天正午
+    const T = (JD - 2451545.0) / 36525.0; // 儒略世紀數
+    const rad = deg2 => deg2 * Math.PI / 180, deg = r => r * 180 / Math.PI;
+    const L0 = (280.46646 + T * (36000.76983 + T * 0.0003032)) % 360; // 太陽幾何平黃經
+    const M0 = 357.52911 + T * (35999.05029 - 0.0001537 * T);         // 太陽平近點角
+    const e = 0.016708634 - T * (0.000042037 + 0.0000001267 * T);     // 地球軌道離心率
+    const C = Math.sin(rad(M0)) * (1.914602 - T * (0.004817 + 0.000014 * T))
+      + Math.sin(rad(2 * M0)) * (0.019993 - 0.000101 * T)
+      + Math.sin(rad(3 * M0)) * 0.000289;                              // 太陽中心方程
+    const trueLong = L0 + C;
+    const omega = 125.04 - 1934.136 * T;
+    const appLong = trueLong - 0.00569 - 0.00478 * Math.sin(rad(omega)); // 視黃經
+    const meanObliq = 23 + (26 + (21.448 - T * (46.815 + T * (0.00059 - T * 0.001813))) / 60) / 60;
+    const obliqCorr = meanObliq + 0.00256 * Math.cos(rad(omega));       // 黃道傾角修正
+    const decl = deg(Math.asin(Math.sin(rad(obliqCorr)) * Math.sin(rad(appLong)))); // 太陽赤緯
+    const y2 = Math.pow(Math.tan(rad(obliqCorr / 2)), 2);
+    const eqTime = 4 * deg(                                             // 均時差（分鐘）
+      y2 * Math.sin(2 * rad(L0))
+      - 2 * e * Math.sin(rad(M0))
+      + 4 * e * y2 * Math.sin(rad(M0)) * Math.cos(2 * rad(L0))
+      - 0.5 * y2 * y2 * Math.sin(4 * rad(L0))
+      - 1.25 * e * e * Math.sin(2 * rad(M0))
+    );
+    // 90.833° = 90° + 大氣折射(約34')＋太陽半徑(約16')，標準日出日落定義（上緣觸及地平線）
+    const cosHA = Math.cos(rad(90.833)) / (Math.cos(rad(lat)) * Math.cos(rad(decl))) - Math.tan(rad(lat)) * Math.tan(rad(decl));
+    if (cosHA > 1 || cosHA < -1) return null; // 極圈永晝／永夜，本專案兩站緯度不會發生
+    const HA = deg(Math.acos(cosHA)); // 日出日落時角
+    const solarNoonMin = 720 - 4 * lon - eqTime + tzOffsetHours * 60;
+    const fmtMin = min => {
+      let mm = ((Math.round(min) % 1440) + 1440) % 1440;
+      return pad2(Math.floor(mm / 60)) + ":" + pad2(mm % 60);
+    };
+    return { sunrise: fmtMin(solarNoonMin - HA * 4), sunset: fmtMin(solarNoonMin + HA * 4) };
+  }
+
   /* 單色線條 icon（Feather 風格：24x24、stroke=currentColor、無填色） */
   const ICONS = {
     calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
@@ -2015,13 +2068,27 @@ const TRIP_DATA = {
     /* --- 天氣：橫向一排小卡（每天都要查看，移到最前面）：優先即時預報，超出16天退回歷年平均預估 --- */
     html += '<div id="wx-card-wrap">' + wxCardHTML(D) + '</div>';
 
-    /* --- 日出日落＋建議穿著：一條橫向資訊帶 --- */
+    /* --- 日出日落＋建議穿著：一條橫向資訊帶（日出日落逐日以 NOAA 太陽方程式精算，非預估） --- */
+    const sunCoords = D.weather && D.weather.coords;
+    const sunDaily = sunCoords ? D.days.map(dy => {
+      const s = calcSunTimes(dy.date, sunCoords[0], sunCoords[1], D.sunTzOffset);
+      return { date: dy.date, sunrise: s ? s.sunrise : "—", sunset: s ? s.sunset : "—" };
+    }) : [];
+    const sFirst = sunDaily[0], sLast = sunDaily[sunDaily.length - 1];
     html += '<div class="card"><h3>' + secTitle("02", "日出日落・建議穿著", "Sun & Dress", "sunrise") + '</h3>'
       + '<div class="sun-strip">'
       + '<div class="ss-sun">'
-      + '<div>' + ic("sunrise", "sm ic-gold") + ' 日出<b>' + esc(D.sun.sunrise) + '</b></div>'
-      + '<div>' + ic("sun", "sm ic-terra") + ' 日落<b>' + esc(D.sun.sunset) + '</b></div>'
-      + '<div class="muted">當地時間</div>'
+      + (sFirst ?
+          '<div>' + ic("sunrise", "sm ic-gold") + ' 日出<b>' + esc(sFirst.sunrise) + '</b>'
+            + (sLast && sLast.sunrise !== sFirst.sunrise ? '<span class="arrow">→</span><b>' + esc(sLast.sunrise) + '</b>' : '') + '</div>'
+          + '<div>' + ic("sun", "sm ic-terra") + ' 日落<b>' + esc(sFirst.sunset) + '</b>'
+            + (sLast && sLast.sunset !== sFirst.sunset ? '<span class="arrow">→</span><b>' + esc(sLast.sunset) + '</b>' : '') + '</div>'
+          + '<div class="muted">當地時間・精確計算</div>'
+          + (sunDaily.length > 1 ? '<details class="sun-detail"><summary>看每日明細（' + sunDaily.length + ' 天）</summary>'
+              + '<div class="sun-detail-grid">' + sunDaily.map(s =>
+                  '<div class="sd-row"><span class="sd-date">' + fmtDate(s.date) + '</span><span>日出 ' + esc(s.sunrise) + '</span><span>日落 ' + esc(s.sunset) + '</span></div>'
+                ).join('') + '</div></details>' : '')
+        : '<div class="muted">日出日落資料尚未設定</div>')
       + '</div>'
       + '<div class="ss-dress">' + lines(D.clothing).map((t, i) =>
           '<div class="dl">' + (i === 0 ? ic("shirt", "sm ic-blue") + ' ' : '') + esc(t) + '</div>').join('') + '</div>'
