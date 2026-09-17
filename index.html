@@ -459,8 +459,7 @@
   /* ===== 記帳輸入與同步 ===== */
   .ef-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 18px;}
   @media(min-width:760px){.ef-grid{grid-template-columns:repeat(4,1fr);}}
-  /* grid item 預設 min-width:auto 會吃 min-content，datetime-local 原生控件的 min-content
-     比一般 text input 寬，導致該格被撐寬而右邊界凸出，必須強制 min-width:0 交還 width:100% 決定寬度 */
+  /* datetime-local 撐寬 iOS Safari 修不好，改拆 date+time 兩個獨立 input，min-width:0 防禦仍留著 */
   .ef-f{min-width:0;}
   .ef-f label{display:block;font-size:.74rem;color:var(--soft);letter-spacing:.06em;margin-bottom:3px;}
   .ef-f input,.ef-f select{
@@ -469,11 +468,13 @@
   }
   .ef-f select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%);background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;}
   .ef-f input:focus,.ef-f select:focus{outline:none;border-color:var(--blue);}
-  /* datetime-local 二度修法：裁切容器物理擋住 WebKit 內部寬度偏好，不靠瀏覽器聽話 */
+  /* 保底防線：外層仍裁切，拆分後個別 input 若還想撐寬也物理擋住 */
   .ef-grid .ef-f .ef-dt-clip{width:100%;max-width:100%;overflow:hidden;box-sizing:border-box;}
-  .ef-grid .ef-f .ef-dt-clip input[type="datetime-local"]{
-    width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
-    display:block;padding:8px 4px;font-size:.82rem;border:1px solid var(--line);
+  .ef-grid .ef-f .ef-dt-clip .ef-dt-row{display:flex;gap:6px;width:100%;max-width:100%;box-sizing:border-box;}
+  .ef-grid .ef-f .ef-dt-clip .ef-dt-row input[type="date"],
+  .ef-grid .ef-f .ef-dt-clip .ef-dt-row input[type="time"]{
+    width:50%!important;max-width:50%!important;min-width:0!important;flex:1 1 50%;box-sizing:border-box!important;
+    display:block;padding:8px 4px;font-size:.78rem;border:1px solid var(--line);
   }
   .ef-name{grid-column:span 2;}
   .ef-note{grid-column:span 2;}
@@ -3276,7 +3277,7 @@ const TRIP_DATA = {
       + '<select name="currency">' + CCY_LIST.map(c => '<option' + (c === (TRIP_DATA.baseCurrency || "THB") ? ' selected' : '') + '>' + c + '</option>').join('') + '</select>'
       + '<input name="amount" type="number" step="0.01" min="0" inputmode="decimal"></div></div>'
       + '<div class="ef-f"><label>金額 TWD NT$</label><input name="amountTWD" type="number" step="1" min="0" inputmode="decimal"></div>'
-      + '<div class="ef-f"><label>花費日期時間</label><div class="ef-dt-clip"><input name="spentAt" type="datetime-local"></div></div>'
+      + '<div class="ef-f"><label>花費日期時間</label><div class="ef-dt-clip"><div class="ef-dt-row"><input name="spentAtDate" type="date"><input name="spentAtTime" type="time"></div></div></div>'
       + '<div class="ef-f"><label>狀態</label><select name="status"><option>已付款</option><option>待付款</option><option>已退款</option></select></div>'
       + '<div class="ef-f"><label>分類</label><select name="category"></select></div>'
       + '<div class="ef-f ef-note"><label>備註</label><input name="note" autocomplete="off"></div>'
@@ -3343,21 +3344,32 @@ const TRIP_DATA = {
       const d = new Date(), pad = n => String(n).padStart(2, "0");
       return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
     };
+    /* date/time 拆分後合併／拆解成原本 spentAt 用的 ISO 字串，存取層不用改 */
+    const getSpentAt = () => {
+      const d = fe("spentAtDate").value, t = fe("spentAtTime").value;
+      if (!d && !t) return "";
+      return (d || nowLocalDT().slice(0, 10)) + "T" + (t || "00:00");
+    };
+    const setSpentAt = val => {
+      const v = val || nowLocalDT();
+      fe("spentAtDate").value = v.slice(0, 10);
+      fe("spentAtTime").value = v.slice(11, 16);
+    };
     const applySpentAtDayInference = () => {
-      const val = fe("spentAt").value;
+      const val = fe("spentAtDate").value;
       if (!val) return;
-      const idx = TRIP_DATA.days.findIndex(d => d.date === val.slice(0, 10));
+      const idx = TRIP_DATA.days.findIndex(d => d.date === val);
       if (idx >= 0) { const cat = "第" + (idx + 1) + "天"; fe("category").value = cat; lastCat = cat; }
       /* 找不到對應天數（行前或行程外）→ 維持使用者原本分類，不強制覆蓋 */
     };
-    fe("spentAt").addEventListener("change", applySpentAtDayInference);
+    fe("spentAtDate").addEventListener("change", applySpentAtDayInference);
     const resetForm = () => {
       editingId = null; form.reset();
       touched.amount = touched.TWD = false;
       rebuildCats(); // form.reset 後回到第一個分類，並清掉可能殘留的 __add__ 選取
       lastCat = fe("category").value;
       fe("currency").value = TRIP_DATA.baseCurrency || "THB";
-      fe("spentAt").value = nowLocalDT();
+      setSpentAt(nowLocalDT());
       applySpentAtDayInference();
       $("#exp-submit", p).textContent = "新增";
       $("#exp-cancel", p).style.display = "none";
@@ -3380,7 +3392,7 @@ const TRIP_DATA = {
         amountTWD: isNaN(twd) ? null : Math.round(twd),
         rate: rate || null,
         rateDate: rate ? FX.date : null,
-        spentAt: fe("spentAt").value || nowLocalDT(),
+        spentAt: getSpentAt() || nowLocalDT(),
         status: fe("status").value,
         category: fe("category").value === "__add__" ? lastCat : fe("category").value,
         /* 誰付的＝登入者；編輯既有記錄時保留原付款人 */
@@ -3413,7 +3425,7 @@ const TRIP_DATA = {
         fe("currency").value = item.currency || TRIP_DATA.baseCurrency || "THB";
         fe("amount").value = item.amount != null ? item.amount : "";
         fe("amountTWD").value = item.amountTWD != null ? item.amountTWD : "";
-        fe("spentAt").value = (item.spentAt || nowLocalDT()).slice(0, 16);
+        setSpentAt(item.spentAt || nowLocalDT());
         fe("status").value = item.status;
         rebuildCats();
         if (item.category && !Array.from(fe("category").options).some(o => o.value === item.category)) {
