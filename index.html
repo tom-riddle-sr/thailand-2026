@@ -124,6 +124,10 @@
   .wx-day:first-child{border-left:none;padding-left:0;}
   .wx-day .d{font-weight:600;color:var(--ink);letter-spacing:.06em;}
   .wx-day .t{font-size:1.15rem;font-weight:600;}
+  .wx-live-note{color:var(--soft);font-size:.82rem;}
+  .wx-tag{display:inline-block;margin-top:4px;font-size:.72rem;letter-spacing:.04em;padding:1px 7px;border-radius:20px;}
+  .wx-tag-live{background:var(--blue-soft);color:var(--blue);}
+  .wx-tag-est{background:transparent;color:var(--soft);border:1px solid var(--line-soft);}
 
   /* ===== Prep checklist ===== */
   .progress-wrap{margin-bottom:18px;}
@@ -762,6 +766,7 @@ const TRIP_DATA = {
 
   /* 每日天氣概況（9 月底～10 月初平均預估：曼谷雨季尾聲，出發前請再查即時預報） */
   weather: {
+    coords: [13.7563, 100.5018], // 曼谷市中心，供 Open-Meteo 即時預報查詢用
     overall: [
       "曼谷 9 月底～10 月初為雨季尾聲（以下為氣候平均值，非即時預報）",
       "均溫約 25–33°C，濕度高（約 75–85%）",
@@ -1825,6 +1830,89 @@ const TRIP_DATA = {
     : /步行/.test(t) ? 'walk' : 'alert';
   /* 依天氣描述挑 icon */
   const wxIcon = d => /雨/.test(d) ? 'cloudrain' : /雪|雲/.test(d) ? 'cloud' : 'sun';
+
+  /* ---------- 天氣：Open-Meteo 即時預報（未來16天）＋歷年平均預估優雅降級 ---------- */
+  const WMO_DESC = {
+    0: "晴天", 1: "晴時多雲", 2: "多雲", 3: "陰天",
+    45: "起霧", 48: "霧凇",
+    51: "小毛毛雨", 53: "毛毛雨", 55: "大毛毛雨", 56: "凍毛毛雨", 57: "強凍毛毛雨",
+    61: "小雨", 63: "中雨", 65: "大雨", 66: "凍雨", 67: "強凍雨",
+    71: "小雪", 73: "中雪", 75: "大雪", 77: "陣雪粒",
+    80: "短暫陣雨", 81: "陣雨", 82: "強陣雨",
+    85: "陣雪", 86: "強陣雪",
+    95: "雷陣雨", 96: "雷陣雨挾冰雹", 99: "強雷陣雨挾冰雹"
+  };
+  const wmoDesc = code => WMO_DESC[code] || "天氣變化";
+  const WX = { live: {}, tried: false, updatedLabel: "", K: "trip::" + TRIP_DATA.id + "::wxforecast" };
+  try {
+    const wc = JSON.parse(localStorage.getItem(WX.K) || "null");
+    if (wc && wc.live && wc.ts && (Date.now() - wc.ts < 3600000)) { WX.live = wc.live; WX.updatedLabel = wc.updatedLabel; WX.tried = true; }
+  } catch (e) { /* 私密模式或快取損毀，忽略 */ }
+
+  /* 天氣卡片：每天優先用 WX.live（即時預報），沒有的日期退回 TRIP_DATA.weather.daily（歷年平均預估） */
+  function wxCardHTML(D) {
+    const overallHTML = lines(D.weather.overall).map(t => '<p>' + esc(t) + '</p>').join('');
+    const liveCount = D.weather.daily.filter(w => WX.live[w.date]).length;
+    const total = D.weather.daily.length;
+    let note = "";
+    if (WX.tried) {
+      note = liveCount === 0 ? "目前無法取得即時預報（可能離線，或行程日期超出未來 16 天範圍），以下為歷年平均預估。"
+        : liveCount === total ? ("已取得全部 " + liveCount + " 天即時預報，更新於 " + WX.updatedLabel + "。")
+        : ("已取得 " + liveCount + "／" + total + " 天即時預報（更新於 " + WX.updatedLabel + "），其餘日期超出 16 天預報範圍，維持歷年平均預估。");
+    }
+    let html = '<div class="card"><h3>' + secTitle("01", "天氣與濕度", "Weather", wxIcon(lines(D.weather.overall).join("、"))) + '</h3>'
+      + '<div class="wx-overall">' + overallHTML + (note ? '<p class="wx-live-note">' + esc(note) + '</p>' : '') + '</div><div class="wx-grid">';
+    D.weather.daily.forEach(w => {
+      const live = WX.live[w.date];
+      const desc = live ? live.desc : w.desc;
+      const tempMin = live ? live.tempMin : w.tempMin;
+      const tempMax = live ? live.tempMax : w.tempMax;
+      const humidity = live ? live.humidity : w.humidity;
+      const rain = live ? live.rain : w.rain;
+      const wi = wxIcon(desc);
+      const tag = live ? '<span class="wx-tag wx-tag-live">即時預報</span>' : '<span class="wx-tag wx-tag-est">歷年平均預估</span>';
+      html += '<div class="wx-day"><div class="d">' + fmtDate(w.date) + '</div>'
+        + '<div class="muted">' + ic(wi, "sm " + (wi === "sun" ? "ic-gold" : "ic-blue")) + ' ' + esc(desc) + '</div>'
+        + '<div class="t">' + tempMin + '–' + tempMax + '°C</div>'
+        + '<div class="muted">濕度 ' + esc(humidity) + '｜降雨 ' + esc(rain) + '</div>'
+        + tag + '</div>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+  function wxRefreshDOM() { const el = $("#wx-card-wrap"); if (el) el.innerHTML = wxCardHTML(TRIP_DATA); }
+  async function wxLoad() {
+    const coords = TRIP_DATA.weather && TRIP_DATA.weather.coords;
+    const cached = (function () { try { return JSON.parse(localStorage.getItem(WX.K) || "null"); } catch (e) { return null; } })();
+    if (cached && cached.ts && (Date.now() - cached.ts < 3600000)) { wxRefreshDOM(); return; } // 快取 1 小時內有效，不重抓
+    if (!coords) { WX.tried = true; wxRefreshDOM(); return; }
+    try {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=" + coords[0] + "&longitude=" + coords[1]
+        + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,relative_humidity_2m_mean&timezone=auto&forecast_days=16";
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) throw new Error("http " + r.status);
+      const j = await r.json();
+      const dates = (j && j.daily && j.daily.time) || [];
+      const live = {};
+      dates.forEach((date, i) => {
+        live[date] = {
+          desc: wmoDesc(j.daily.weather_code[i]) + "（即時）",
+          tempMax: Math.round(j.daily.temperature_2m_max[i]),
+          tempMin: Math.round(j.daily.temperature_2m_min[i]),
+          humidity: j.daily.relative_humidity_2m_mean ? Math.round(j.daily.relative_humidity_2m_mean[i]) + "%" : "—",
+          rain: j.daily.precipitation_probability_max ? Math.round(j.daily.precipitation_probability_max[i]) + "%" : "—"
+        };
+      });
+      WX.live = live;
+      WX.updatedLabel = new Date().toTimeString().slice(0, 5);
+      WX.tried = true;
+      try { localStorage.setItem(WX.K, JSON.stringify({ live: live, updatedLabel: WX.updatedLabel, ts: Date.now() })); } catch (e) {}
+    } catch (e) {
+      WX.tried = true; // fetch 失敗（離線/API 掛掉）：優雅降級，維持既有（可能為空）資料，蓋回歷年平均預估
+    }
+    wxRefreshDOM();
+  }
+
   /* 行前準備分類 icon */
   const catIcon = c => /簽證/.test(c) ? 'book' : /票/.test(c) ? 'ticket' : /預約/.test(c) ? 'calcheck' : 'list';
   /* 區塊標題：icon＋小編號＋中文＋英文小標 */
@@ -1924,17 +2012,8 @@ const TRIP_DATA = {
       + '<div class="clock"><div class="zone">' + esc(D.timezoneLabel) + ' Local</div><div class="time" id="clk-local">--:--:--</div><div class="date" id="clkd-local"></div></div>'
       + '</div></div>';
 
-    /* --- 天氣：橫向一排 11 天小卡（每天都要查看，移到最前面） --- */
-    html += '<div class="card"><h3>' + secTitle("01", "天氣與濕度", "Weather", wxIcon(lines(D.weather.overall).join("、"))) + '</h3>'
-      + '<div class="wx-overall">' + lines(D.weather.overall).map(t => '<p>' + esc(t) + '</p>').join('') + '</div><div class="wx-grid">';
-    D.weather.daily.forEach(w => {
-      const wi = wxIcon(w.desc);
-      html += '<div class="wx-day"><div class="d">' + fmtDate(w.date) + '</div>'
-        + '<div class="muted">' + ic(wi, "sm " + (wi === "sun" ? "ic-gold" : "ic-blue")) + ' ' + esc(w.desc) + '</div>'
-        + '<div class="t">' + w.tempMin + '–' + w.tempMax + '°C</div>'
-        + '<div class="muted">濕度 ' + esc(w.humidity) + '｜降雨 ' + esc(w.rain) + '</div></div>';
-    });
-    html += '</div></div>';
+    /* --- 天氣：橫向一排小卡（每天都要查看，移到最前面）：優先即時預報，超出16天退回歷年平均預估 --- */
+    html += '<div id="wx-card-wrap">' + wxCardHTML(D) + '</div>';
 
     /* --- 日出日落＋建議穿著：一條橫向資訊帶 --- */
     html += '<div class="card"><h3>' + secTitle("02", "日出日落・建議穿著", "Sun & Dress", "sunrise") + '</h3>'
@@ -3288,6 +3367,7 @@ const TRIP_DATA = {
 
     resetForm();
     fxLoad();
+    wxLoad();
     refreshExpenses(); // 先畫未登入態；登入後由 onAuthStateChanged → expWatch 接手
   })();
 
