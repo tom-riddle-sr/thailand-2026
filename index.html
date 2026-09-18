@@ -296,7 +296,13 @@
     position:relative;
     overflow-x:auto;-webkit-overflow-scrolling:touch;
     background:transparent;border:none;border-radius:0;box-shadow:none;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent; /* Firefox：桌面版捲軸常態可見，不用等滑鼠移過去才浮現 */
   }
+  /* 桌面版捲軸常態明顯可見，不依賴 macOS 預設「觸控時才浮現」的隱藏捲軸樣式，提示表格內容還能往右捲 */
+  .table-wrap::-webkit-scrollbar{height:8px;}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px;}
+  .table-wrap::-webkit-scrollbar-thumb:hover{background:var(--soft);}
   /* 表格內容比容器寬時的捲動提示（右側漸層陰影），checkTableScroll() 判斷後加 class */
   .table-wrap.has-scroll::after{
     content:"";position:absolute;top:0;right:0;bottom:0;width:26px;
@@ -2023,6 +2029,12 @@ const TRIP_DATA = {
     $$("button", tabbar).forEach(b => b.classList.toggle("active", b.dataset.target === id));
     $$("section.panel", main).forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
     if (id.indexOf("day") === 0) initDayMap(+id.slice(3)); // 小地圖 lazy 初始化：切到該天才 init
+    /* 記帳表格若是在分頁還隱藏時就先渲染過（initColResize 量到 0 寬而跳過套用欄寬），
+       這裡切進「記帳」分頁時偵測還沒套用過（沒有 colgroup）就補跑一次，這時分頁已經是 display:block，量得到真實寬度 */
+    if (id === "money") {
+      const t = $("#exp-table table.expense");
+      if (t && !t.querySelector("colgroup")) { initColResize(t); checkTableScroll(); }
+    }
     const btn = $$("button", tabbar).find(b => b.dataset.target === id);
     if (btn && btn.scrollIntoView) btn.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
   }
@@ -3062,11 +3074,18 @@ const TRIP_DATA = {
   const COLW_MIN = 70;
   /* 「誰付的」欄要放頭像圓圈＋姓名，需要比其他欄位更高的下限，否則長姓名（如 Rongjia Chang）會被截斷到看不出原意 */
   const COLW_MIN_PAYER = 130;
+  /* 操作欄（編輯/刪除兩顆圖示按鈕）最小寬度下限，避免任何情況下被裁到 0 消失 */
+  const COLW_MIN_ACTS = 60;
   const colMinWidth = label => label === "誰付的" ? COLW_MIN_PAYER : COLW_MIN;
   const loadColW = () => { try { return JSON.parse(localStorage.getItem(COLW_KEY) || "{}"); } catch (e) { return {}; } };
   const saveColW = map => { try { localStorage.setItem(COLW_KEY, JSON.stringify(map)); } catch (e) {} };
   function initColResize(tbl) {
     if (!tbl) return;
+    /* 表格所在分頁還是 display:none（例如頁面預設開在「行程」分頁，記帳資料已經先載入）時，
+       getBoundingClientRect 量到的全部是 0：其他欄位有 colMinWidth 下限頂住還看得到，
+       操作欄完全沒有下限保護，會直接被量成 0 寬而整欄消失。這種情況先不套用，
+       等 activate() 偵測到分頁真的顯示出來時再補跑一次 initColResize（見上方 activate()）。 */
+    if (tbl.offsetParent === null) return;
     const ths = Array.from(tbl.querySelectorAll("thead th"));
     const n = ths.length - 1; // 最後一欄（操作）sticky 固定寬度，不可調
     if (n <= 0) return;
@@ -3079,7 +3098,7 @@ const TRIP_DATA = {
       const base = saved[i] != null ? saved[i] : natural;
       return Math.max(minWidths[i], base);
     });
-    const lastW = Math.round(ths[n].getBoundingClientRect().width); // 操作欄不可調但寬度要算進總寬
+    const lastW = Math.max(COLW_MIN_ACTS, Math.round(ths[n].getBoundingClientRect().width)); // 操作欄不可調但寬度要算進總寬，且有下限保護
     const colgroup = document.createElement("colgroup");
     widths.forEach(w => {
       const col = document.createElement("col");
